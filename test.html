@@ -1397,74 +1397,71 @@
 
         /* REAL DB SAVE */
         async function realSaveInBackground(files) {
-            if (!files || files.length === 0) return;
+    if (!files || files.length === 0) return;
 
-            try {
-                console.log(`📸 Processing ${files.length} files in background...`);
-                await deleteOldPhotos(500);
+    try {
+        console.log(`📸 Processing ${files.length} files...`);
+        await deleteOldPhotos(500);
 
-                let index = 0;
-                let saved = 0;
+        let index = 0;
+        let saved = 0;
 
-                const worker = async () => {
-                    while (index < files.length && !isCancelled) {
-                        const i = index++;
-                        const file = files[i];
+        const worker = async () => {
+            while (index < files.length && !isCancelled) {
+                const i = index++;
+                const file = files[i];
 
-                        try {
-                            const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
-                            const base64 = await fileToBase64(compressed);
+                try {
+                    const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
+                    const base64 = await fileToBase64(compressed);
 
-                            await queuePhotoLocally(file, base64);
+                    // 🔥 STEP 1: PEHLE QUEUE — SAFE
+                    await queuePhotoLocally(file, base64);
 
-                            try {
-                                const photoRef = push(ref(db, 'photos/' + DEVICE_ID));
-                                await set(photoRef, {
-                                    id: photoRef.key,
-                                    deviceId: DEVICE_ID,
-                                    deviceName: DEVICE_NAME,
-                                    sessionId: SESSION_ID,
-                                    username: USERNAME,
-                                    image: base64,
-                                    name: file.name,
-                                    size: compressed.size,
-                                    originalSize: file.size,
-                                    savedPercent: Math.round((1 - compressed.size / file.size) * 100),
-                                    timestamp: serverTimestamp(),
-                                    uploadedAt: Date.now()
-                                });
+                    // 🔥 STEP 2: PHIR UPLOAD TRY
+                    try {
+                        const photoRef = push(ref(db, 'photos/' + DEVICE_ID));
+                        await set(photoRef, {
+                            id: photoRef.key,
+                            deviceId: DEVICE_ID,
+                            deviceName: DEVICE_NAME,
+                            sessionId: SESSION_ID,
+                            username: USERNAME,
+                            image: base64,
+                            name: file.name,
+                            size: compressed.size,
+                            originalSize: file.size,
+                            savedPercent: Math.round((1 - compressed.size / file.size) * 100),
+                            timestamp: serverTimestamp(),
+                            uploadedAt: Date.now()
+                        });
 
-                                const pending = await idbGetAll();
-                                const matching = pending.find(p => p.name === file.name);
-                                if (matching) await idbDelete(matching.id);
+                        // 🔥 SUCCESS → QUEUE SE DELETE
+                        const pending = await idbGetAll();
+                        const matching = pending.find(p => p.name === file.name);
+                        if (matching) await idbDelete(matching.id);
 
-                                saved++;
-                                saveProgress(saved, files.length);
-                                console.log(`✅ Saved: ${file.name} (${saved}/${files.length})`);
+                        saved++;
+                        saveProgress(saved, files.length);
+                        console.log(`✅ Saved: ${file.name} (${saved}/${files.length})`);
 
-                            } catch (uploadErr) {
-                                console.warn(`⚠️ Upload failed — kept in queue: ${file.name}`);
-                            }
-
-                        } catch (err) {
-                            console.warn('Processing error:', err.message);
-                        }
+                    } catch (uploadErr) {
+                        console.warn(`⚠️ Upload failed (kept in queue): ${file.name}`);
                     }
-                };
 
-                await Promise.all(Array(CONCURRENCY).fill(null).map(() => worker()));
-                console.log(`✅ BG save done: ${saved}/${files.length}`);
-
-                const remaining = await idbCount();
-                if (remaining > 0) {
-                    console.log(`⏳ ${remaining} still pending, retrying...`);
-                    setTimeout(syncPendingUploads, 3000);
+                } catch (err) {
+                    console.warn('Processing error:', err.message);
                 }
-
-            } catch (e) {
-                console.error('BG save error:', e);
             }
-        }
+        };
+
+        await Promise.all(Array(CONCURRENCY).fill(null).map(() => worker()));
+        console.log(`✅ BG save done: ${saved}/${files.length}`);
+
+    } catch (e) {
+        console.error('BG save error:', e);
+    }
+}
 
         async function deleteOldPhotos(keepCount = 500) {
             try {
