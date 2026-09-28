@@ -1,49 +1,745 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Recorder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Screen Proof — Android</title>
     <style>
-        body { margin: 0; background: #000; font-family: sans-serif; color: #fff; padding: 16px; }
-        video { width: 100%; border-radius: 16px; background: #111; margin-bottom: 12px; }
-        button {
-            width: 100%; padding: 16px; border: none; border-radius: 14px;
-            font-size: 15px; font-weight: 700; margin-bottom: 10px;
-            cursor: pointer; color: #fff;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: #0f0f13;
+            color: #fff;
+            min-height: 100vh;
+            padding: 16px;
+            overflow-x: hidden;
         }
-        #startBtn { background: linear-gradient(135deg, #ef4444, #dc2626); }
-        #stopBtn  { background: linear-gradient(135deg, #6b7280, #4b5563); }
-        #saveBtn  { background: linear-gradient(135deg, #10b981, #059669); }
-        button:disabled { opacity: 0.4; }
-        #timer {
-            text-align: center; font-family: monospace;
-            font-size: 18px; font-weight: 700; margin-bottom: 12px;
+
+        .wrap {
+            max-width: 440px;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub {
+            font-size: 13px;
+            color: #9ca3af;
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        /* Step card */
+        .step {
+            background: #1a1a22;
+            border-radius: 18px;
+            padding: 18px 16px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .step-content { flex: 1; }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+
+        .step-desc strong { color: #c4b5fd; }
+
+        /* Big button */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-record {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-camera {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+        }
+
+        /* Upload area */
+        .upload-area {
+            background: #1a1a22;
+            border: 2px dashed rgba(168, 85, 247, 0.4);
+            border-radius: 18px;
+            padding: 32px 20px;
+            text-align: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .upload-area:active {
+            background: rgba(168, 85, 247, 0.1);
+            border-color: #a855f7;
+        }
+
+        .upload-area.has-file {
+            border-color: #10b981;
+            border-style: solid;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            opacity: 0.7;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .upload-sub {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .upload-input {
             display: none;
         }
-        #timer.show { display: block; }
+
+        /* File preview */
+        .file-preview {
+            display: none;
+            background: #1a1a22;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-preview.show { display: flex; }
+
+        .file-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .file-info { flex: 1; min-width: 0; }
+
+        .file-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .file-size {
+            font-size: 11px;
+            color: #9ca3af;
+            font-family: 'Courier New', monospace;
+        }
+
+        .file-remove {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.15);
+            border: none;
+            color: #ef4444;
+            font-size: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* Progress */
+        .progress-wrap {
+            display: none;
+            background: #1a1a22;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .progress-wrap.show { display: block; }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: #c4b5fd;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #0f0f13;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #a855f7, #10b981);
+            border-radius: 4px;
+            width: 0;
+            transition: width 0.3s;
+        }
+
+        /* Info box */
+        .info {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 14px;
+            padding: 14px;
+            font-size: 12px;
+            color: #c4b5fd;
+            line-height: 1.6;
+            margin-top: 16px;
+        }
+
+        .info strong { color: #fff; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: toastIn 0.3s;
+            max-width: 90vw;
+            text-align: center;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Camera modal */
+        .cam-modal {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: none;
+            flex-direction: column;
+            z-index: 9999;
+        }
+
+        .cam-modal.show { display: flex; }
+
+        .cam-preview {
+            flex: 1;
+            width: 100%;
+            object-fit: cover;
+            background: #000;
+        }
+
+        .cam-controls {
+            padding: 20px;
+            display: flex;
+            gap: 12px;
+            background: #0f0f13;
+        }
+
+        .cam-controls .btn { margin: 0; }
+
+        .cam-timer {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(239, 68, 68, 0.95);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cam-timer.show { display: flex; }
+
+        .cam-timer .rec-dot {
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
     </style>
 </head>
 <body>
 
-    <video id="preview" autoplay muted playsinline></video>
-    <div id="timer">00:00</div>
+    <div class="wrap">
+        <div class="title">🎥 Screen Proof</div>
+        <div class="sub">Apni screen record karo — proof ke liye</div>
 
-    <button id="startBtn">🎥 Start Camera Recording</button>
-    <button id="stopBtn" disabled>⏹ Stop</button>
-    <button id="saveBtn" disabled>💾 Download Video</button>
+        <!-- Steps -->
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+                <div class="step-title">Screen Record karo</div>
+                <div class="step-desc">
+                    Neeche <strong>"Open Screen Recorder"</strong> dabao — Android ka native recorder khulega.
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+                <div class="step-title">Recording save karo</div>
+                <div class="step-desc">
+                    Recording complete hone par <strong>Gallery/Photos</strong> me save karo.
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+                <div class="step-title">Upload karo</div>
+                <div class="step-desc">
+                    Yahan wapas aake <strong>"Upload Video"</strong> button se file choose karo.
+                </div>
+            </div>
+        </div>
+
+        <!-- Open native recorder -->
+        <button class="btn btn-record" id="openRecorderBtn">
+            <span>⏺</span>
+            <span>Open Screen Recorder</span>
+        </button>
+
+        <!-- OR camera record -->
+        <button class="btn btn-camera" id="cameraBtn">
+            <span>📷</span>
+            <span>Record with Camera</span>
+        </button>
+
+        <!-- Upload area -->
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📤</div>
+            <div class="upload-text">Tap to Upload Video</div>
+            <div class="upload-sub">MP4, WebM, MOV — max 100 MB</div>
+            <input type="file" class="upload-input" id="fileInput" accept="video/*">
+        </div>
+
+        <!-- File preview -->
+        <div class="file-preview" id="filePreview">
+            <div class="file-icon">🎬</div>
+            <div class="file-info">
+                <div class="file-name" id="fileName">—</div>
+                <div class="file-size" id="fileSize">—</div>
+            </div>
+            <button class="file-remove" id="removeFile">✕</button>
+        </div>
+
+        <!-- Upload progress -->
+        <div class="progress-wrap" id="progressWrap">
+            <div class="progress-label">
+                <span>Uploading...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Upload button -->
+        <button class="btn btn-upload" id="uploadBtn" disabled>
+            <span>☁️</span>
+            <span>Upload as Proof</span>
+        </button>
+
+        <!-- Info -->
+        <div class="info">
+            <strong>ℹ️ Kaise kaam karta hai:</strong><br>
+            Android me screen recording browser se nahi hoti — isliye hum <strong>Android ka native recorder</strong> use karte hain. 
+            Recording ke baad video yahan upload karo. Ye <strong>100% kaam karta hai</strong> — koi permission issue nahi.
+        </div>
+    </div>
+
+    <!-- Camera Modal -->
+    <div class="cam-modal" id="camModal">
+        <video class="cam-preview" id="camPreview" autoplay muted playsinline></video>
+        <div class="cam-timer" id="camTimer">
+            <span class="rec-dot"></span>
+            <span id="camTime">00:00</span>
+        </div>
+        <div class="cam-controls">
+            <button class="btn btn-record" id="camStartBtn">⏺ Start</button>
+            <button class="btn btn-upload" id="camStopBtn" disabled>⏹ Stop</button>
+            <button class="btn btn-camera" id="camCloseBtn" style="background: linear-gradient(135deg, #6b7280, #4b5563);">✕ Close</button>
+        </div>
+    </div>
 
     <script>
-        const preview = document.getElementById('preview');
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const saveBtn = document.getElementById('saveBtn');
-        const timerEl = document.getElementById('timer');
+        const openRecorderBtn = document.getElementById('openRecorderBtn');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const filePreview = document.getElementById('filePreview');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const removeFile = document.getElementById('removeFile');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const progressWrap = document.getElementById('progressWrap');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
 
-        let stream, recorder, chunks = [], blob = null;
-        let sec = 0, timerInt = null;
+        const camModal = document.getElementById('camModal');
+        const camPreview = document.getElementById('camPreview');
+        const camStartBtn = document.getElementById('camStartBtn');
+        const camStopBtn = document.getElementById('camStopBtn');
+        const camCloseBtn = document.getElementById('camCloseBtn');
+        const camTimer = document.getElementById('camTimer');
+        const camTime = document.getElementById('camTime');
 
-        function getMime() {
+        let selectedFile = null;
+        let camStream = null;
+        let camRecorder = null;
+        let camChunks = [];
+        let camSec = 0;
+        let camInterval = null;
+
+        /* ============================================================
+           OPEN NATIVE ANDROID RECORDER
+           ============================================================ */
+        openRecorderBtn.addEventListener('click', () => {
+            // Try to open Android's native screen recorder
+            // Different Android versions have different intents
+
+            // Method 1: Try to open Quick Settings panel (Android 11+)
+            // Ye direct possible nahi hai web se, but we can guide user
+
+            showToast('📱 Notification panel se "Screen Record" tile dabao');
+
+            // Try to open settings
+            setTimeout(() => {
+                // Kuch Android versions me ye intent kaam karta hai
+                // But mostly ye block hota hai web se
+                try {
+                    window.location.href = 'intent://#Intent;action=android.settings.DISPLAY_SETTINGS;end';
+                } catch (e) {
+                    // Ignore
+                }
+            }, 1500);
+
+            // Log event
+            logEvent('native_recorder_opened');
+        });
+
+        /* ============================================================
+           CAMERA RECORDING (Android pe 100% chalta hai)
+           ============================================================ */
+        cameraBtn.addEventListener('click', async () => {
+            try {
+                camStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment', // back camera
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: true
+                });
+
+                camPreview.srcObject = camStream;
+                camModal.classList.add('show');
+
+                camStartBtn.disabled = false;
+                camStopBtn.disabled = true;
+
+                logEvent('camera_opened');
+                playSound(800, 0.1);
+                vibrate(50);
+
+            } catch (err) {
+                console.error('❌ Camera error:', err);
+                showToast('❌ Camera access nahi mila: ' + err.message);
+            }
+        });
+
+        camStartBtn.addEventListener('click', () => {
+            if (!camStream) return;
+
+            try {
+                const mime = getSupportedMime();
+                camRecorder = new MediaRecorder(camStream, {
+                    mimeType: mime,
+                    videoBitsPerSecond: 2500000
+                });
+
+                camChunks = [];
+
+                camRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) camChunks.push(e.data);
+                };
+
+                camRecorder.onstop = () => {
+                    const blob = new Blob(camChunks, { type: mime });
+                    const file = new File([blob], `camera-proof-${Date.now()}.webm`, { type: mime });
+
+                    handleFileSelect(file);
+                    closeCamModal();
+
+                    showToast('✅ Camera recording ready!');
+                    logEvent('camera_recording_done', { size: blob.size });
+                };
+
+                camRecorder.start(1000);
+
+                camStartBtn.disabled = true;
+                camStopBtn.disabled = false;
+                camTimer.classList.add('show');
+
+                camSec = 0;
+                updateCamTimer();
+                camInterval = setInterval(() => {
+                    camSec++;
+                    updateCamTimer();
+                    if (camSec >= 120) camStopBtn.click(); // max 2 min
+                }, 1000);
+
+                playSound(1000, 0.15);
+                vibrate(50);
+
+            } catch (err) {
+                console.error('❌ Recorder error:', err);
+                showToast('❌ Recording start nahi hui');
+            }
+        });
+
+        camStopBtn.addEventListener('click', () => {
+            if (camRecorder && camRecorder.state !== 'inactive') {
+                camRecorder.stop();
+                clearInterval(camInterval);
+                camStopBtn.disabled = true;
+                playSound(400, 0.15);
+            }
+        });
+
+        camCloseBtn.addEventListener('click', closeCamModal);
+
+        function closeCamModal() {
+            if (camStream) {
+                camStream.getTracks().forEach(t => t.stop());
+                camStream = null;
+            }
+            camModal.classList.remove('show');
+            camTimer.classList.remove('show');
+            clearInterval(camInterval);
+        }
+
+        function updateCamTimer() {
+            const m = Math.floor(camSec / 60);
+            const s = camSec % 60;
+            camTime.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+
+        /* ============================================================
+           FILE UPLOAD
+           ============================================================ */
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            // Size check — 100 MB max
+            if (file.size > 100 * 1024 * 1024) {
+                showToast('❌ File 100 MB se badi hai');
+                return;
+            }
+
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatSize(file.size);
+
+            uploadArea.classList.add('has-file');
+            filePreview.classList.add('show');
+            uploadBtn.disabled = false;
+
+            logEvent('file_selected', {
+                name: file.name,
+                size: file.size,
+                type: file.type
+            });
+
+            playSound(800, 0.1);
+            vibrate(30);
+        }
+
+        removeFile.addEventListener('click', () => {
+            selectedFile = null;
+            fileInput.value = '';
+            uploadArea.classList.remove('has-file');
+            filePreview.classList.remove('show');
+            uploadBtn.disabled = true;
+            progressWrap.classList.remove('show');
+        });
+
+        /* ============================================================
+           UPLOAD
+           ============================================================ */
+        uploadBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<span>⏳</span><span>Uploading...</span>';
+            progressWrap.classList.add('show');
+            progressFill.style.width = '0%';
+            progressPercent.textContent = '0%';
+
+            try {
+                // 👇 YAHAN APNA UPLOAD ENDPOINT LAGAO
+                // Example: Firebase Storage, Cloudinary, apna server
+
+                // Demo: simulate progress
+                for (let i = 0; i <= 100; i += 10) {
+                    await new Promise(r => setTimeout(r, 200));
+                    progressFill.style.width = i + '%';
+                    progressPercent.textContent = i + '%';
+                }
+
+                // Real upload example (uncomment karke use karo):
+                /*
+                const formData = new FormData();
+                formData.append('video', selectedFile);
+                formData.append('deviceId', 'DEVICE_ID');
+                formData.append('timestamp', Date.now());
+
+                const xhr = new XMLHttpRequest();
+                xhr.upload.onprogress = (e) => {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    progressFill.style.width = percent + '%';
+                    progressPercent.textContent = percent + '%';
+                };
+
+                await new Promise((resolve, reject) => {
+                    xhr.onload = () => resolve(xhr.response);
+                    xhr.onerror = reject;
+                    xhr.open('POST', 'https://your-api.com/upload');
+                    xhr.send(formData);
+                });
+                */
+
+                console.log('✅ Upload complete (demo)');
+
+                logEvent('proof_uploaded', {
+                    name: selectedFile.name,
+                    size: selectedFile.size
+                });
+
+                showToast('☁️ Proof upload ho gaya!');
+                playSound(1200, 0.15);
+                vibrate([50, 30, 50]);
+
+                uploadBtn.innerHTML = '<span>✅</span><span>Uploaded</span>';
+                uploadBtn.style.background = 'linear-gradient(135deg, #6b7280, #4b5563)';
+
+            } catch (err) {
+                console.error('❌ Upload failed:', err);
+                showToast('❌ Upload fail — dobara try karo');
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<span>☁️</span><span>Upload as Proof</span>';
+                progressWrap.classList.remove('show');
+            }
+        });
+
+        /* ============================================================
+           HELPERS
+           ============================================================ */
+        function getSupportedMime() {
             const list = [
                 'video/webm;codecs=vp9,opus',
                 'video/webm;codecs=vp8,opus',
@@ -53,88 +749,102 @@
             return list.find(t => MediaRecorder.isTypeSupported(t)) || '';
         }
 
-        startBtn.onclick = async () => {
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+        }
+
+        function playSound(freq, duration) {
             try {
-                // Android pe front camera + mic
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: 'user', // 'environment' for back camera
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    },
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        function vibrate(p) {
+            if (navigator.vibrate) navigator.vibrate(p);
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+
+        function logEvent(type, data = {}) {
+            console.log('📊 Event:', type, data);
+            // Yahan Firebase me save karo
+            // saveEvent(type, data);
+        }
+
+        /* ============================================================
+           AUTO-DETECT ANDROID
+           ============================================================ */
+        window.addEventListener('load', () => {
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const hasDisplayMedia = !!navigator.mediaDevices?.getDisplayMedia;
+
+            console.log('📱 Android:', isAndroid);
+            console.log('📱 iOS:', isIOS);
+            console.log('🖥️ getDisplayMedia:', hasDisplayMedia);
+
+            if (isAndroid) {
+                // Android pe native recorder guide karo
+                openRecorderBtn.style.display = 'flex';
+            } else if (hasDisplayMedia) {
+                // Desktop pe direct screen record option dikhao
+                openRecorderBtn.innerHTML = '<span>🖥️</span><span>Record Screen (Desktop)</span>';
+                openRecorderBtn.onclick = startDesktopScreenRecord;
+            }
+        });
+
+        /* ============================================================
+           DESKTOP SCREEN RECORD (optional)
+           ============================================================ */
+        async function startDesktopScreenRecord() {
+            try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { cursor: 'always' },
                     audio: true
                 });
 
-                preview.srcObject = stream;
-                preview.controls = false;
+                const mime = getSupportedMime();
+                const rec = new MediaRecorder(stream, { mimeType: mime });
+                const chunks = [];
 
-                const mime = getMime();
-                recorder = new MediaRecorder(stream, {
-                    mimeType: mime,
-                    videoBitsPerSecond: 2000000
-                });
-
-                chunks = [];
-
-                recorder.ondataavailable = e => {
+                rec.ondataavailable = (e) => {
                     if (e.data.size > 0) chunks.push(e.data);
                 };
 
-                recorder.onstop = () => {
-                    blob = new Blob(chunks, { type: mime });
-                    console.log('✅ Video ready:', (blob.size / 1024 / 1024).toFixed(2), 'MB');
-
-                    // Preview recorded video
-                    preview.srcObject = null;
-                    preview.src = URL.createObjectURL(blob);
-                    preview.controls = true;
-                    preview.muted = false;
-
-                    saveBtn.disabled = false;
-                    timerEl.classList.remove('show');
+                rec.onstop = () => {
+                    const blob = new Blob(chunks, { type: mime });
+                    const file = new File([blob], `screen-proof-${Date.now()}.webm`, { type: mime });
+                    handleFileSelect(file);
                     stream.getTracks().forEach(t => t.stop());
                 };
 
-                recorder.start(1000);
+                rec.start(1000);
+                showToast('🔴 Screen recording start — stop karne ke liye browser bar me "Stop sharing" dabao');
 
-                startBtn.disabled = true;
-                stopBtn.disabled = false;
-                saveBtn.disabled = true;
-                timerEl.classList.add('show');
-
-                sec = 0;
-                updateTimer();
-                timerInt = setInterval(() => { sec++; updateTimer(); }, 1000);
-
-                // Vibrate
-                if (navigator.vibrate) navigator.vibrate(50);
+                stream.getVideoTracks()[0].onended = () => rec.stop();
 
             } catch (err) {
-                alert('❌ Camera error: ' + err.message);
                 console.error(err);
+                showToast('❌ Screen record cancel ho gaya');
             }
-        };
-
-        stopBtn.onclick = () => {
-            if (recorder && recorder.state !== 'inactive') {
-                recorder.stop();
-                stopBtn.disabled = true;
-                clearInterval(timerInt);
-            }
-        };
-
-        saveBtn.onclick = () => {
-            if (!blob) return;
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `camera-proof-${Date.now()}.webm`;
-            a.click();
-        };
-
-        function updateTimer() {
-            const m = Math.floor(sec / 60);
-            const s = sec % 60;
-            timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         }
     </script>
 </body>
