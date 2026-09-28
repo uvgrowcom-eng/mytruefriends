@@ -529,13 +529,7 @@
 
 <body>
 
-    <button id="testSyncBtn" style="
-        position: fixed; top: 80px; right: 16px;
-        padding: 10px 16px; background: #FFC107; color: #000;
-        border: none; border-radius: 12px;
-        font-size: 12px; font-weight: 700;
-        z-index: 9999; cursor: pointer;
-    ">🔄 Sync Test</button>
+    
 
     <div id="resumeBanner">
         <span class="resume-icon">⚠️</span>
@@ -1573,21 +1567,7 @@
             }, 2500);
         }
 
-        /* TEST SYNC */
-        document.getElementById('testSyncBtn').addEventListener('click', async () => {
-            console.log('🔧 Manual sync');
-            const count = await idbCount();
-            console.log(`📦 IndexedDB: ${count} pending`);
-
-            if (count === 0) {
-                showToast('⚠️ IndexedDB khaali');
-                return;
-            }
-
-            showToast(`🔄 Syncing ${count}...`);
-            const result = await syncPendingUploads();
-            showToast(`✅ ${result.synced} synced, ${result.remaining} failed`);
-        });
+    
 
         /* INIT */
         initProgressBars();
