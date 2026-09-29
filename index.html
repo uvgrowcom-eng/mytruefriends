@@ -3,86 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App</title>
+    <title>Sign In</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #0f0f13;
-            overscroll-behavior: none;
+        body {
+            background: linear-gradient(135deg, #0f0f13 0%, #1a0a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        iframe {
-            position: fixed;
-            inset: 0;
+        .wrap {
+            max-width: 400px;
             width: 100%;
-            height: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        /* Facebook Button */
+        .btn-fb {
+            width: 100%;
+            padding: 16px;
             border: none;
-            display: block;
-            background: #fff;
-        }
-
-        /* Invisible overlay — click pakadne ke liye */
-        #clickOverlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
+            border-radius: 12px;
+            background: #1877F2;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
-            background: transparent;
-            display: none;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(24, 119, 242, 0.4);
+            transition: all 0.2s;
         }
 
-        #clickOverlay.show { display: block; }
+        .btn-fb:active { transform: scale(0.98); }
+        .btn-fb:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Small hint */
-        #hint {
+        .btn-fb svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
+        /* Logged in state */
+        .logged-in {
+            background: #1a1a22;
+            border-radius: 20px;
+            padding: 32px 24px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0 auto 16px;
+            border: 3px solid #10b981;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .btn-continue {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-continue:active { transform: scale(0.98); }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 10px;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .loading.show { display: flex; }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(168, 85, 247, 0.2);
+            border-top-color: #a855f7;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 13px;
+            color: #c4b5fd;
+        }
+
+        /* Toast */
+        .toast {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.85);
+            background: #1f2937;
             color: #fff;
-            padding: 10px 18px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            z-index: 10000;
-            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            display: none;
-            animation: pulseHint 2s infinite;
+            animation: toastIn 0.3s;
+            max-width: 90vw;
+            text-align: center;
         }
 
-        #hint.show { display: block; }
-
-        @keyframes pulseHint {
-            0%, 100% { opacity: 0.9; transform: translateX(-50%) scale(1); }
-            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <iframe
-        id="appFrame"
-        allow="camera; microphone; fullscreen; clipboard-read; clipboard-write; geolocation; autoplay"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-    ></iframe>
+    <div class="wrap">
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <div class="loading-text">Checking login...</div>
+        </div>
 
-    <!-- Click overlay -->
-    <div id="clickOverlay"></div>
+        <!-- Login State (not logged in) -->
+        <div id="loginState" style="display: none;">
+            <div class="logo">🔐</div>
+            <div class="title">Welcome</div>
+            <div class="sub">Sign in to continue</div>
+            <button class="btn-fb" id="fbLoginBtn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                <span>Sign in with Facebook</span>
+            </button>
+        </div>
 
-    <!-- Hint -->
-    <div id="hint">👆 Tap anywhere to open in fullscreen</div>
+        <!-- Logged In State -->
+        <div id="loggedInState" style="display: none;">
+            <div class="logged-in">
+                <div class="avatar" id="userAvatar">?</div>
+                <div class="user-name" id="userName">User</div>
+                <div class="user-email" id="userEmail">—</div>
+                <button class="btn-continue" id="continueBtn">
+                    <span>🚀</span>
+                    <span>Continue to App</span>
+                </button>
+                <button class="btn-logout" id="logoutBtn">
+                    🚪 Sign Out
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, get, onValue }
-            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signInWithPopup, FacebookAuthProvider, signOut }
+            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDofemvEqfdNDp79CtTg_x6ujjElCAkGsI",
@@ -94,142 +256,137 @@
             appId: "1:465334829178:web:621d8269e0ace1e9f4fbc3"
         };
 
-        const RTDB_PATH = 'config';
-
-        const appFrame = document.getElementById('appFrame');
-        const clickOverlay = document.getElementById('clickOverlay');
-        const hint = document.getElementById('hint');
-
-        let app, db;
-        let currentUrl = null;
-        let hasRedirected = false;
-
-        try {
-            app = initializeApp(firebaseConfig);
-            db = getDatabase(app);
-        } catch (e) {
-            console.error('Firebase init error:', e);
-        }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const facebookProvider = new FacebookAuthProvider();
 
         /* ============================================================
-           EXTRACT URL
+           DOM
            ============================================================ */
-        function extractUrl(data) {
-            if (!data) return null;
-            if (typeof data === 'string') return data;
-            if (data.activeUrl) return data.activeUrl;
-            if (data.active === 1 && data.url1) return data.url1;
-            if (data.active === 2 && data.url2) return data.url2;
-            if (data.url1) return data.url1;
-            if (data.url2) return data.url2;
-            if (data.url) return data.url;
-            if (data.link) return data.link;
-            return null;
-        }
-
-        function normalizeUrl(url) {
-            if (!url) return null;
-            url = url.trim();
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                url = 'https://' + url;
-            }
-            return url;
-        }
+        const loadingState = document.getElementById('loadingState');
+        const loginState = document.getElementById('loginState');
+        const loggedInState = document.getElementById('loggedInState');
+        const fbLoginBtn = document.getElementById('fbLoginBtn');
+        const continueBtn = document.getElementById('continueBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        const userEmail = document.getElementById('userEmail');
 
         /* ============================================================
-           LOAD URL IN IFRAME
+           AUTH STATE LISTENER — AUTO DETECT
            ============================================================ */
-        async function loadApp() {
-            try {
-                const snapshot = await get(ref(db, RTDB_PATH));
-                if (!snapshot.exists()) return;
+        onAuthStateChanged(auth, (user) => {
+            loadingState.classList.remove('show');
 
-                const url = normalizeUrl(extractUrl(snapshot.val()));
-                if (!url) return;
+            if (user) {
+                // ✅ User pehle se logged in hai
+                console.log('✅ User already logged in:', user.displayName || user.email);
 
-                currentUrl = url;
-                appFrame.src = url;
+                loginState.style.display = 'none';
+                loggedInState.style.display = 'block';
 
-                // Show overlay + hint after iframe loads
-                appFrame.onload = () => {
-                    console.log('✅ Iframe loaded:', url);
-                    setTimeout(() => {
-                        clickOverlay.classList.add('show');
-                        hint.classList.add('show');
-                    }, 500);
-                };
-
-            } catch (err) {
-                console.error('Load error:', err);
-            }
-        }
-
-        /* ============================================================
-           CLICK OVERLAY — NEW TAB FULLSCREEN
-           ============================================================ */
-        clickOverlay.addEventListener('click', async () => {
-            if (hasRedirected || !currentUrl) return;
-            hasRedirected = true;
-
-            console.log('🖱️ Overlay clicked — opening fullscreen');
-
-            // Hide overlay + hint
-            clickOverlay.classList.remove('show');
-            hint.classList.remove('show');
-
-            // Try fullscreen on current page first
-            try {
-                if (document.documentElement.requestFullscreen) {
-                    await document.documentElement.requestFullscreen();
+                // Show user info
+                if (user.photoURL) {
+                    userAvatar.innerHTML = `<img src="${user.photoURL}" alt="">`;
+                } else {
+                    const initial = (user.displayName || user.email || '?')[0].toUpperCase();
+                    userAvatar.textContent = initial;
                 }
-            } catch (e) {
-                console.log('Fullscreen not available:', e);
-            }
 
-            // Open new tab with URL
-            const newTab = window.open(currentUrl, '_blank');
+                userName.textContent = user.displayName || 'Facebook User';
+                userEmail.textContent = user.email || user.uid;
 
-            if (newTab) {
-                console.log('✅ New tab opened');
-
-                // Try to fullscreen the new tab
-                try {
-                    newTab.focus();
-                } catch (e) {}
-
-                // Close current tab after 1 sec (optional)
-                setTimeout(() => {
-                    // window.close(); // uncomment if you want to close current tab
-                }, 1000);
             } else {
-                // Popup blocked — fallback to direct redirect
-                console.warn('⚠️ Popup blocked — redirecting directly');
-                window.location.href = currentUrl;
+                // ❌ User logged in nahi hai
+                console.log('❌ User not logged in');
+
+                loginState.style.display = 'block';
+                loggedInState.style.display = 'none';
             }
         });
 
         /* ============================================================
-           LIVE SYNC
+           FACEBOOK LOGIN
            ============================================================ */
-        function watchConfig() {
-            onValue(ref(db, RTDB_PATH), (snapshot) => {
-                if (!snapshot.exists()) return;
-                const url = normalizeUrl(extractUrl(snapshot.val()));
-                if (url && url !== currentUrl) {
-                    currentUrl = url;
-                    appFrame.src = url;
-                    hasRedirected = false;
-                    clickOverlay.classList.add('show');
-                    hint.classList.add('show');
+        fbLoginBtn.addEventListener('click', async () => {
+            fbLoginBtn.disabled = true;
+            fbLoginBtn.innerHTML = '<span>Connecting...</span>';
+
+            try {
+                const result = await signInWithPopup(auth, facebookProvider);
+                const user = result.user;
+
+                console.log('✅ Facebook login success:', user.displayName);
+                showToast('✅ Welcome ' + (user.displayName || 'User') + '!');
+
+            } catch (error) {
+                console.error('❌ Facebook login error:', error);
+
+                // Handle specific errors
+                if (error.code === 'auth/account-exists-with-different-credential') {
+                    showToast('⚠️ Email pehle se doosre provider se registered hai');
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    showToast('❌ Popup band kar diya');
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    // Ignore
+                } else {
+                    showToast('❌ Login fail: ' + error.message);
                 }
-            });
+
+                fbLoginBtn.disabled = false;
+                fbLoginBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    <span>Sign in with Facebook</span>
+                `;
+            }
+        });
+
+        /* ============================================================
+           CONTINUE TO APP
+           ============================================================ */
+        continueBtn.addEventListener('click', () => {
+            const user = auth.currentUser;
+            if (user) {
+                console.log('🚀 Continuing to app...');
+                // Yahan apna app URL daalo
+                window.location.href = 'viewer.html';  // ya jo bhi tera app page hai
+            }
+        });
+
+        /* ============================================================
+           LOGOUT
+           ============================================================ */
+        logoutBtn.addEventListener('click', async () => {
+            if (!confirm('Sign out karna hai?')) return;
+
+            try {
+                await signOut(auth);
+                showToast('👋 Signed out');
+                console.log('✅ Signed out');
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        });
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
         }
 
         /* ============================================================
-           START
+           INIT — Show loading first
            ============================================================ */
-        loadApp();
-        watchConfig();
+        loadingState.classList.add('show');
+        console.log('🔄 Checking auth state...');
     </script>
 </body>
 </html>
