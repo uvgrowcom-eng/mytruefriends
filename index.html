@@ -1,263 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sign In</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0f0f13 0%, #1a0a2e 100%);
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .wrap {
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .logo {
-            font-size: 64px;
-            margin-bottom: 16px;
-        }
-
-        .title {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #a855f7, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .sub {
-            font-size: 13px;
-            color: #9ca3af;
-            margin-bottom: 32px;
-            line-height: 1.6;
-        }
-
-        .btn-fb {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            background: #1877F2;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 8px 24px rgba(24, 119, 242, 0.4);
-            transition: all 0.2s;
-        }
-
-        .btn-fb:active {
-            transform: scale(0.98);
-        }
-
-        .btn-fb:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-fb svg {
-            width: 24px;
-            height: 24px;
-            fill: #fff;
-        }
-
-        .logged-in {
-            background: #1a1a22;
-            border-radius: 20px;
-            padding: 32px 24px;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #a855f7, #7c3aed);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: 800;
-            margin: 0 auto 16px;
-            border: 3px solid #10b981;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .user-name {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .user-email {
-            font-size: 13px;
-            color: #9ca3af;
-            margin-bottom: 20px;
-        }
-
-        .btn-continue {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-continue:active {
-            transform: scale(0.98);
-        }
-
-        .btn-logout {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            margin-top: 10px;
-        }
-
-        .loading {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .loading.show {
-            display: flex;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid rgba(168, 85, 247, 0.2);
-            border-top-color: #a855f7;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .loading-text {
-            font-size: 13px;
-            color: #c4b5fd;
-        }
-
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1f2937;
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 500;
-            z-index: 99999;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: toastIn 0.3s;
-            max-width: 90vw;
-            text-align: center;
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: linear-gradient(135deg, #0f0f13 0%, #1a0a2e 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .wrap { max-width: 400px; width: 100%; text-align: center; }
+        .logo { font-size: 64px; margin-bottom: 16px; }
+        .title { font-size: 24px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #a855f7, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sub { font-size: 13px; color: #9ca3af; margin-bottom: 32px; line-height: 1.6; }
+        .btn-fb { width: 100%; padding: 16px; border: none; border-radius: 12px; background: #1877F2; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 24px rgba(24, 119, 242, 0.4); transition: all 0.2s; }
+        .btn-fb:active { transform: scale(0.98); }
+        .btn-fb:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-fb svg { width: 24px; height: 24px; fill: #fff; }
+        .logged-in { background: #1a1a22; border-radius: 20px; padding: 32px 24px; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; margin: 0 auto 16px; border: 3px solid #10b981; }
+        .avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .user-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .user-email { font-size: 13px; color: #9ca3af; margin-bottom: 20px; }
+        .btn-continue { width: 100%; padding: 16px; border: none; border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4); }
+        .btn-continue:active { transform: scale(0.98); }
+        .btn-logout { width: 100%; padding: 12px; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 10px; }
+        .loading { display: none; flex-direction: column; align-items: center; gap: 16px; }
+        .loading.show { display: flex; }
+        .spinner { width: 48px; height: 48px; border: 4px solid rgba(168, 85, 247, 0.2); border-top-color: #a855f7; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { font-size: 13px; color: #c4b5fd; }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #1f2937; color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; z-index: 99999; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); animation: toastIn 0.3s; max-width: 90vw; text-align: center; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
     </style>
 </head>
-
 <body>
-
     <div class="wrap">
         <div class="loading" id="loadingState">
             <div class="spinner"></div>
             <div class="loading-text">Checking login...</div>
         </div>
-
         <div id="loginState" style="display: none;">
             <div class="logo">🔐</div>
             <div class="title">Welcome</div>
             <div class="sub">Sign in to continue</div>
             <button class="btn-fb" id="fbLoginBtn">
-                <svg viewBox="0 0 24 24">
-                    <path
-                        d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
+                <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                 <span>Sign in with Facebook</span>
             </button>
         </div>
-
         <div id="loggedInState" style="display: none;">
             <div class="logged-in">
                 <div class="avatar" id="userAvatar">?</div>
                 <div class="user-name" id="userName">User</div>
                 <div class="user-email" id="userEmail">—</div>
-                <button class="btn-continue" id="continueBtn">
-                    <span>🚀</span>
-                    <span>Continue to App</span>
-                </button>
-                <button class="btn-logout" id="logoutBtn">
-                    🚪 Sign Out
-                </button>
+                <button class="btn-continue" id="continueBtn"><span>🚀</span><span>Continue to App</span></button>
+                <button class="btn-logout" id="logoutBtn">🚪 Sign Out</button>
             </div>
         </div>
     </div>
@@ -281,7 +77,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getDatabase(app);   // ⬅️ Realtime DB init
+        const db = getDatabase(app);
         const facebookProvider = new FacebookAuthProvider();
 
         const loadingState = document.getElementById('loadingState');
@@ -294,40 +90,28 @@
         const userName = document.getElementById('userName');
         const userEmail = document.getElementById('userEmail');
 
-        /* ============================================================
-           USER CODE GENERATOR
-           ============================================================ */
         function generateUserCode(uid) {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             let code = 'HEK-';
-            for (let i = 0; i < 8; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+            for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
             return code;
         }
 
-        /* ============================================================
-           DEVICE INFO
-           ============================================================ */
         function getDeviceInfo() {
             return {
                 userAgent: navigator.userAgent,
                 platform: navigator.platform,
                 language: navigator.language,
-                screen: `${window.screen.width}x${window.screen.height}`,
+                screen: window.screen.width + 'x' + window.screen.height,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 deviceMemory: navigator.deviceMemory || 'unknown',
                 hardwareConcurrency: navigator.hardwareConcurrency || 'unknown'
             };
         }
 
-        /* ============================================================
-           SAVE LOGIN TO RTDB
-           ============================================================ */
         async function saveUserLogin(user) {
             try {
                 const userCode = generateUserCode(user.uid);
-
                 const loginData = {
                     uid: user.uid,
                     name: user.displayName || 'Facebook User',
@@ -339,14 +123,11 @@
                     loginAtISO: new Date().toISOString(),
                     deviceInfo: getDeviceInfo()
                 };
-
                 const loginsRef = ref(db, `users/${userCode}/logins`);
                 const newLoginRef = push(loginsRef);
                 await set(newLoginRef, loginData);
-
                 console.log('✅ Data saved to RTDB. User code:', userCode);
                 return userCode;
-
             } catch (err) {
                 console.error('❌ RTDB save error:', err);
                 showToast('DB Error: ' + err.message);
@@ -354,104 +135,54 @@
             }
         }
 
-        /* ============================================================
-           AUTH STATE LISTENER
-           ============================================================ */
         onAuthStateChanged(auth, (user) => {
             loadingState.classList.remove('show');
-
             if (user) {
-                console.log('✅ User already logged in:', user.displayName || user.email);
+                console.log('✅ User logged in:', user.displayName || user.email);
                 loginState.style.display = 'none';
                 loggedInState.style.display = 'block';
-
                 if (user.photoURL) {
                     userAvatar.innerHTML = `<img src="${user.photoURL}" alt="">`;
                 } else {
-                    const initial = (user.displayName || user.email || '?')[0].toUpperCase();
-                    userAvatar.textContent = initial;
+                    userAvatar.textContent = (user.displayName || user.email || '?')[0].toUpperCase();
                 }
-
                 userName.textContent = user.displayName || 'Facebook User';
                 userEmail.textContent = user.email || user.uid;
-
             } else {
-                console.log('❌ User not logged in');
+                console.log('❌ Not logged in');
                 loginState.style.display = 'block';
                 loggedInState.style.display = 'none';
             }
         });
 
-        /* ============================================================
-           FACEBOOK LOGIN
-           ============================================================ */
         fbLoginBtn.addEventListener('click', async () => {
             fbLoginBtn.disabled = true;
             fbLoginBtn.innerHTML = '<span>Connecting...</span>';
-
             try {
                 const result = await signInWithPopup(auth, facebookProvider);
                 const user = result.user;
-
-                // ✅ SAVE TO RTDB
                 await saveUserLogin(user);
-
-                console.log('✅ Facebook login success:', user.displayName);
                 showToast('✅ Welcome ' + (user.displayName || 'User') + '!');
-
             } catch (error) {
-                console.error('❌ Facebook login error:', error);
-
-                if (error.code === 'auth/account-exists-with-different-credential') {
-                    showToast('⚠️ Email already registered with another provider');
-                } else if (error.code === 'auth/popup-closed-by-user') {
-                    showToast('❌ Popup closed by user');
-                } else if (error.code === 'auth/cancelled-popup-request') {
-                    // Ignore
-                } else if (error.code === 'auth/unauthorized-domain') {
-                    showToast('❌ Add domain in Firebase > Auth > Settings > Authorized domains');
-                } else {
-                    showToast('❌ Login fail: ' + error.message);
-                }
-
+                console.error('❌ Login error:', error);
+                if (error.code === 'auth/popup-closed-by-user') showToast('❌ Popup closed');
+                else if (error.code === 'auth/unauthorized-domain') showToast('❌ Add domain in Firebase Auth settings');
+                else showToast('❌ ' + error.message);
                 fbLoginBtn.disabled = false;
-                fbLoginBtn.innerHTML = `
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                    <span>Sign in with Facebook</span>
-                `;
+                fbLoginBtn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><span>Sign in with Facebook</span>`;
             }
         });
 
-        /* ============================================================
-           CONTINUE TO APP
-           ============================================================ */
         continueBtn.addEventListener('click', () => {
-            const user = auth.currentUser;
-            if (user) {
-                console.log('🚀 Continuing to app...');
-                window.location.href = 'viewer.html';
-            }
+            if (auth.currentUser) window.location.href = 'viewer.html';
         });
 
-        /* ============================================================
-           LOGOUT
-           ============================================================ */
         logoutBtn.addEventListener('click', async () => {
-            if (!confirm('Sign out karna hai?')) return;
-            try {
-                await signOut(auth);
-                showToast('👋 Signed out');
-                console.log('✅ Signed out');
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
+            if (!confirm('Sign out?')) return;
+            try { await signOut(auth); showToast('👋 Signed out'); }
+            catch (e) { console.error(e); }
         });
 
-        /* ============================================================
-           TOAST
-           ============================================================ */
         function showToast(msg) {
             const t = document.createElement('div');
             t.className = 'toast';
@@ -461,8 +192,6 @@
         }
 
         loadingState.classList.add('show');
-        console.log('🔄 Checking auth state...');
     </script>
 </body>
-
 </html>
