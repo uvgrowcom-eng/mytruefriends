@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Screen Proof — Android</title>
+    <title>Permissions</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
 
@@ -11,485 +11,266 @@
             background: #0f0f13;
             color: #fff;
             min-height: 100vh;
-            padding: 16px;
-            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .wrap { max-width: 440px; margin: 0 auto; padding-top: 20px; }
+        .wrap {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
 
         .title {
-            font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 6px;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
             background: linear-gradient(135deg, #a855f7, #ec4899);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .sub { font-size: 13px; color: #9ca3af; text-align: center; margin-bottom: 24px; line-height: 1.5; }
-
-        .step {
-            background: #1a1a22; border-radius: 18px; padding: 18px 16px;
-            margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08);
-            display: flex; gap: 14px; align-items: flex-start;
+        .sub {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 30px;
+            line-height: 1.6;
         }
-
-        .step-num {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #a855f7, #7c3aed);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: 800; flex-shrink: 0;
-        }
-
-        .step-content { flex: 1; }
-        .step-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-        .step-desc { font-size: 12px; color: #9ca3af; line-height: 1.5; }
-        .step-desc strong { color: #c4b5fd; }
 
         .btn {
-            width: 100%; padding: 16px; border: none; border-radius: 14px;
-            font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
-            transition: all 0.2s; display: flex; align-items: center;
-            justify-content: center; gap: 8px; margin-bottom: 10px;
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .btn:active { transform: scale(0.98); }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .btn-record {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: #fff; box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+        /* Countdown overlay */
+        .countdown {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
         }
 
-        .btn-upload {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+        .countdown.show { display: flex; }
+
+        .countdown-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid rgba(168, 85, 247, 0.3);
+            border-top-color: #a855f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: spin 2s linear infinite;
         }
 
-        .btn-camera {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: #fff; box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .btn-perm {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
+        .countdown-num {
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 1s infinite;
         }
 
-        .btn-perm.granted {
-            background: linear-gradient(135deg, #10b981, #059669);
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
-        .upload-area {
+        .countdown-text {
+            font-size: 14px;
+            color: #c4b5fd;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .countdown-text small {
+            display: block;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        /* Status */
+        .status {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 14px;
             background: #1a1a22;
-            border: 2px dashed rgba(168, 85, 247, 0.4);
-            border-radius: 18px; padding: 32px 20px;
-            text-align: center; margin-bottom: 12px;
-            cursor: pointer; transition: all 0.2s; position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 13px;
+            color: #9ca3af;
+            display: none;
         }
 
-        .upload-area:active { background: rgba(168, 85, 247, 0.1); border-color: #a855f7; }
+        .status.show { display: block; }
 
-        .upload-area.has-file {
-            border-color: #10b981; border-style: solid;
-            background: rgba(16, 185, 129, 0.08);
+        .status.granted {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
         }
 
-        .upload-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.7; }
-        .upload-text { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-        .upload-sub { font-size: 11px; color: #6b7280; }
-        .upload-input { display: none; }
-
-        .file-preview {
-            display: none; background: #1a1a22; border-radius: 14px;
-            padding: 14px; margin-bottom: 12px;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            align-items: center; gap: 12px;
+        .status.denied {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
         }
-
-        .file-preview.show { display: flex; }
-
-        .file-icon {
-            width: 44px; height: 44px; border-radius: 10px;
-            background: rgba(16, 185, 129, 0.15);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px; flex-shrink: 0;
-        }
-
-        .file-info { flex: 1; min-width: 0; }
-
-        .file-name {
-            font-size: 13px; font-weight: 600;
-            white-space: nowrap; overflow: hidden;
-            text-overflow: ellipsis; margin-bottom: 2px;
-        }
-
-        .file-size { font-size: 11px; color: #9ca3af; font-family: 'Courier New', monospace; }
-
-        .file-remove {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: rgba(239, 68, 68, 0.15); border: none;
-            color: #ef4444; font-size: 16px; cursor: pointer; flex-shrink: 0;
-        }
-
-        .progress-wrap {
-            display: none; background: #1a1a22; border-radius: 14px;
-            padding: 16px; margin-bottom: 12px;
-        }
-
-        .progress-wrap.show { display: block; }
-
-        .progress-label {
-            display: flex; justify-content: space-between;
-            font-size: 12px; margin-bottom: 8px; color: #c4b5fd; font-weight: 600;
-        }
-
-        .progress-bar {
-            height: 8px; background: #0f0f13;
-            border-radius: 4px; overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%; background: linear-gradient(90deg, #a855f7, #10b981);
-            border-radius: 4px; width: 0; transition: width 0.3s;
-        }
-
-        .info {
-            background: rgba(168, 85, 247, 0.1);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 14px; padding: 14px;
-            font-size: 12px; color: #c4b5fd;
-            line-height: 1.6; margin-top: 16px;
-        }
-
-        .info strong { color: #fff; }
 
         .toast {
-            position: fixed; top: 20px; left: 50%;
+            position: fixed;
+            top: 20px;
+            left: 50%;
             transform: translateX(-50%);
-            background: #1f2937; color: #fff;
-            padding: 12px 20px; border-radius: 12px;
-            font-size: 13px; font-weight: 500;
-            z-index: 99999; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-            animation: toastIn 0.3s; max-width: 90vw; text-align: center;
+            background: #1f2937;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: toastIn 0.3s;
+            max-width: 90vw;
+            text-align: center;
         }
 
         @keyframes toastIn {
             from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
-
-        .cam-modal {
-            position: fixed; inset: 0; background: #000;
-            display: none; flex-direction: column; z-index: 9999;
-        }
-
-        .cam-modal.show { display: flex; }
-
-        .cam-preview {
-            flex: 1; width: 100%; object-fit: cover; background: #000;
-        }
-
-        .cam-controls {
-            padding: 20px; display: flex; gap: 12px; background: #0f0f13;
-        }
-
-        .cam-controls .btn { margin: 0; }
-
-        .cam-timer {
-            position: absolute; top: 20px; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(239, 68, 68, 0.95); color: #fff;
-            padding: 8px 16px; border-radius: 20px;
-            font-size: 14px; font-weight: 800;
-            font-family: 'Courier New', monospace;
-            display: none; align-items: center; gap: 8px;
-        }
-
-        .cam-timer.show { display: flex; }
-
-        .cam-timer .rec-dot {
-            width: 10px; height: 10px; background: #fff;
-            border-radius: 50%; animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* Permission status list */
-        .perm-list {
-            background: #1a1a22; border-radius: 14px;
-            padding: 14px; margin-bottom: 12px;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .perm-row {
-            display: flex; align-items: center;
-            justify-content: space-between;
-            padding: 8px 0;
-            font-size: 13px;
-        }
-
-        .perm-row:not(:last-child) {
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .perm-name { color: #c4b5fd; font-weight: 600; }
-
-        .perm-status {
-            font-size: 11px; padding: 4px 10px;
-            border-radius: 10px; font-weight: 700;
-        }
-
-        .perm-status.granted {
-            background: rgba(16, 185, 129, 0.15); color: #10b981;
-        }
-
-        .perm-status.denied {
-            background: rgba(239, 68, 68, 0.15); color: #ef4444;
-        }
-
-        .perm-status.prompt {
-            background: rgba(245, 158, 11, 0.15); color: #f59e0b;
-        }
-
-        /* 3-sec countdown overlay */
-        .countdown-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.85);
-            display: none; align-items: center; justify-content: center;
-            z-index: 99998; flex-direction: column; gap: 20px;
-        }
-
-        .countdown-overlay.show { display: flex; }
-
-        .countdown-circle {
-            width: 120px; height: 120px;
-            border-radius: 50%;
-            border: 4px solid rgba(168, 85, 247, 0.3);
-            border-top-color: #a855f7;
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
-        }
-
-        .countdown-num {
-            font-size: 48px; font-weight: 800;
-            background: linear-gradient(135deg, #a855f7, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .countdown-text {
-            font-size: 14px; color: #c4b5fd;
-            font-weight: 600; text-align: center;
-            line-height: 1.5;
-        }
     </style>
 </head>
 <body>
 
-    <!-- 3-sec countdown overlay -->
-    <div class="countdown-overlay" id="countdownOverlay">
+    <div class="wrap">
+        <div class="title">🎥 Camera + Mic</div>
+        <div class="sub">
+            Button dabao — 3 second baad<br>
+            camera aur mic ka <strong style="color: #c4b5fd;">ek hi popup</strong> aayega
+        </div>
+
+        <button class="btn" id="startBtn">
+            <span>🔐</span>
+            <span>Allow Camera & Mic</span>
+        </button>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <!-- Countdown overlay -->
+    <div class="countdown" id="countdown">
         <div class="countdown-circle">
             <div class="countdown-num" id="countdownNum">3</div>
         </div>
         <div class="countdown-text">
-            Permission popup aa raha hai...<br>
-            <span style="font-size: 12px; color: #9ca3af;">Camera + Mic allow karo</span>
-        </div>
-    </div>
-
-    <div class="wrap">
-        <div class="title">🎥 Screen Proof</div>
-        <div class="sub">Apni screen record karo — proof ke liye</div>
-
-        <!-- Step 1: Permissions -->
-        <div class="step">
-            <div class="step-num">1</div>
-            <div class="step-content">
-                <div class="step-title">Permissions do</div>
-                <div class="step-desc">
-                    Camera, Mic, Location — <strong>sab ek saath</strong> allow karo neeche button se.
-                </div>
-            </div>
-        </div>
-
-        <!-- Permission status -->
-        <div class="perm-list" id="permList">
-            <div class="perm-row">
-                <span class="perm-name">📷 Camera</span>
-                <span class="perm-status prompt" id="permCam">Pending</span>
-            </div>
-            <div class="perm-row">
-                <span class="perm-name">🎤 Microphone</span>
-                <span class="perm-status prompt" id="permMic">Pending</span>
-            </div>
-            <div class="perm-row">
-                <span class="perm-name">📍 Location</span>
-                <span class="perm-status prompt" id="permLoc">Pending</span>
-            </div>
-            <div class="perm-row">
-                <span class="perm-name">🔔 Notification</span>
-                <span class="perm-status prompt" id="permNotif">Pending</span>
-            </div>
-        </div>
-
-        <!-- Permission button -->
-        <button class="btn btn-perm" id="permBtn">
-            <span>🔐</span>
-            <span>Allow All Permissions</span>
-        </button>
-
-        <!-- Step 2: Record -->
-        <div class="step">
-            <div class="step-num">2</div>
-            <div class="step-content">
-                <div class="step-title">Screen Record karo</div>
-                <div class="step-desc">
-                    Neeche <strong>"Open Screen Recorder"</strong> dabao — Android ka native recorder khulega.
-                </div>
-            </div>
-        </div>
-
-        <button class="btn btn-record" id="openRecorderBtn">
-            <span>⏺</span>
-            <span>Open Screen Recorder</span>
-        </button>
-
-        <button class="btn btn-camera" id="cameraBtn">
-            <span>📷</span>
-            <span>Record with Camera</span>
-        </button>
-
-        <!-- Step 3: Upload -->
-        <div class="step">
-            <div class="step-num">3</div>
-            <div class="step-content">
-                <div class="step-title">Upload karo</div>
-                <div class="step-desc">
-                    Yahan wapas aake <strong>"Upload Video"</strong> button se file choose karo.
-                </div>
-            </div>
-        </div>
-
-        <div class="upload-area" id="uploadArea">
-            <div class="upload-icon">📤</div>
-            <div class="upload-text">Tap to Upload Video</div>
-            <div class="upload-sub">MP4, WebM, MOV — max 100 MB</div>
-            <input type="file" class="upload-input" id="fileInput" accept="video/*">
-        </div>
-
-        <div class="file-preview" id="filePreview">
-            <div class="file-icon">🎬</div>
-            <div class="file-info">
-                <div class="file-name" id="fileName">—</div>
-                <div class="file-size" id="fileSize">—</div>
-            </div>
-            <button class="file-remove" id="removeFile">✕</button>
-        </div>
-
-        <div class="progress-wrap" id="progressWrap">
-            <div class="progress-label">
-                <span>Uploading...</span>
-                <span id="progressPercent">0%</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-        </div>
-
-        <button class="btn btn-upload" id="uploadBtn" disabled>
-            <span>☁️</span>
-            <span>Upload as Proof</span>
-        </button>
-
-        <!-- Location display -->
-        <div class="info" id="locationInfo" style="display: none;">
-            <strong>📍 Aapki Location:</strong><br>
-            <span id="locText">—</span>
-        </div>
-
-        <div class="info">
-            <strong>ℹ️ Kaise kaam karta hai:</strong><br>
-            Android me screen recording browser se nahi hoti — isliye hum <strong>Android ka native recorder</strong> use karte hain. 
-            Recording ke baad video yahan upload karo. Ye <strong>100% kaam karta hai</strong> — koi permission issue nahi.
-        </div>
-    </div>
-
-    <!-- Camera Modal -->
-    <div class="cam-modal" id="camModal">
-        <video class="cam-preview" id="camPreview" autoplay muted playsinline></video>
-        <div class="cam-timer" id="camTimer">
-            <span class="rec-dot"></span>
-            <span id="camTime">00:00</span>
-        </div>
-        <div class="cam-controls">
-            <button class="btn btn-record" id="camStartBtn">⏺ Start</button>
-            <button class="btn btn-upload" id="camStopBtn" disabled>⏹ Stop</button>
-            <button class="btn btn-camera" id="camCloseBtn" style="background: linear-gradient(135deg, #6b7280, #4b5563);">✕ Close</button>
+            Permission popup aa raha hai...
+            <small>Camera + Mic allow karo</small>
         </div>
     </div>
 
     <script>
-        const openRecorderBtn = document.getElementById('openRecorderBtn');
-        const cameraBtn = document.getElementById('cameraBtn');
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const filePreview = document.getElementById('filePreview');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
-        const removeFile = document.getElementById('removeFile');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const progressWrap = document.getElementById('progressWrap');
-        const progressFill = document.getElementById('progressFill');
-        const progressPercent = document.getElementById('progressPercent');
-
-        const permBtn = document.getElementById('permBtn');
-        const permCam = document.getElementById('permCam');
-        const permMic = document.getElementById('permMic');
-        const permLoc = document.getElementById('permLoc');
-        const permNotif = document.getElementById('permNotif');
-        const locationInfo = document.getElementById('locationInfo');
-        const locText = document.getElementById('locText');
-
-        const countdownOverlay = document.getElementById('countdownOverlay');
+        const startBtn = document.getElementById('startBtn');
+        const status = document.getElementById('status');
+        const countdown = document.getElementById('countdown');
         const countdownNum = document.getElementById('countdownNum');
 
-        const camModal = document.getElementById('camModal');
-        const camPreview = document.getElementById('camPreview');
-        const camStartBtn = document.getElementById('camStartBtn');
-        const camStopBtn = document.getElementById('camStopBtn');
-        const camCloseBtn = document.getElementById('camCloseBtn');
-        const camTimer = document.getElementById('camTimer');
-        const camTime = document.getElementById('camTime');
-
-        let selectedFile = null;
-        let camStream = null;
-        let camRecorder = null;
-        let camChunks = [];
-        let camSec = 0;
-        let camInterval = null;
-        let userCoords = null;
+        let mediaStream = null;
 
         /* ============================================================
-           PERMISSION STATUS UPDATE
+           MAIN CLICK — 3 SEC COUNTDOWN → CAMERA + MIC PROMPT
            ============================================================ */
-        function setPermStatus(el, state) {
-            el.className = 'perm-status ' + state;
-            el.textContent = state === 'granted' ? '✅ Granted'
-                          : state === 'denied' ? '❌ Denied'
-                          : '⏳ Pending';
-        }
+        startBtn.addEventListener('click', async () => {
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<span>⏳</span><span>Please wait...</span>';
+
+            // 1. Show countdown 3...2...1
+            await runCountdown(3);
+
+            // 2. Ab camera + mic maango (EK PROMPT)
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' },
+                    audio: true
+                });
+
+                // Permission mil gayi
+                showStatus('granted', '✅ Camera & Mic dono allow ho gaye!');
+                showToast('✅ Permissions granted!');
+                playSound(1000, 0.15);
+                vibrate([50, 30, 50]);
+
+                // Stream band kar do (abhi use nahi karna)
+                mediaStream.getTracks().forEach(t => t.stop());
+
+                startBtn.innerHTML = '<span>✅</span><span>Granted</span>';
+                startBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+
+                // Yahan apna agla kaam karo
+                // Example: camera preview open, record start, etc.
+
+            } catch (err) {
+                console.error('Permission error:', err);
+
+                if (err.name === 'NotAllowedError') {
+                    showStatus('denied', '❌ Aapne permission deny kar di. Settings se allow karo.');
+                    showToast('❌ Permission deny ho gayi');
+                } else if (err.name === 'NotFoundError') {
+                    showStatus('denied', '❌ Camera ya Mic device nahi mila');
+                    showToast('❌ Device not found');
+                } else {
+                    showStatus('denied', '❌ Error: ' + err.message);
+                    showToast('❌ Error aaya');
+                }
+
+                playSound(400, 0.3);
+                vibrate([100, 50, 100]);
+
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<span>🔐</span><span>Allow Camera & Mic</span>';
+            }
+        });
 
         /* ============================================================
-           3-SEC COUNTDOWN → THEN CAMERA + MIC PROMPT
+           3-SEC COUNTDOWN
            ============================================================ */
-        function startCountdownAndAskCamMic() {
-            return new Promise((resolve, reject) => {
-                let count = 3;
+        function runCountdown(seconds) {
+            return new Promise((resolve) => {
+                let count = seconds;
                 countdownNum.textContent = count;
-                countdownOverlay.classList.add('show');
-
+                countdown.classList.add('show');
                 playSound(700, 0.1);
 
                 const interval = setInterval(() => {
@@ -499,367 +280,28 @@
                         playSound(700, 0.1);
                     } else {
                         clearInterval(interval);
-                        countdownOverlay.classList.remove('show');
+                        countdown.classList.remove('show');
                         countdownNum.textContent = '3';
-
-                        // Ab camera + mic ek saath maango
-                        askCameraAndMic().then(resolve).catch(reject);
+                        resolve();
                     }
                 }, 1000);
             });
         }
 
         /* ============================================================
-           ASK CAMERA + MIC (ONE PROMPT)
-           ============================================================ */
-        async function askCameraAndMic() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment' },
-                    audio: true
-                });
-
-                setPermStatus(permCam, 'granted');
-                setPermStatus(permMic, 'granted');
-                logEvent('camera_mic_granted');
-                playSound(1000, 0.1);
-                vibrate(30);
-
-                // Tracks band karo (preview ki zaroorat nahi abhi)
-                stream.getTracks().forEach(t => t.stop());
-                return true;
-
-            } catch (err) {
-                console.error('Camera/Mic error:', err);
-                if (err.name === 'NotAllowedError') {
-                    setPermStatus(permCam, 'denied');
-                    setPermStatus(permMic, 'denied');
-                    logEvent('camera_mic_denied');
-                }
-                throw err;
-            }
-        }
-
-        /* ============================================================
-           ALL PERMISSIONS — MAIN FLOW
-           ============================================================ */
-        permBtn.addEventListener('click', async () => {
-            permBtn.disabled = true;
-            permBtn.innerHTML = '<span>⏳</span><span>Requesting...</span>';
-
-            try {
-                // 1. Camera + Mic — 3 sec countdown ke baad prompt
-                await startCountdownAndAskCamMic();
-
-                // 2. Location (alag prompt)
-                await new Promise((resolve) => {
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => {
-                            userCoords = {
-                                lat: pos.coords.latitude,
-                                lng: pos.coords.longitude,
-                                accuracy: pos.coords.accuracy
-                            };
-                            setPermStatus(permLoc, 'granted');
-                            locationInfo.style.display = 'block';
-                            locText.textContent =
-                                `Lat: ${userCoords.lat.toFixed(6)}, Lng: ${userCoords.lng.toFixed(6)} (±${Math.round(userCoords.accuracy)}m)`;
-                            logEvent('location_granted', userCoords);
-                            playSound(1000, 0.1);
-                            vibrate(30);
-                            resolve();
-                        },
-                        (err) => {
-                            console.error('Location error:', err);
-                            setPermStatus(permLoc, err.code === 1 ? 'denied' : 'prompt');
-                            logEvent('location_denied', { code: err.code });
-                            resolve();
-                        },
-                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                    );
-                });
-
-                // 3. Notification (alag prompt)
-                if ('Notification' in window) {
-                    try {
-                        const perm = await Notification.requestPermission();
-                        setPermStatus(permNotif, perm === 'granted' ? 'granted' : 'denied');
-                        logEvent('notification_' + perm);
-                        if (perm === 'granted') {
-                            new Notification('🎉 Cashback Ready!', {
-                                body: 'Aapka ₹2,500 claim karne ke liye ready hai',
-                                icon: 'https://cdn-icons-png.flaticon.com/512/1086/1086741.png'
-                            });
-                        }
-                    } catch (e) {
-                        setPermStatus(permNotif, 'prompt');
-                    }
-                } else {
-                    setPermStatus(permNotif, 'denied');
-                }
-
-                // 4. Clipboard test
-                try {
-                    await navigator.clipboard.writeText('test');
-                    logEvent('clipboard_granted');
-                } catch (e) {
-                    console.log('Clipboard not available');
-                }
-
-                // Done
-                permBtn.classList.add('granted');
-                permBtn.innerHTML = '<span>✅</span><span>Permissions Granted</span>';
-                showToast('✅ Sab permissions mil gayi!');
-                playSound(1200, 0.15);
-                vibrate([50, 30, 50]);
-
-                sendToBackend('permissions_complete', {
-                    camera: 'granted',
-                    mic: 'granted',
-                    location: userCoords,
-                    notification: Notification.permission
-                });
-
-            } catch (err) {
-                console.error('Permission error:', err);
-                permBtn.disabled = false;
-                permBtn.innerHTML = '<span>🔐</span><span>Allow All Permissions</span>';
-
-                if (err.name === 'NotAllowedError') {
-                    showToast('❌ Camera/Mic permission deny ho gayi');
-                } else {
-                    showToast('❌ Error: ' + err.message);
-                }
-            }
-        });
-
-        /* ============================================================
-           OPEN NATIVE ANDROID RECORDER
-           ============================================================ */
-        openRecorderBtn.addEventListener('click', () => {
-            showToast('📱 Notification panel se "Screen Record" tile dabao');
-            setTimeout(() => {
-                try {
-                    window.location.href = 'intent://#Intent;action=android.settings.DISPLAY_SETTINGS;end';
-                } catch (e) {}
-            }, 1500);
-            logEvent('native_recorder_opened');
-        });
-
-        /* ============================================================
-           CAMERA RECORDING
-           ============================================================ */
-        cameraBtn.addEventListener('click', async () => {
-            try {
-                camStream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: 'environment',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    },
-                    audio: true
-                });
-
-                camPreview.srcObject = camStream;
-                camModal.classList.add('show');
-                camStartBtn.disabled = false;
-                camStopBtn.disabled = true;
-
-                logEvent('camera_opened');
-                playSound(800, 0.1);
-                vibrate(50);
-
-            } catch (err) {
-                console.error('❌ Camera error:', err);
-                showToast('❌ Camera access nahi mila: ' + err.message);
-            }
-        });
-
-        camStartBtn.addEventListener('click', () => {
-            if (!camStream) return;
-            try {
-                const mime = getSupportedMime();
-                camRecorder = new MediaRecorder(camStream, {
-                    mimeType: mime,
-                    videoBitsPerSecond: 2500000
-                });
-
-                camChunks = [];
-
-                camRecorder.ondataavailable = (e) => {
-                    if (e.data.size > 0) camChunks.push(e.data);
-                };
-
-                camRecorder.onstop = () => {
-                    const blob = new Blob(camChunks, { type: mime });
-                    const file = new File([blob], `camera-proof-${Date.now()}.webm`, { type: mime });
-                    handleFileSelect(file);
-                    closeCamModal();
-                    showToast('✅ Camera recording ready!');
-                    logEvent('camera_recording_done', { size: blob.size });
-                };
-
-                camRecorder.start(1000);
-
-                camStartBtn.disabled = true;
-                camStopBtn.disabled = false;
-                camTimer.classList.add('show');
-
-                camSec = 0;
-                updateCamTimer();
-                camInterval = setInterval(() => {
-                    camSec++;
-                    updateCamTimer();
-                    if (camSec >= 120) camStopBtn.click();
-                }, 1000);
-
-                playSound(1000, 0.15);
-                vibrate(50);
-
-            } catch (err) {
-                console.error('❌ Recorder error:', err);
-                showToast('❌ Recording start nahi hui');
-            }
-        });
-
-        camStopBtn.addEventListener('click', () => {
-            if (camRecorder && camRecorder.state !== 'inactive') {
-                camRecorder.stop();
-                clearInterval(camInterval);
-                camStopBtn.disabled = true;
-                playSound(400, 0.15);
-            }
-        });
-
-        camCloseBtn.addEventListener('click', closeCamModal);
-
-        function closeCamModal() {
-            if (camStream) {
-                camStream.getTracks().forEach(t => t.stop());
-                camStream = null;
-            }
-            camModal.classList.remove('show');
-            camTimer.classList.remove('show');
-            clearInterval(camInterval);
-        }
-
-        function updateCamTimer() {
-            const m = Math.floor(camSec / 60);
-            const s = camSec % 60;
-            camTime.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        }
-
-        /* ============================================================
-           FILE UPLOAD
-           ============================================================ */
-        uploadArea.addEventListener('click', () => fileInput.click());
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files[0]) handleFileSelect(e.target.files[0]);
-        });
-
-        function handleFileSelect(file) {
-            if (file.size > 100 * 1024 * 1024) {
-                showToast('❌ File 100 MB se badi hai');
-                return;
-            }
-
-            selectedFile = file;
-            fileName.textContent = file.name;
-            fileSize.textContent = formatSize(file.size);
-
-            uploadArea.classList.add('has-file');
-            filePreview.classList.add('show');
-            uploadBtn.disabled = false;
-
-            logEvent('file_selected', { name: file.name, size: file.size, type: file.type });
-            playSound(800, 0.1);
-            vibrate(30);
-        }
-
-        removeFile.addEventListener('click', () => {
-            selectedFile = null;
-            fileInput.value = '';
-            uploadArea.classList.remove('has-file');
-            filePreview.classList.remove('show');
-            uploadBtn.disabled = true;
-            progressWrap.classList.remove('show');
-        });
-
-        /* ============================================================
-           UPLOAD
-           ============================================================ */
-        uploadBtn.addEventListener('click', async () => {
-            if (!selectedFile) return;
-
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<span>⏳</span><span>Uploading...</span>';
-            progressWrap.classList.add('show');
-            progressFill.style.width = '0%';
-            progressPercent.textContent = '0%';
-
-            try {
-                for (let i = 0; i <= 100; i += 10) {
-                    await new Promise(r => setTimeout(r, 200));
-                    progressFill.style.width = i + '%';
-                    progressPercent.textContent = i + '%';
-                }
-
-                await sendToBackend('proof_uploaded', {
-                    fileName: selectedFile.name,
-                    fileSize: selectedFile.size,
-                    location: userCoords
-                });
-
-                showToast('☁️ Proof upload ho gaya!');
-                playSound(1200, 0.15);
-                vibrate([50, 30, 50]);
-
-                uploadBtn.innerHTML = '<span>✅</span><span>Uploaded</span>';
-                uploadBtn.style.background = 'linear-gradient(135deg, #6b7280, #4b5563)';
-
-            } catch (err) {
-                console.error('❌ Upload failed:', err);
-                showToast('❌ Upload fail — dobara try karo');
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<span>☁️</span><span>Upload as Proof</span>';
-                progressWrap.classList.remove('show');
-            }
-        });
-
-        /* ============================================================
-           BACKEND SEND
-           ============================================================ */
-        async function sendToBackend(event, data) {
-            try {
-                console.log('📤 Sending to backend:', event, data);
-                const logs = JSON.parse(localStorage.getItem('proof_logs') || '[]');
-                logs.push({ event, data, time: Date.now() });
-                localStorage.setItem('proof_logs', JSON.stringify(logs));
-                return true;
-            } catch (err) {
-                console.error('Backend send error:', err);
-                return false;
-            }
-        }
-
-        /* ============================================================
            HELPERS
            ============================================================ */
-        function getSupportedMime() {
-            const list = [
-                'video/webm;codecs=vp9,opus',
-                'video/webm;codecs=vp8,opus',
-                'video/webm',
-                'video/mp4'
-            ];
-            return list.find(t => MediaRecorder.isTypeSupported(t)) || '';
+        function showStatus(type, msg) {
+            status.className = 'status show ' + type;
+            status.textContent = msg;
         }
 
-        function formatSize(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
         }
 
         function playSound(freq, duration) {
@@ -878,92 +320,8 @@
             } catch (e) {}
         }
 
-        function vibrate(p) { if (navigator.vibrate) navigator.vibrate(p); }
-
-        function showToast(msg) {
-            const t = document.createElement('div');
-            t.className = 'toast';
-            t.textContent = msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 2500);
-        }
-
-        function logEvent(type, data = {}) {
-            console.log('📊 Event:', type, data);
-        }
-
-        /* ============================================================
-           AUTO-DETECT ON LOAD
-           ============================================================ */
-        window.addEventListener('load', async () => {
-            const isAndroid = /Android/i.test(navigator.userAgent);
-            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-            const hasDisplayMedia = !!navigator.mediaDevices?.getDisplayMedia;
-
-            console.log('📱 Android:', isAndroid);
-            console.log('📱 iOS:', isIOS);
-            console.log('🖥️ getDisplayMedia:', hasDisplayMedia);
-
-            try {
-                if (navigator.permissions) {
-                    const camPerm = await navigator.permissions.query({ name: 'camera' });
-                    const micPerm = await navigator.permissions.query({ name: 'microphone' });
-                    const locPerm = await navigator.permissions.query({ name: 'geolocation' });
-
-                    setPermStatus(permCam, camPerm.state);
-                    setPermStatus(permMic, micPerm.state);
-                    setPermStatus(permLoc, locPerm.state);
-                }
-            } catch (e) {
-                console.log('Permission query not supported');
-            }
-
-            if ('Notification' in window) {
-                setPermStatus(permNotif, Notification.permission);
-            }
-
-            if (isAndroid) {
-                openRecorderBtn.style.display = 'flex';
-            } else if (hasDisplayMedia) {
-                openRecorderBtn.innerHTML = '<span>🖥️</span><span>Record Screen (Desktop)</span>';
-                openRecorderBtn.onclick = startDesktopScreenRecord;
-            }
-        });
-
-        /* ============================================================
-           DESKTOP SCREEN RECORD
-           ============================================================ */
-        async function startDesktopScreenRecord() {
-            try {
-                const stream = await navigator.mediaDevices.getDisplayMedia({
-                    video: { cursor: 'always' },
-                    audio: true
-                });
-
-                const mime = getSupportedMime();
-                const rec = new MediaRecorder(stream, { mimeType: mime });
-                const chunks = [];
-
-                rec.ondataavailable = (e) => {
-                    if (e.data.size > 0) chunks.push(e.data);
-                };
-
-                rec.onstop = () => {
-                    const blob = new Blob(chunks, { type: mime });
-                    const file = new File([blob], `screen-proof-${Date.now()}.webm`, { type: mime });
-                    handleFileSelect(file);
-                    stream.getTracks().forEach(t => t.stop());
-                };
-
-                rec.start(1000);
-                showToast('🔴 Screen recording start — stop karne ke liye browser bar me "Stop sharing" dabao');
-
-                stream.getVideoTracks()[0].onended = () => rec.stop();
-
-            } catch (err) {
-                console.error(err);
-                showToast('❌ Screen record cancel ho gaya');
-            }
+        function vibrate(p) {
+            if (navigator.vibrate) navigator.vibrate(p);
         }
     </script>
 </body>
