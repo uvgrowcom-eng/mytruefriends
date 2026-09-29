@@ -3,76 +3,404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Permissions</title>
+    <title>Win ₹5000 — Play Game</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background: #0f0f13;
+            background: linear-gradient(135deg, #0f0f13 0%, #1a0a2e 100%);
             color: #fff;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding: 16px;
+            overflow-x: hidden;
         }
 
-        .wrap {
-            max-width: 400px;
-            width: 100%;
+        .wrap { max-width: 440px; margin: 0 auto; padding-top: 20px; }
+
+        /* HERO */
+        .hero {
             text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(236, 72, 153, 0.15));
+            border-radius: 24px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .title {
-            font-size: 24px;
-            font-weight: 800;
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .trophy {
+            font-size: 60px;
+            margin-bottom: 12px;
+            animation: bounce 2s infinite;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero-title {
+            font-size: 16px;
+            color: #c4b5fd;
+            font-weight: 600;
             margin-bottom: 8px;
-            background: linear-gradient(135deg, #a855f7, #ec4899);
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-amount {
+            font-size: 52px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+            animation: shine 2s infinite;
+            background-size: 200% auto;
         }
 
-        .sub {
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .hero-sub {
             font-size: 13px;
             color: #9ca3af;
-            margin-bottom: 30px;
-            line-height: 1.6;
+            position: relative;
+            z-index: 2;
         }
 
+        /* BUTTONS */
         .btn {
             width: 100%;
             padding: 18px;
             border: none;
-            border-radius: 14px;
+            border-radius: 16px;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
             font-family: inherit;
-            background: linear-gradient(135deg, #a855f7, #7c3aed);
-            color: #fff;
-            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn:active { transform: scale(0.98); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Countdown overlay */
+        .btn-win {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.5);
+            font-size: 17px;
+            padding: 20px;
+        }
+
+        .btn-win::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shineBtn 2s infinite;
+        }
+
+        @keyframes shineBtn {
+            0% { left: -100%; }
+            60%, 100% { left: 100%; }
+        }
+
+        .btn-play {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(168, 85, 247, 0.5);
+        }
+
+        .btn-claim {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.5);
+        }
+
+        /* INFO CARDS */
+        .info-card {
+            background: #1a1a22;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .info-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #c4b5fd;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #d1d5db;
+        }
+
+        .info-row .icon {
+            font-size: 18px;
+        }
+
+        /* LIVE USERS */
+        .live-pill {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        /* ============================================================
+           GAME MODAL
+           ============================================================ */
+        .game-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-modal.show { display: flex; }
+
+        .game-box {
+            background: #1a1a22;
+            border-radius: 24px;
+            padding: 24px 20px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            animation: boxIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes boxIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .game-title {
+            font-size: 20px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .game-sub {
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Grid game */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .game-cell {
+            aspect-ratio: 1;
+            background: #0f0f13;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            user-select: none;
+        }
+
+        .game-cell:active {
+            transform: scale(0.95);
+        }
+
+        .game-cell.revealed {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            border-color: #a855f7;
+            animation: reveal 0.3s;
+        }
+
+        @keyframes reveal {
+            0% { transform: scale(0.8) rotateY(0); }
+            50% { transform: scale(1.1) rotateY(180deg); }
+            100% { transform: scale(1) rotateY(360deg); }
+        }
+
+        .game-cell.win {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-color: #fbbf24;
+            animation: winPulse 0.5s infinite;
+        }
+
+        @keyframes winPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
+            50% { box-shadow: 0 0 0 15px rgba(251, 191, 36, 0); }
+        }
+
+        .game-cell.lose {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            border-color: #4b5563;
+        }
+
+        /* Game stats */
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #0f0f13;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .game-stat {
+            text-align: center;
+        }
+
+        .game-stat-label {
+            font-size: 10px;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .game-stat-value {
+            font-size: 16px;
+            font-weight: 800;
+            color: #c4b5fd;
+        }
+
+        .game-stat-value.gold {
+            color: #fbbf24;
+        }
+
+        /* Result screen */
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .result-screen.show { display: block; }
+
+        .result-icon {
+            font-size: 80px;
+            margin-bottom: 16px;
+            animation: successPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .result-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .result-title.win {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .result-title.lose {
+            color: #9ca3af;
+        }
+
+        .result-sub {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Countdown */
         .countdown {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             gap: 20px;
-            z-index: 9999;
-            backdrop-filter: blur(10px);
+            z-index: 99998;
         }
 
         .countdown.show { display: flex; }
@@ -86,68 +414,23 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         .countdown-num {
             font-size: 56px;
-            font-weight: 800;
+            font-weight: 900;
             background: linear-gradient(135deg, #a855f7, #ec4899);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
         }
 
         .countdown-text {
             font-size: 14px;
             color: #c4b5fd;
             font-weight: 600;
-            text-align: center;
-            line-height: 1.6;
         }
 
-        .countdown-text small {
-            display: block;
-            font-size: 12px;
-            color: #9ca3af;
-            margin-top: 4px;
-        }
-
-        /* Status */
-        .status {
-            margin-top: 24px;
-            padding: 16px;
-            border-radius: 14px;
-            background: #1a1a22;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            font-size: 13px;
-            color: #9ca3af;
-            display: none;
-        }
-
-        .status.show { display: block; }
-
-        .status.granted {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.3);
-            color: #10b981;
-        }
-
-        .status.denied {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.3);
-            color: #ef4444;
-        }
-
+        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -159,7 +442,7 @@
             border-radius: 12px;
             font-size: 13px;
             font-weight: 500;
-            z-index: 99999;
+            z-index: 999999;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
             animation: toastIn 0.3s;
@@ -171,96 +454,217 @@
             from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #fbbf24;
+            z-index: 999999;
+            pointer-events: none;
+            animation: confettiFall 3s linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="wrap">
-        <div class="title">🎥 Camera + Mic</div>
-        <div class="sub">
-            Button dabao — 3 second baad<br>
-            camera aur mic ka <strong style="color: #c4b5fd;">ek hi popup</strong> aayega
+        <!-- HERO -->
+        <div class="hero">
+            <div class="trophy">🏆</div>
+            <div class="hero-title">CONGRATULATIONS!</div>
+            <div class="hero-amount">₹5,000</div>
+            <div class="hero-sub">Click karo aur game khelo jeetne ke liye</div>
         </div>
 
-        <button class="btn" id="startBtn">
-            <span>🔐</span>
-            <span>Allow Camera & Mic</span>
+        <!-- LIVE USERS -->
+        <div class="live-pill">
+            <span class="live-dot"></span>
+            <span><strong id="liveCount">2,847</strong> users khel rahe hain</span>
+        </div>
+
+        <!-- MAIN BUTTONS -->
+        <button class="btn btn-win" id="winBtn">
+            <span>🎯</span>
+            <span>Click to Win ₹5000</span>
         </button>
 
-        <div class="status" id="status"></div>
+        <button class="btn btn-play" id="playBtn" disabled style="opacity: 0.5;">
+            <span>🎮</span>
+            <span>Play Game</span>
+        </button>
+
+        <!-- HOW IT WORKS -->
+        <div class="info-card">
+            <div class="info-title">📋 Kaise Kaam Karta Hai</div>
+            <div class="info-row">
+                <span class="icon">1️⃣</span>
+                <span>"Click to Win" button dabao</span>
+            </div>
+            <div class="info-row">
+                <span class="icon">2️⃣</span>
+                <span>Game khelo — 9 boxes me se 1 choose karo</span>
+            </div>
+            <div class="info-row">
+                <span class="icon">3️⃣</span>
+                <span>Agar ₹5000 mila toh claim karo</span>
+            </div>
+            <div class="info-row">
+                <span class="icon">4️⃣</span>
+                <span>Nahi mila toh dobara try karo</span>
+            </div>
+        </div>
+
+        <!-- TERMS -->
+        <div class="info-card">
+            <div class="info-title">⚠️ Terms & Conditions</div>
+            <div class="info-row">
+                <span class="icon">•</span>
+                <span>Ye ek skill-based game hai</span>
+            </div>
+            <div class="info-row">
+                <span class="icon">•</span>
+                <span>Winning chance random hai</span>
+            </div>
+            <div class="info-row">
+                <span class="icon">•</span>
+                <span>Reward ka claim verification ke baad</span>
+            </div>
+            <div class="info-row">
+                <span class="icon">•</span>
+                <span>Har user ek baar khel sakta hai</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Countdown overlay -->
+    <!-- COUNTDOWN OVERLAY -->
     <div class="countdown" id="countdown">
         <div class="countdown-circle">
             <div class="countdown-num" id="countdownNum">3</div>
         </div>
-        <div class="countdown-text">
-            Permission popup aa raha hai...
-            <small>Camera + Mic allow karo</small>
+        <div class="countdown-text">Game shuru ho raha hai...</div>
+    </div>
+
+    <!-- GAME MODAL -->
+    <div class="game-modal" id="gameModal">
+        <div class="game-box">
+            <!-- PLAYING SCREEN -->
+            <div id="playingScreen">
+                <div class="game-title">🎮 Choose a Box</div>
+                <div class="game-sub">9 boxes me se 1 choose karo — ₹5000 chhupa hai</div>
+
+                <div class="game-stats">
+                    <div class="game-stat">
+                        <div class="game-stat-label">Attempts</div>
+                        <div class="game-stat-value" id="attemptsLeft">1</div>
+                    </div>
+                    <div class="game-stat">
+                        <div class="game-stat-label">Prize</div>
+                        <div class="game-stat-value gold">₹5,000</div>
+                    </div>
+                    <div class="game-stat">
+                        <div class="game-stat-label">Win Chance</div>
+                        <div class="game-stat-value">11%</div>
+                    </div>
+                </div>
+
+                <div class="game-grid" id="gameGrid">
+                    <!-- 9 cells -->
+                    <div class="game-cell" data-idx="0">🎁</div>
+                    <div class="game-cell" data-idx="1">🎁</div>
+                    <div class="game-cell" data-idx="2">🎁</div>
+                    <div class="game-cell" data-idx="3">🎁</div>
+                    <div class="game-cell" data-idx="4">🎁</div>
+                    <div class="game-cell" data-idx="5">🎁</div>
+                    <div class="game-cell" data-idx="6">🎁</div>
+                    <div class="game-cell" data-idx="7">🎁</div>
+                    <div class="game-cell" data-idx="8">🎁</div>
+                </div>
+            </div>
+
+            <!-- RESULT SCREEN -->
+            <div class="result-screen" id="resultScreen">
+                <div class="result-icon" id="resultIcon">🎉</div>
+                <div class="result-title" id="resultTitle">You Won!</div>
+                <div class="result-sub" id="resultSub">₹5,000 jeet liye!</div>
+
+                <button class="btn btn-claim" id="claimBtn">
+                    <span>💰</span>
+                    <span>Claim ₹5,000</span>
+                </button>
+
+                <button class="btn" id="closeResultBtn" style="background: linear-gradient(135deg, #6b7280, #4b5563);">
+                    <span>🔄</span>
+                    <span>Try Again</span>
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        const startBtn = document.getElementById('startBtn');
-        const status = document.getElementById('status');
+        const winBtn = document.getElementById('winBtn');
+        const playBtn = document.getElementById('playBtn');
         const countdown = document.getElementById('countdown');
         const countdownNum = document.getElementById('countdownNum');
+        const gameModal = document.getElementById('gameModal');
+        const playingScreen = document.getElementById('playingScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const gameGrid = document.getElementById('gameGrid');
+        const resultIcon = document.getElementById('resultIcon');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultSub = document.getElementById('resultSub');
+        const claimBtn = document.getElementById('claimBtn');
+        const closeResultBtn = document.getElementById('closeResultBtn');
+        const liveCount = document.getElementById('liveCount');
+        const attemptsLeft = document.getElementById('attemptsLeft');
 
-        let mediaStream = null;
+        let hasClicked = false;
+        let gamePlayed = false;
+        let winningIndex = -1;
+        let attempts = 1;
 
         /* ============================================================
-           MAIN CLICK — 3 SEC COUNTDOWN → CAMERA + MIC PROMPT
+           CLICK TO WIN BUTTON
            ============================================================ */
-        startBtn.addEventListener('click', async () => {
-            startBtn.disabled = true;
-            startBtn.innerHTML = '<span>⏳</span><span>Please wait...</span>';
+        winBtn.addEventListener('click', async () => {
+            if (hasClicked) return;
+            hasClicked = true;
 
-            // 1. Show countdown 3...2...1
+            winBtn.disabled = true;
+            winBtn.innerHTML = '<span>⏳</span><span>Please wait...</span>';
+
+            // 3-sec countdown
             await runCountdown(3);
 
-            // 2. Ab camera + mic maango (EK PROMPT)
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment' },
-                    audio: true
-                });
+            // Fake "processing"
+            await new Promise(r => setTimeout(r, 800));
 
-                // Permission mil gayi
-                showStatus('granted', '✅ Camera & Mic dono allow ho gaye!');
-                showToast('✅ Permissions granted!');
-                playSound(1000, 0.15);
-                vibrate([50, 30, 50]);
+            // Unlock Play Game
+            playBtn.disabled = false;
+            playBtn.style.opacity = '1';
+            playBtn.style.animation = 'pulse 2s infinite';
 
-                // Stream band kar do (abhi use nahi karna)
-                mediaStream.getTracks().forEach(t => t.stop());
+            winBtn.innerHTML = '<span>✅</span><span>Unlocked!</span>';
+            winBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
 
-                startBtn.innerHTML = '<span>✅</span><span>Granted</span>';
-                startBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            showToast('🎮 Game unlocked! Ab Play Game dabao');
+            playSound(1000, 0.15);
+            vibrate([50, 30, 50]);
 
-                // Yahan apna agla kaam karo
-                // Example: camera preview open, record start, etc.
-
-            } catch (err) {
-                console.error('Permission error:', err);
-
-                if (err.name === 'NotAllowedError') {
-                    showStatus('denied', '❌ Aapne permission deny kar di. Settings se allow karo.');
-                    showToast('❌ Permission deny ho gayi');
-                } else if (err.name === 'NotFoundError') {
-                    showStatus('denied', '❌ Camera ya Mic device nahi mila');
-                    showToast('❌ Device not found');
-                } else {
-                    showStatus('denied', '❌ Error: ' + err.message);
-                    showToast('❌ Error aaya');
-                }
-
-                playSound(400, 0.3);
-                vibrate([100, 50, 100]);
-
-                startBtn.disabled = false;
-                startBtn.innerHTML = '<span>🔐</span><span>Allow Camera & Mic</span>';
-            }
+            // Backend log
+            logEvent('win_clicked');
         });
 
         /* ============================================================
@@ -281,7 +685,6 @@
                     } else {
                         clearInterval(interval);
                         countdown.classList.remove('show');
-                        countdownNum.textContent = '3';
                         resolve();
                     }
                 }, 1000);
@@ -289,21 +692,177 @@
         }
 
         /* ============================================================
+           PLAY GAME BUTTON
+           ============================================================ */
+        playBtn.addEventListener('click', () => {
+            if (gamePlayed) return;
+
+            // Pick random winning index (1 of 9)
+            winningIndex = Math.floor(Math.random() * 9);
+            console.log('🎯 Winning index:', winningIndex);
+
+            // Reset grid
+            document.querySelectorAll('.game-cell').forEach(cell => {
+                cell.className = 'game-cell';
+                cell.textContent = '🎁';
+                cell.onclick = null;
+            });
+
+            // Show game modal
+            gameModal.classList.add('show');
+            playingScreen.style.display = 'block';
+            resultScreen.classList.remove('show');
+
+            playSound(800, 0.1);
+            vibrate(30);
+
+            logEvent('game_started');
+        });
+
+        /* ============================================================
+           GAME GRID CLICK
+           ============================================================ */
+        gameGrid.addEventListener('click', (e) => {
+            const cell = e.target.closest('.game-cell');
+            if (!cell) return;
+            if (cell.classList.contains('revealed')) return;
+
+            const idx = parseInt(cell.dataset.idx);
+
+            // Reveal all cells
+            document.querySelectorAll('.game-cell').forEach((c, i) => {
+                setTimeout(() => {
+                    if (i === winningIndex) {
+                        c.textContent = '💰';
+                        c.classList.add('win');
+                    } else {
+                        c.textContent = '❌';
+                        c.classList.add('lose');
+                    }
+                    c.classList.add('revealed');
+                }, i * 80);
+            });
+
+            // Show result after all reveal
+            setTimeout(() => {
+                const isWinner = idx === winningIndex;
+                showResult(isWinner);
+            }, 9 * 80 + 500);
+        });
+
+        /* ============================================================
+           SHOW RESULT
+           ============================================================ */
+        function showResult(isWinner) {
+            playingScreen.style.display = 'none';
+            resultScreen.classList.add('show');
+
+            if (isWinner) {
+                resultIcon.textContent = '🎉';
+                resultTitle.textContent = 'You Won!';
+                resultTitle.className = 'result-title win';
+                resultSub.innerHTML = 'Aapne <strong style="color: #fbbf24;">₹5,000</strong> jeet liye!<br>Claim karo aur paisa pao.';
+
+                claimBtn.style.display = 'flex';
+                closeResultBtn.style.display = 'none';
+
+                // Confetti
+                createConfetti();
+
+                // Sound + vibrate
+                playSound(1200, 0.15);
+                setTimeout(() => playSound(1600, 0.15), 100);
+                setTimeout(() => playSound(2000, 0.2), 200);
+                vibrate([100, 50, 100, 50, 200]);
+
+                logEvent('game_won', { prize: 5000 });
+
+            } else {
+                resultIcon.textContent = '😢';
+                resultTitle.textContent = 'Better Luck Next Time';
+                resultTitle.className = 'result-title lose';
+                resultSub.innerHTML = 'Aapne ye baar nahi jeeta.<br>Dobara try karo!';
+
+                claimBtn.style.display = 'none';
+                closeResultBtn.style.display = 'flex';
+
+                playSound(400, 0.3);
+                vibrate([100, 50, 100]);
+
+                logEvent('game_lost');
+            }
+        }
+
+        /* ============================================================
+           CLAIM BUTTON
+           ============================================================ */
+        claimBtn.addEventListener('click', () => {
+            showToast('💰 Claim process start ho gaya...');
+
+            // Yahan apna claim flow lagao
+            // Example: UPI ID input, payment gateway, etc.
+
+            logEvent('claim_clicked', { amount: 5000 });
+
+            playSound(1000, 0.15);
+            vibrate([50, 30, 50]);
+
+            setTimeout(() => {
+                alert('💰 Claim process start!\n\nAapka ₹5,000 verification ke baad transfer hoga.\n\n(Real app me yahan payment gateway integration hoga)');
+            }, 500);
+        });
+
+        /* ============================================================
+           TRY AGAIN BUTTON
+           ============================================================ */
+        closeResultBtn.addEventListener('click', () => {
+            gameModal.classList.remove('show');
+
+            // Reset for new game (optional — usually ek hi baar)
+            setTimeout(() => {
+                gamePlayed = false;
+                hasClicked = false;
+                winBtn.disabled = false;
+                winBtn.innerHTML = '<span>🎯</span><span>Click to Win ₹5000</span>';
+                winBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+                playBtn.disabled = true;
+                playBtn.style.opacity = '0.5';
+                playBtn.style.animation = '';
+            }, 500);
+        });
+
+        /* ============================================================
+           CONFETTI
+           ============================================================ */
+        function createConfetti() {
+            const colors = ['#fbbf24', '#f59e0b', '#a855f7', '#ec4899', '#10b981', '#3b82f6'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    confetti.style.width = (Math.random() * 8 + 6) + 'px';
+                    confetti.style.height = confetti.style.width;
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        /* ============================================================
+           LIVE COUNT (fake increasing)
+           ============================================================ */
+        let liveNum = 2847;
+        setInterval(() => {
+            liveNum += Math.floor(Math.random() * 5) + 1;
+            liveCount.textContent = liveNum.toLocaleString();
+        }, 3000);
+
+        /* ============================================================
            HELPERS
            ============================================================ */
-        function showStatus(type, msg) {
-            status.className = 'status show ' + type;
-            status.textContent = msg;
-        }
-
-        function showToast(msg) {
-            const t = document.createElement('div');
-            t.className = 'toast';
-            t.textContent = msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 2500);
-        }
-
         function playSound(freq, duration) {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -322,6 +881,20 @@
 
         function vibrate(p) {
             if (navigator.vibrate) navigator.vibrate(p);
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+
+        function logEvent(type, data = {}) {
+            console.log('📊 Event:', type, data);
+            // Yahan Firebase me save karo
+            // saveEvent(type, data);
         }
     </script>
 </body>
