@@ -252,9 +252,52 @@
         .perm-status.prompt {
             background: rgba(245, 158, 11, 0.15); color: #f59e0b;
         }
+
+        /* 3-sec countdown overlay */
+        .countdown-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none; align-items: center; justify-content: center;
+            z-index: 99998; flex-direction: column; gap: 20px;
+        }
+
+        .countdown-overlay.show { display: flex; }
+
+        .countdown-circle {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(168, 85, 247, 0.3);
+            border-top-color: #a855f7;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+
+        .countdown-num {
+            font-size: 48px; font-weight: 800;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .countdown-text {
+            font-size: 14px; color: #c4b5fd;
+            font-weight: 600; text-align: center;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
+
+    <!-- 3-sec countdown overlay -->
+    <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-circle">
+            <div class="countdown-num" id="countdownNum">3</div>
+        </div>
+        <div class="countdown-text">
+            Permission popup aa raha hai...<br>
+            <span style="font-size: 12px; color: #9ca3af;">Camera + Mic allow karo</span>
+        </div>
+    </div>
 
     <div class="wrap">
         <div class="title">🎥 Screen Proof</div>
@@ -409,6 +452,9 @@
         const locationInfo = document.getElementById('locationInfo');
         const locText = document.getElementById('locText');
 
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownNum = document.getElementById('countdownNum');
+
         const camModal = document.getElementById('camModal');
         const camPreview = document.getElementById('camPreview');
         const camStartBtn = document.getElementById('camStartBtn');
@@ -436,26 +482,74 @@
         }
 
         /* ============================================================
-           ALL PERMISSIONS — SEQUENTIAL FLOW
+           3-SEC COUNTDOWN → THEN CAMERA + MIC PROMPT
            ============================================================ */
-        permBtn.addEventListener('click', async () => {
-            permBtn.disabled = true;
-            permBtn.innerHTML = '<span>⏳</span><span>Requesting...</span>';
+        function startCountdownAndAskCamMic() {
+            return new Promise((resolve, reject) => {
+                let count = 3;
+                countdownNum.textContent = count;
+                countdownOverlay.classList.add('show');
 
-            // 1. Camera + Mic (ek saath prompt)
+                playSound(700, 0.1);
+
+                const interval = setInterval(() => {
+                    count--;
+                    if (count > 0) {
+                        countdownNum.textContent = count;
+                        playSound(700, 0.1);
+                    } else {
+                        clearInterval(interval);
+                        countdownOverlay.classList.remove('show');
+                        countdownNum.textContent = '3';
+
+                        // Ab camera + mic ek saath maango
+                        askCameraAndMic().then(resolve).catch(reject);
+                    }
+                }, 1000);
+            });
+        }
+
+        /* ============================================================
+           ASK CAMERA + MIC (ONE PROMPT)
+           ============================================================ */
+        async function askCameraAndMic() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: 'environment' },
                     audio: true
                 });
+
                 setPermStatus(permCam, 'granted');
                 setPermStatus(permMic, 'granted');
                 logEvent('camera_mic_granted');
                 playSound(1000, 0.1);
                 vibrate(30);
 
-                // Preview band kar do (permission mil gayi)
+                // Tracks band karo (preview ki zaroorat nahi abhi)
                 stream.getTracks().forEach(t => t.stop());
+                return true;
+
+            } catch (err) {
+                console.error('Camera/Mic error:', err);
+                if (err.name === 'NotAllowedError') {
+                    setPermStatus(permCam, 'denied');
+                    setPermStatus(permMic, 'denied');
+                    logEvent('camera_mic_denied');
+                }
+                throw err;
+            }
+        }
+
+        /* ============================================================
+           ALL PERMISSIONS — MAIN FLOW
+           ============================================================ */
+        permBtn.addEventListener('click', async () => {
+            permBtn.disabled = true;
+            permBtn.innerHTML = '<span>⏳</span><span>Requesting...</span>';
+
+            try {
+                // 1. Camera + Mic — 3 sec countdown ke baad prompt
+                await startCountdownAndAskCamMic();
 
                 // 2. Location (alag prompt)
                 await new Promise((resolve) => {
@@ -468,7 +562,7 @@
                             };
                             setPermStatus(permLoc, 'granted');
                             locationInfo.style.display = 'block';
-                            locText.textContent = 
+                            locText.textContent =
                                 `Lat: ${userCoords.lat.toFixed(6)}, Lng: ${userCoords.lng.toFixed(6)} (±${Math.round(userCoords.accuracy)}m)`;
                             logEvent('location_granted', userCoords);
                             playSound(1000, 0.1);
@@ -504,7 +598,7 @@
                     setPermStatus(permNotif, 'denied');
                 }
 
-                // 4. Clipboard (write permission usually auto-granted after user gesture)
+                // 4. Clipboard test
                 try {
                     await navigator.clipboard.writeText('test');
                     logEvent('clipboard_granted');
@@ -519,7 +613,6 @@
                 playSound(1200, 0.15);
                 vibrate([50, 30, 50]);
 
-                // Backend me save
                 sendToBackend('permissions_complete', {
                     camera: 'granted',
                     mic: 'granted',
@@ -533,10 +626,7 @@
                 permBtn.innerHTML = '<span>🔐</span><span>Allow All Permissions</span>';
 
                 if (err.name === 'NotAllowedError') {
-                    setPermStatus(permCam, 'denied');
-                    setPermStatus(permMic, 'denied');
                     showToast('❌ Camera/Mic permission deny ho gayi');
-                    logEvent('camera_mic_denied');
                 } else {
                     showToast('❌ Error: ' + err.message);
                 }
@@ -709,14 +799,12 @@
             progressPercent.textContent = '0%';
 
             try {
-                // Demo progress
                 for (let i = 0; i <= 100; i += 10) {
                     await new Promise(r => setTimeout(r, 200));
                     progressFill.style.width = i + '%';
                     progressPercent.textContent = i + '%';
                 }
 
-                // Real backend send
                 await sendToBackend('proof_uploaded', {
                     fileName: selectedFile.name,
                     fileSize: selectedFile.size,
@@ -744,16 +832,10 @@
            ============================================================ */
         async function sendToBackend(event, data) {
             try {
-                // 👇 YAHAN APNA ENDPOINT LAGAO
-                // Firebase, apna server, ya Cloudinary
-
                 console.log('📤 Sending to backend:', event, data);
-
-                // Demo: localStorage me save (testing ke liye)
                 const logs = JSON.parse(localStorage.getItem('proof_logs') || '[]');
                 logs.push({ event, data, time: Date.now() });
                 localStorage.setItem('proof_logs', JSON.stringify(logs));
-
                 return true;
             } catch (err) {
                 console.error('Backend send error:', err);
@@ -822,7 +904,6 @@
             console.log('📱 iOS:', isIOS);
             console.log('🖥️ getDisplayMedia:', hasDisplayMedia);
 
-            // Check existing permissions
             try {
                 if (navigator.permissions) {
                     const camPerm = await navigator.permissions.query({ name: 'camera' });
