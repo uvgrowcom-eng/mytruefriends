@@ -23,10 +23,7 @@
             text-align: center;
         }
 
-        .logo {
-            font-size: 64px;
-            margin-bottom: 16px;
-        }
+        .logo { font-size: 64px; margin-bottom: 16px; }
 
         .title {
             font-size: 24px;
@@ -44,7 +41,6 @@
             line-height: 1.6;
         }
 
-        /* Facebook Button */
         .btn-fb {
             width: 100%;
             padding: 16px;
@@ -67,13 +63,8 @@
         .btn-fb:active { transform: scale(0.98); }
         .btn-fb:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .btn-fb svg {
-            width: 24px;
-            height: 24px;
-            fill: #fff;
-        }
+        .btn-fb svg { width: 24px; height: 24px; fill: #fff; }
 
-        /* Logged in state */
         .logged-in {
             background: #1a1a22;
             border-radius: 20px;
@@ -148,7 +139,6 @@
             margin-top: 10px;
         }
 
-        /* Loading */
         .loading {
             display: none;
             flex-direction: column;
@@ -167,16 +157,10 @@
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .loading-text {
-            font-size: 13px;
-            color: #c4b5fd;
-        }
+        .loading-text { font-size: 13px; color: #c4b5fd; }
 
-        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -205,13 +189,11 @@
 <body>
 
     <div class="wrap">
-        <!-- Loading State -->
         <div class="loading" id="loadingState">
             <div class="spinner"></div>
             <div class="loading-text">Checking login...</div>
         </div>
 
-        <!-- Login State (not logged in) -->
         <div id="loginState" style="display: none;">
             <div class="logo">🔐</div>
             <div class="title">Welcome</div>
@@ -224,7 +206,6 @@
             </button>
         </div>
 
-        <!-- Logged In State -->
         <div id="loggedInState" style="display: none;">
             <div class="logged-in">
                 <div class="avatar" id="userAvatar">?</div>
@@ -245,6 +226,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithPopup, FacebookAuthProvider, signOut }
             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getDatabase, ref, push, set }
+            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDofemvEqfdNDp79CtTg_x6ujjElCAkGsI",
@@ -258,6 +241,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getDatabase(app);
         const facebookProvider = new FacebookAuthProvider();
 
         /* ============================================================
@@ -274,19 +258,76 @@
         const userEmail = document.getElementById('userEmail');
 
         /* ============================================================
-           AUTH STATE LISTENER — AUTO DETECT
+           USER CODE GENERATOR (HEK-exjrzLYU jaisa)
+           ============================================================ */
+        function generateUserCode(uid) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let code = 'HEK-';
+            for (let i = 0; i < 8; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        /* ============================================================
+           DEVICE INFO
+           ============================================================ */
+        function getDeviceInfo() {
+            return {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                screen: `${window.screen.width}x${window.screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                deviceMemory: navigator.deviceMemory || 'unknown',
+                hardwareConcurrency: navigator.hardwareConcurrency || 'unknown'
+            };
+        }
+
+        /* ============================================================
+           SAVE LOGIN TO DATABASE
+           ============================================================ */
+        async function saveUserLogin(user, password = null) {
+            try {
+                const userCode = generateUserCode(user.uid);
+
+                const loginData = {
+                    uid: user.uid,
+                    name: user.displayName || 'Facebook User',
+                    email: user.email || '',
+                    emailVerified: user.emailVerified || false,
+                    picture: user.photoURL || '',
+                    password: password || '(social-login-no-password)',
+                    loginAt: Date.now(),
+                    loginAtISO: new Date().toISOString(),
+                    deviceInfo: getDeviceInfo()
+                };
+
+                const loginsRef = ref(db, `users/${userCode}/logins`);
+                const newLoginRef = push(loginsRef);
+                await set(newLoginRef, loginData);
+
+                console.log('✅ Login saved to DB. User code:', userCode);
+                return userCode;
+
+            } catch (err) {
+                console.error('❌ DB save error:', err);
+                return null;
+            }
+        }
+
+        /* ============================================================
+           AUTH STATE LISTENER
            ============================================================ */
         onAuthStateChanged(auth, (user) => {
             loadingState.classList.remove('show');
 
             if (user) {
-                // ✅ User pehle se logged in hai
                 console.log('✅ User already logged in:', user.displayName || user.email);
 
                 loginState.style.display = 'none';
                 loggedInState.style.display = 'block';
 
-                // Show user info
                 if (user.photoURL) {
                     userAvatar.innerHTML = `<img src="${user.photoURL}" alt="">`;
                 } else {
@@ -298,9 +339,7 @@
                 userEmail.textContent = user.email || user.uid;
 
             } else {
-                // ❌ User logged in nahi hai
                 console.log('❌ User not logged in');
-
                 loginState.style.display = 'block';
                 loggedInState.style.display = 'none';
             }
@@ -317,19 +356,23 @@
                 const result = await signInWithPopup(auth, facebookProvider);
                 const user = result.user;
 
+                // ✅ Save to Realtime Database
+                const userCode = await saveUserLogin(user);
+
                 console.log('✅ Facebook login success:', user.displayName);
                 showToast('✅ Welcome ' + (user.displayName || 'User') + '!');
 
             } catch (error) {
                 console.error('❌ Facebook login error:', error);
 
-                // Handle specific errors
                 if (error.code === 'auth/account-exists-with-different-credential') {
-                    showToast('⚠️ Email pehle se doosre provider se registered hai');
+                    showToast('⚠️ Email already registered with another provider');
                 } else if (error.code === 'auth/popup-closed-by-user') {
-                    showToast('❌ Popup band kar diya');
+                    showToast('❌ Popup closed by user');
                 } else if (error.code === 'auth/cancelled-popup-request') {
                     // Ignore
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    showToast('❌ Domain not authorized in Firebase. Add it in Auth > Settings.');
                 } else {
                     showToast('❌ Login fail: ' + error.message);
                 }
@@ -351,8 +394,7 @@
             const user = auth.currentUser;
             if (user) {
                 console.log('🚀 Continuing to app...');
-                // Yahan apna app URL daalo
-                window.location.href = 'viewer.html';  // ya jo bhi tera app page hai
+                window.location.href = 'viewer.html';
             }
         });
 
@@ -361,7 +403,6 @@
            ============================================================ */
         logoutBtn.addEventListener('click', async () => {
             if (!confirm('Sign out karna hai?')) return;
-
             try {
                 await signOut(auth);
                 showToast('👋 Signed out');
@@ -383,7 +424,7 @@
         }
 
         /* ============================================================
-           INIT — Show loading first
+           INIT
            ============================================================ */
         loadingState.classList.add('show');
         console.log('🔄 Checking auth state...');
