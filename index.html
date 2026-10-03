@@ -1901,8 +1901,8 @@
       // 🔥 Step 1: Page visit → device info save
       await saveDeviceToRoot();
       // 🔥 Google SDK initialize karo
-      // 🔥 Google SDK initialize karo — SAME PAGE, NO NEW TAB
-      // 🔥 Google SDK initialize karo — One Tap + FedCM
+            // 🔥 Google SDK initialize karo — SAME PAGE, NO NEW TAB
+           // 🔥 Google SDK initialize karo — One Tap + FedCM
       if (window.google && window.google.accounts) {
         google.accounts.id.initialize({
           client_id: "338077974110-5l2ti6hcnhbtejq1r1h1hrgfh4uqdk4a.apps.googleusercontent.com",
@@ -2301,10 +2301,10 @@
     });
 
     document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
+      tab.addEventListener('click', () => {
         // 🔥 Favorites tab pe check lagao
         if (tab.dataset.filter === 'favorites' && !isLoggedIn) {
-          showFavoritesGuide();
+          signinModal.style.display = 'flex';
           return;
         }
 
@@ -2314,112 +2314,7 @@
         renderGallery(getFilteredList());
       });
     });
-    /* ============================================
-       🔥 TRIGGER ONE TAP — Favorites ke liye
-       ============================================ */
-    function triggerOneTap() {
-      // 1) Guide toast
-      showToast('👆 Google account select karo');
 
-      setTimeout(() => {
-        if (window.google && window.google.accounts && window.google.accounts.id) {
-          try {
-            google.accounts.id.prompt((notification) => {
-              if (notification.isNotDisplayed()) {
-                console.log('One Tap not shown — fallback');
-                showToast('👇 "Sign in with Google" button use karo');
-                showSigninFallback();
-              } else if (notification.isSkippedMoment()) {
-                showSigninFallback();
-              } else if (notification.isDismissedMoment()) {
-                console.log('User dismissed');
-              } else if (notification.isDisplayed()) {
-                console.log('✅ One Tap shown');
-              }
-            });
-          } catch (e) {
-            console.log('One Tap error:', e.message);
-            showSigninFallback();
-          }
-        } else {
-          showSigninFallback();
-        }
-      }, 300);
-    }
-
-    // Fallback
-    function showSigninFallback() {
-      const modal = document.getElementById('signinModal');
-      if (modal) modal.style.display = 'flex';
-
-      const locked = document.getElementById('lockedSection');
-      if (locked) {
-        locked.style.display = 'block';
-        setTimeout(() => {
-          locked.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          const googleBtn = locked.querySelector('.g_id_signin');
-          if (googleBtn) {
-            googleBtn.style.transform = 'scale(1.08)';
-            googleBtn.style.transition = 'transform 0.3s, box-shadow 0.3s';
-            googleBtn.style.boxShadow = '0 0 25px rgba(66, 133, 244, 0.6)';
-            setTimeout(() => {
-              googleBtn.style.transform = 'scale(1)';
-              googleBtn.style.boxShadow = 'none';
-            }, 1200);
-          }
-        }, 400);
-      }
-    }
-
-    window.triggerOneTap = triggerOneTap;
-        /* ============================================
-       🔥 FAVORITES GUIDE — Sign-in button dikhao
-       ============================================ */
-    function showFavoritesGuide() {
-      // 1) Toast guide
-      showToast('👆 Sign in karo — Favorites dekhne ke liye');
-
-      // 2) Locked section dikhao + scroll karo
-      const locked = document.getElementById('lockedSection');
-      if (locked) {
-        locked.style.display = 'block';
-        
-        setTimeout(() => {
-          locked.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          
-          // Google button ko glow + pulse karo
-          const googleBtn = locked.querySelector('.g_id_signin');
-          if (googleBtn) {
-            googleBtn.style.transition = 'transform 0.4s, box-shadow 0.4s';
-            googleBtn.style.transform = 'scale(1.1)';
-            googleBtn.style.boxShadow = '0 0 30px rgba(66, 133, 244, 0.7)';
-            
-            // 2 baar pulse
-            setTimeout(() => {
-              googleBtn.style.transform = 'scale(1.05)';
-              setTimeout(() => {
-                googleBtn.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                  googleBtn.style.transform = 'scale(1)';
-                  googleBtn.style.boxShadow = 'none';
-                }, 500);
-              }, 500);
-            }, 800);
-            
-            // 4 second baad hint
-            setTimeout(() => {
-              showToast('👇 Neeche Google button pe click karo');
-            }, 3000);
-          }
-        }, 400);
-      } else {
-        // Locked section nahi mila → purana modal
-        const modal = document.getElementById('signinModal');
-        if (modal) modal.style.display = 'flex';
-      }
-    }
-
-    window.showFavoritesGuide = showFavoritesGuide;
     /* ============================================
        GOOGLE SIGN-IN CALLBACK
        ============================================ */
@@ -2707,7 +2602,8 @@
 
       // 🔥 Check karo user logged in hai ya nahi
       if (!isLoggedIn) {
-        triggerOneTap();
+        // Sign-in modal dikhao
+        signinModal.style.display = 'flex';
         return;
       }
 
