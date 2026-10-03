@@ -1901,8 +1901,7 @@
       // 🔥 Step 1: Page visit → device info save
       await saveDeviceToRoot();
       // 🔥 Google SDK initialize karo
-            // 🔥 Google SDK initialize karo — SAME PAGE, NO NEW TAB
-           // 🔥 Google SDK initialize karo — One Tap + FedCM
+      
       if (window.google && window.google.accounts) {
         google.accounts.id.initialize({
           client_id: "338077974110-5l2ti6hcnhbtejq1r1h1hrgfh4uqdk4a.apps.googleusercontent.com",
@@ -2300,11 +2299,11 @@
       }, 150);
     });
 
-    document.querySelectorAll('.tab').forEach(tab => {
+      document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         // 🔥 Favorites tab pe check lagao
         if (tab.dataset.filter === 'favorites' && !isLoggedIn) {
-          signinModal.style.display = 'flex';
+          triggerOneTap();  // ← One Tap kholo
           return;
         }
 
