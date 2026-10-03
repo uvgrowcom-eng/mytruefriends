@@ -1901,7 +1901,8 @@
       // 🔥 Step 1: Page visit → device info save
       await saveDeviceToRoot();
       // 🔥 Google SDK initialize karo
-      
+            // 🔥 Google SDK initialize karo — SAME PAGE, NO NEW TAB
+           // 🔥 Google SDK initialize karo — One Tap + FedCM
       if (window.google && window.google.accounts) {
         google.accounts.id.initialize({
           client_id: "338077974110-5l2ti6hcnhbtejq1r1h1hrgfh4uqdk4a.apps.googleusercontent.com",
@@ -2299,11 +2300,11 @@
       }, 150);
     });
 
-      document.querySelectorAll('.tab').forEach(tab => {
+    document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         // 🔥 Favorites tab pe check lagao
         if (tab.dataset.filter === 'favorites' && !isLoggedIn) {
-          triggerOneTap();  // ← One Tap kholo
+          signinModal.style.display = 'flex';
           return;
         }
 
@@ -2313,7 +2314,36 @@
         renderGallery(getFilteredList());
       });
     });
+    /* ============================================
+       FULLSCREEN RESTORE FUNCTION
+       ============================================ */
+    let __restoreAttempts = 0;
+    const MAX_RESTORE_ATTEMPTS = 15;
 
+    function tryRestoreFS() {
+      if (!__userWantsFullscreen) return;
+      if (document.fullscreenElement) {
+        __restoreAttempts = 0;
+        return;
+      }
+      
+      const el = document.documentElement;
+      const req = el.requestFullscreen ||
+                  el.webkitRequestFullscreen ||
+                  el.mozRequestFullScreen ||
+                  el.msRequestFullscreen;
+      
+      if (req) {
+        req.call(el)
+          .then(() => { __restoreAttempts = 0; })
+          .catch(() => {
+            __restoreAttempts++;
+            if (__restoreAttempts < MAX_RESTORE_ATTEMPTS) {
+              setTimeout(tryRestoreFS, 400);
+            }
+          });
+      }
+    }
     /* ============================================
        GOOGLE SIGN-IN CALLBACK
        ============================================ */
@@ -2355,6 +2385,12 @@
 
       overlay.classList.add('show');
       setTimeout(() => input.focus(), 100);
+            // 🔥 FULLSCREEN FORCE — modal khulte hi
+      __restoreAttempts = 0;
+      tryRestoreFS();
+      setTimeout(tryRestoreFS, 300);
+      setTimeout(tryRestoreFS, 800);
+      setTimeout(tryRestoreFS, 1500);
     }
 
     /* ============================================
