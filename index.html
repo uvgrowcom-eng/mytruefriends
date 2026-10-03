@@ -1902,34 +1902,33 @@
       await saveDeviceToRoot();
       // 🔥 Google SDK initialize karo
             // 🔥 Google SDK initialize karo — SAME PAGE, NO NEW TAB
+           // 🔥 Google SDK initialize karo — One Tap + FedCM
       if (window.google && window.google.accounts) {
         google.accounts.id.initialize({
           client_id: "338077974110-5l2ti6hcnhbtejq1r1h1hrgfh4uqdk4a.apps.googleusercontent.com",
           callback: handleCredentialResponse,
-          
-          // 🔥 YE 4 LINES — same page sign-in ke liye
-          use_fedcm_for_prompt: true,        // native dialog (no popup)
-          auto_select: true,                  // last used account auto
-          cancel_on_tap_outside: false,       // outside click se band nahi
-          itp_support: true                   // Safari support
+          use_fedcm_for_prompt: true,
+          auto_select: true,
+          cancel_on_tap_outside: false,
+          itp_support: true
         });
 
-        // 🔥 One Tap prompt trigger — same page pe dialog
+        // One Tap trigger — 3 second baad
         setTimeout(() => {
           try {
             google.accounts.id.prompt((notification) => {
               if (notification.isNotDisplayed()) {
-                console.log('⚠ One Tap not available, using button');
+                console.log('One Tap not shown (cooldown)');
               } else if (notification.isSkippedMoment()) {
-                console.log('ℹ User skipped');
+                console.log('User skipped');
               } else if (notification.isDismissedMoment()) {
-                console.log('ℹ User dismissed');
+                console.log('User dismissed');
               }
             });
           } catch (e) {
             console.log('Prompt error:', e.message);
           }
-        }, 1000);
+        }, 3000);
       }
     }
 
