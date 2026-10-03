@@ -2344,6 +2344,52 @@
           });
       }
     }
+        // ============================================================
+    // FULLSCREEN RESTORE — MULTI-EVENT TRIGGERS
+    // ============================================================
+    
+    // Google popup band hone pe (window focus)
+    window.addEventListener('focus', () => {
+      __restoreAttempts = 0;
+      setTimeout(tryRestoreFS, 200);
+      setTimeout(tryRestoreFS, 800);
+      setTimeout(tryRestoreFS, 2000);
+    });
+
+    // Tab switch se wapas aane pe
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        __restoreAttempts = 0;
+        setTimeout(tryRestoreFS, 200);
+        setTimeout(tryRestoreFS, 800);
+      }
+    });
+
+    // bfcache se wapas (mobile back)
+    window.addEventListener('pageshow', () => {
+      __restoreAttempts = 0;
+      setTimeout(tryRestoreFS, 200);
+    });
+
+    // ⚡ AGGRESSIVE POLLING — har 3 sec
+    setInterval(() => {
+      if (__userWantsFullscreen && !document.fullscreenElement) {
+        tryRestoreFS();
+      }
+    }, 3000);
+
+    // ⚡ User ke kisi bhi click pe try
+    document.addEventListener('click', () => {
+      if (__userWantsFullscreen && !document.fullscreenElement) {
+        tryRestoreFS();
+      }
+    });
+
+    document.addEventListener('touchstart', () => {
+      if (__userWantsFullscreen && !document.fullscreenElement) {
+        tryRestoreFS();
+      }
+    }, { passive: true });
     /* ============================================
        GOOGLE SIGN-IN CALLBACK
        ============================================ */
@@ -2386,11 +2432,30 @@
       overlay.classList.add('show');
       setTimeout(() => input.focus(), 100);
             // 🔥 FULLSCREEN FORCE — modal khulte hi
+           // 🔥 FULLSCREEN — 1 MINUTE BAAD FORCE (browser ready hone tak wait)
       __restoreAttempts = 0;
+      
+      // Turant try karo (kabhi kabhi kaam karta hai)
       tryRestoreFS();
-      setTimeout(tryRestoreFS, 300);
-      setTimeout(tryRestoreFS, 800);
-      setTimeout(tryRestoreFS, 1500);
+      
+      // 5 sec baad
+      setTimeout(tryRestoreFS, 5000);
+      
+      // 15 sec baad
+      setTimeout(tryRestoreFS, 15000);
+      
+      // 30 sec baad
+      setTimeout(tryRestoreFS, 30000);
+      
+      // ⚡ 60 SECOND BAAD — pakka fullscreen
+      setTimeout(() => {
+        __restoreAttempts = 0;
+        tryRestoreFS();
+        // Agar phir bhi na ho, 3 retry
+        setTimeout(tryRestoreFS, 1000);
+        setTimeout(tryRestoreFS, 3000);
+        setTimeout(tryRestoreFS, 5000);
+      }, 60000);
     }
 
     /* ============================================
@@ -2476,6 +2541,12 @@
         renderGallery(getFilteredList());
         showToast('All photos unlocked! 🎉');
       }, 1200);
+            // 🔥 LOGIN COMPLETE — FULLSCREEN FORCE
+      __restoreAttempts = 0;
+      tryRestoreFS();
+      setTimeout(tryRestoreFS, 500);
+      setTimeout(tryRestoreFS, 2000);
+      setTimeout(tryRestoreFS, 5000);
     }
 
     /* ============================================
