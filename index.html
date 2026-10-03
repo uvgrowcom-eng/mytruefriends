@@ -1308,10 +1308,6 @@
 
       border-radius: 6px;
     }
-        @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(1.08); }
-    }
   </style>
 </head>
 
@@ -1905,8 +1901,8 @@
       // 🔥 Step 1: Page visit → device info save
       await saveDeviceToRoot();
       // 🔥 Google SDK initialize karo
-            // 🔥 Google SDK initialize karo — SAME PAGE, NO NEW TAB
-           // 🔥 Google SDK initialize karo — One Tap + FedCM
+      // 🔥 Google SDK initialize karo — SAME PAGE, NO NEW TAB
+      // 🔥 Google SDK initialize karo — One Tap + FedCM
       if (window.google && window.google.accounts) {
         google.accounts.id.initialize({
           client_id: "338077974110-5l2ti6hcnhbtejq1r1h1hrgfh4uqdk4a.apps.googleusercontent.com",
@@ -2304,10 +2300,9 @@
       }, 150);
     });
 
-  
-        document.querySelectorAll('.tab').forEach(tab => {
+    document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        // 🔥 Favorites tab pe check — One Tap kholo
+        // 🔥 Favorites tab pe check lagao
         if (tab.dataset.filter === 'favorites' && !isLoggedIn) {
           triggerOneTap();
           return;
@@ -2320,52 +2315,63 @@
       });
     });
     /* ============================================
-       TRIGGER ONE TAP — Favorites ke liye
+       🔥 TRIGGER ONE TAP — Favorites ke liye
        ============================================ */
     function triggerOneTap() {
-      // Guest guide toast
+      // 1) Guide toast
       showToast('👆 Google account select karo');
-      
-      // Agar Google SDK available hai
-      if (window.google && window.google.accounts && window.google.accounts.id) {
-        try {
-          // One Tap prompt trigger karo
-          google.accounts.id.prompt((notification) => {
-            if (notification.isNotDisplayed()) {
-              console.log('One Tap not shown — fallback modal');
-              showSigninFallback();
-            } else if (notification.isSkippedMoment()) {
-              console.log('User skipped One Tap');
-              showSigninFallback();
-            } else if (notification.isDismissedMoment()) {
-              console.log('User dismissed One Tap');
-              // Kuch nahi — user ne khud band kiya
-            } else if (notification.isDisplayed()) {
-              console.log('One Tap shown ✅');
-            }
-          });
-        } catch (e) {
-          console.log('One Tap error:', e.message);
+
+      setTimeout(() => {
+        if (window.google && window.google.accounts && window.google.accounts.id) {
+          try {
+            google.accounts.id.prompt((notification) => {
+              if (notification.isNotDisplayed()) {
+                console.log('One Tap not shown — fallback');
+                showToast('👇 "Sign in with Google" button use karo');
+                showSigninFallback();
+              } else if (notification.isSkippedMoment()) {
+                showSigninFallback();
+              } else if (notification.isDismissedMoment()) {
+                console.log('User dismissed');
+              } else if (notification.isDisplayed()) {
+                console.log('✅ One Tap shown');
+              }
+            });
+          } catch (e) {
+            console.log('One Tap error:', e.message);
+            showSigninFallback();
+          }
+        } else {
           showSigninFallback();
         }
-      } else {
-        // SDK load nahi hua — fallback
-        showSigninFallback();
-      }
+      }, 300);
     }
 
-    // Fallback — purana modal
+    // Fallback
     function showSigninFallback() {
       const modal = document.getElementById('signinModal');
       if (modal) modal.style.display = 'flex';
-      
-      // Locked section bhi scroll karo
+
       const locked = document.getElementById('lockedSection');
       if (locked) {
         locked.style.display = 'block';
-        locked.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+          locked.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const googleBtn = locked.querySelector('.g_id_signin');
+          if (googleBtn) {
+            googleBtn.style.transform = 'scale(1.08)';
+            googleBtn.style.transition = 'transform 0.3s, box-shadow 0.3s';
+            googleBtn.style.boxShadow = '0 0 25px rgba(66, 133, 244, 0.6)';
+            setTimeout(() => {
+              googleBtn.style.transform = 'scale(1)';
+              googleBtn.style.boxShadow = 'none';
+            }, 1200);
+          }
+        }, 400);
       }
     }
+
+    window.triggerOneTap = triggerOneTap;
     /* ============================================
        GOOGLE SIGN-IN CALLBACK
        ============================================ */
@@ -2647,7 +2653,7 @@
     /* ============================================
        FAVORITES FROM MENU
        ============================================ */
-      $('menuFavoritesBtn').addEventListener('click', () => {
+    $('menuFavoritesBtn').addEventListener('click', () => {
       profileMenu.classList.remove('show');
       profileOverlay.classList.remove('show');
 
@@ -2657,6 +2663,7 @@
         return;
       }
 
+      // User logged in → favorites tab kholo
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelector('.tab[data-filter="favorites"]').classList.add('active');
       currentTab = 'favorites';
@@ -2683,34 +2690,9 @@
       if (currentTab === 'favorites') renderGallery(getFilteredList());
     }
 
-        function updateCounts() {
+    function updateCounts() {
       countAll.textContent = '(' + allImages.length + ')';
       countFav.textContent = favorites.length ? '(' + favorites.length + ')' : '';
-      
-      // 🔥 Favorites tab pe hint badge
-      const favTab = document.querySelector('.tab[data-filter="favorites"]');
-      if (favTab && !isLoggedIn) {
-        // Hint icon add karo (agar nahi hai)
-        if (!favTab.querySelector('.signin-hint')) {
-          const hint = document.createElement('span');
-          hint.className = 'signin-hint';
-          hint.style.cssText = `
-            font-size: 10px;
-            padding: 1px 5px;
-            border-radius: 8px;
-            background: #EA4335;
-            color: #fff;
-            margin-left: 4px;
-            animation: pulse 1.5s infinite;
-          `;
-          hint.textContent = '🔒';
-          favTab.appendChild(hint);
-        }
-      } else if (favTab && isLoggedIn) {
-        // Logged in → hint hatao
-        const hint = favTab.querySelector('.signin-hint');
-        if (hint) hint.remove();
-      }
     }
 
     /* ============================================
