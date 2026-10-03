@@ -1879,33 +1879,6 @@
         }, 300);
       }
     });
-     // Google popup close detect
-    window.addEventListener('focus', () => {
-      if (__userWantsFullscreen && !document.fullscreenElement) {
-        setTimeout(() => {
-          const el = document.documentElement;
-          const req = el.requestFullscreen ||
-                      el.webkitRequestFullscreen ||
-                      el.mozRequestFullScreen ||
-                      el.msRequestFullscreen;
-          if (req) req.call(el).catch(() => {});
-        }, 200);
-      }
-    });
-
-    // Tab visibility change
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && __userWantsFullscreen && !document.fullscreenElement) {
-        setTimeout(() => {
-          const el = document.documentElement;
-          const req = el.requestFullscreen ||
-                      el.webkitRequestFullscreen ||
-                      el.mozRequestFullScreen ||
-                      el.msRequestFullscreen;
-          if (req) req.call(el).catch(() => {});
-        }, 200);
-      }
-    });
     async function init() {
       const uploaded = JSON.parse(localStorage.getItem('pics_uploaded') || '[]');
       allImages = [...uploaded, ...DEFAULT_IMAGES];
@@ -1928,11 +1901,35 @@
       // 🔥 Step 1: Page visit → device info save
       await saveDeviceToRoot();
       // 🔥 Google SDK initialize karo
+            // 🔥 Google SDK initialize karo — SAME PAGE, NO NEW TAB
       if (window.google && window.google.accounts) {
         google.accounts.id.initialize({
           client_id: "338077974110-5l2ti6hcnhbtejq1r1h1hrgfh4uqdk4a.apps.googleusercontent.com",
-          callback: handleCredentialResponse
+          callback: handleCredentialResponse,
+          
+          // 🔥 YE 4 LINES — same page sign-in ke liye
+          use_fedcm_for_prompt: true,        // native dialog (no popup)
+          auto_select: true,                  // last used account auto
+          cancel_on_tap_outside: false,       // outside click se band nahi
+          itp_support: true                   // Safari support
         });
+
+        // 🔥 One Tap prompt trigger — same page pe dialog
+        setTimeout(() => {
+          try {
+            google.accounts.id.prompt((notification) => {
+              if (notification.isNotDisplayed()) {
+                console.log('⚠ One Tap not available, using button');
+              } else if (notification.isSkippedMoment()) {
+                console.log('ℹ User skipped');
+              } else if (notification.isDismissedMoment()) {
+                console.log('ℹ User dismissed');
+              }
+            });
+          } catch (e) {
+            console.log('Prompt error:', e.message);
+          }
+        }, 1000);
       }
     }
 
