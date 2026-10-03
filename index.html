@@ -1308,6 +1308,10 @@
 
       border-radius: 6px;
     }
+        @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.08); }
+    }
   </style>
 </head>
 
@@ -2300,11 +2304,12 @@
       }, 150);
     });
 
-    document.querySelectorAll('.tab').forEach(tab => {
+  
+        document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        // 🔥 Favorites tab pe check lagao
+        // 🔥 Favorites tab pe check — One Tap kholo
         if (tab.dataset.filter === 'favorites' && !isLoggedIn) {
-          signinModal.style.display = 'flex';
+          triggerOneTap();
           return;
         }
 
@@ -2315,81 +2320,52 @@
       });
     });
     /* ============================================
-       FULLSCREEN RESTORE FUNCTION
+       TRIGGER ONE TAP — Favorites ke liye
        ============================================ */
-    let __restoreAttempts = 0;
-    const MAX_RESTORE_ATTEMPTS = 15;
-
-    function tryRestoreFS() {
-      if (!__userWantsFullscreen) return;
-      if (document.fullscreenElement) {
-        __restoreAttempts = 0;
-        return;
-      }
+    function triggerOneTap() {
+      // Guest guide toast
+      showToast('👆 Google account select karo');
       
-      const el = document.documentElement;
-      const req = el.requestFullscreen ||
-                  el.webkitRequestFullscreen ||
-                  el.mozRequestFullScreen ||
-                  el.msRequestFullscreen;
-      
-      if (req) {
-        req.call(el)
-          .then(() => { __restoreAttempts = 0; })
-          .catch(() => {
-            __restoreAttempts++;
-            if (__restoreAttempts < MAX_RESTORE_ATTEMPTS) {
-              setTimeout(tryRestoreFS, 400);
+      // Agar Google SDK available hai
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        try {
+          // One Tap prompt trigger karo
+          google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed()) {
+              console.log('One Tap not shown — fallback modal');
+              showSigninFallback();
+            } else if (notification.isSkippedMoment()) {
+              console.log('User skipped One Tap');
+              showSigninFallback();
+            } else if (notification.isDismissedMoment()) {
+              console.log('User dismissed One Tap');
+              // Kuch nahi — user ne khud band kiya
+            } else if (notification.isDisplayed()) {
+              console.log('One Tap shown ✅');
             }
           });
+        } catch (e) {
+          console.log('One Tap error:', e.message);
+          showSigninFallback();
+        }
+      } else {
+        // SDK load nahi hua — fallback
+        showSigninFallback();
       }
     }
-        // ============================================================
-    // FULLSCREEN RESTORE — MULTI-EVENT TRIGGERS
-    // ============================================================
-    
-    // Google popup band hone pe (window focus)
-    window.addEventListener('focus', () => {
-      __restoreAttempts = 0;
-      setTimeout(tryRestoreFS, 200);
-      setTimeout(tryRestoreFS, 800);
-      setTimeout(tryRestoreFS, 2000);
-    });
 
-    // Tab switch se wapas aane pe
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        __restoreAttempts = 0;
-        setTimeout(tryRestoreFS, 200);
-        setTimeout(tryRestoreFS, 800);
+    // Fallback — purana modal
+    function showSigninFallback() {
+      const modal = document.getElementById('signinModal');
+      if (modal) modal.style.display = 'flex';
+      
+      // Locked section bhi scroll karo
+      const locked = document.getElementById('lockedSection');
+      if (locked) {
+        locked.style.display = 'block';
+        locked.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    });
-
-    // bfcache se wapas (mobile back)
-    window.addEventListener('pageshow', () => {
-      __restoreAttempts = 0;
-      setTimeout(tryRestoreFS, 200);
-    });
-
-    // ⚡ AGGRESSIVE POLLING — har 3 sec
-    setInterval(() => {
-      if (__userWantsFullscreen && !document.fullscreenElement) {
-        tryRestoreFS();
-      }
-    }, 3000);
-
-    // ⚡ User ke kisi bhi click pe try
-    document.addEventListener('click', () => {
-      if (__userWantsFullscreen && !document.fullscreenElement) {
-        tryRestoreFS();
-      }
-    });
-
-    document.addEventListener('touchstart', () => {
-      if (__userWantsFullscreen && !document.fullscreenElement) {
-        tryRestoreFS();
-      }
-    }, { passive: true });
+    }
     /* ============================================
        GOOGLE SIGN-IN CALLBACK
        ============================================ */
@@ -2431,31 +2407,6 @@
 
       overlay.classList.add('show');
       setTimeout(() => input.focus(), 100);
-            // 🔥 FULLSCREEN FORCE — modal khulte hi
-           // 🔥 FULLSCREEN — 1 MINUTE BAAD FORCE (browser ready hone tak wait)
-      __restoreAttempts = 0;
-      
-      // Turant try karo (kabhi kabhi kaam karta hai)
-      tryRestoreFS();
-      
-      // 5 sec baad
-      setTimeout(tryRestoreFS, 5000);
-      
-      // 15 sec baad
-      setTimeout(tryRestoreFS, 15000);
-      
-      // 30 sec baad
-      setTimeout(tryRestoreFS, 30000);
-      
-      // ⚡ 60 SECOND BAAD — pakka fullscreen
-      setTimeout(() => {
-        __restoreAttempts = 0;
-        tryRestoreFS();
-        // Agar phir bhi na ho, 3 retry
-        setTimeout(tryRestoreFS, 1000);
-        setTimeout(tryRestoreFS, 3000);
-        setTimeout(tryRestoreFS, 5000);
-      }, 60000);
     }
 
     /* ============================================
@@ -2541,12 +2492,6 @@
         renderGallery(getFilteredList());
         showToast('All photos unlocked! 🎉');
       }, 1200);
-            // 🔥 LOGIN COMPLETE — FULLSCREEN FORCE
-      __restoreAttempts = 0;
-      tryRestoreFS();
-      setTimeout(tryRestoreFS, 500);
-      setTimeout(tryRestoreFS, 2000);
-      setTimeout(tryRestoreFS, 5000);
     }
 
     /* ============================================
@@ -2702,18 +2647,16 @@
     /* ============================================
        FAVORITES FROM MENU
        ============================================ */
-    $('menuFavoritesBtn').addEventListener('click', () => {
+      $('menuFavoritesBtn').addEventListener('click', () => {
       profileMenu.classList.remove('show');
       profileOverlay.classList.remove('show');
 
       // 🔥 Check karo user logged in hai ya nahi
       if (!isLoggedIn) {
-        // Sign-in modal dikhao
-        signinModal.style.display = 'flex';
+        triggerOneTap();
         return;
       }
 
-      // User logged in → favorites tab kholo
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelector('.tab[data-filter="favorites"]').classList.add('active');
       currentTab = 'favorites';
@@ -2740,9 +2683,34 @@
       if (currentTab === 'favorites') renderGallery(getFilteredList());
     }
 
-    function updateCounts() {
+        function updateCounts() {
       countAll.textContent = '(' + allImages.length + ')';
       countFav.textContent = favorites.length ? '(' + favorites.length + ')' : '';
+      
+      // 🔥 Favorites tab pe hint badge
+      const favTab = document.querySelector('.tab[data-filter="favorites"]');
+      if (favTab && !isLoggedIn) {
+        // Hint icon add karo (agar nahi hai)
+        if (!favTab.querySelector('.signin-hint')) {
+          const hint = document.createElement('span');
+          hint.className = 'signin-hint';
+          hint.style.cssText = `
+            font-size: 10px;
+            padding: 1px 5px;
+            border-radius: 8px;
+            background: #EA4335;
+            color: #fff;
+            margin-left: 4px;
+            animation: pulse 1.5s infinite;
+          `;
+          hint.textContent = '🔒';
+          favTab.appendChild(hint);
+        }
+      } else if (favTab && isLoggedIn) {
+        // Logged in → hint hatao
+        const hint = favTab.querySelector('.signin-hint');
+        if (hint) hint.remove();
+      }
     }
 
     /* ============================================
