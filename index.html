@@ -1155,10 +1155,11 @@
       color: #8ab4f8;
     }
 
-        .pwd-actions {
+    .pwd-actions {
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
       align-items: center;
+      gap: 8px;
       margin-top: 8px;
     }
 
@@ -1180,12 +1181,11 @@
     }
 
     .pwd-btn-primary {
-      width: 100%;
-      padding: 12px 24px;
+      padding: 10px 24px;
       border: none;
       background: #1a73e8;
       color: #fff;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 500;
       font-family: inherit;
       cursor: pointer;
@@ -1719,7 +1719,8 @@
 
       <a href="#" class="pwd-forgot" id="pwdForgot">Forgot password?</a>
 
-            <div class="pwd-actions">
+      <div class="pwd-actions">
+        
         <button class="pwd-btn-primary" id="pwdSubmit">Next</button>
       </div>
     </div>
