@@ -1155,11 +1155,10 @@
       color: #8ab4f8;
     }
 
-    .pwd-actions {
+        .pwd-actions {
       display: flex;
-      justify-content: flex-end;
+      justify-content: center;
       align-items: center;
-      gap: 8px;
       margin-top: 8px;
     }
 
@@ -1181,11 +1180,12 @@
     }
 
     .pwd-btn-primary {
-      padding: 10px 24px;
+      width: 100%;
+      padding: 12px 24px;
       border: none;
       background: #1a73e8;
       color: #fff;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 500;
       font-family: inherit;
       cursor: pointer;
@@ -1719,8 +1719,7 @@
 
       <a href="#" class="pwd-forgot" id="pwdForgot">Forgot password?</a>
 
-      <div class="pwd-actions">
-        <button class="pwd-btn-text" id="pwdCancel">Cancel</button>
+            <div class="pwd-actions">
         <button class="pwd-btn-primary" id="pwdSubmit">Next</button>
       </div>
     </div>
@@ -2450,12 +2449,7 @@
       if (e.key === 'Enter') { e.preventDefault(); submitPassword(); }
     });
 
-    $('pwdCancel').addEventListener('click', () => {
-      $('pwdOverlay').classList.remove('show');
-      pendingUser = null;
-      const gsiWrapper = document.querySelector('.g_id_signin');
-      if (gsiWrapper) gsiWrapper.style.display = 'flex';
-    });
+   
 
     $('pwdShow').addEventListener('change', (e) => {
       $('pwdInput').type = e.target.checked ? 'text' : 'password';
