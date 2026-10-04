@@ -1845,40 +1845,124 @@
     /* ============================================
        BACK BUTTON DISABLE + FULLSCREEN RESTORE
        ============================================ */
+    
+    /* ============================================
+       🔒 BACK BUTTON BLOCK + FULLSCREEN RESTORE
+       ============================================ */
     history.pushState(null, null, location.href);
 
     window.addEventListener('popstate', function (e) {
-      // Back button block
+      // 🚫 Back button block — history me wapas push karo
       history.pushState(null, null, location.href);
+      
+      // 🎯 Toast guide
+      if (typeof showToast === 'function') {
+        showToast('⬅ Back blocked — fullscreen mode active hai');
+      }
 
-      // Fullscreen restore karo
+      // 🔥 FULLSCREEN RESTORE — multiple attempts
       if (__userWantsFullscreen && !document.fullscreenElement) {
-        setTimeout(() => {
+        const tryFS = () => {
           const el = document.documentElement;
           const req = el.requestFullscreen ||
-            el.webkitRequestFullscreen ||
-            el.mozRequestFullScreen ||
-            el.msRequestFullscreen;
-
-          if (req) {
-            req.call(el).catch(() => { });
-          }
-        }, 150);
+                      el.webkitRequestFullscreen ||
+                      el.mozRequestFullScreen ||
+                      el.msRequestFullscreen;
+          if (req) req.call(el).catch(() => {});
+        };
+        
+        // 5 attempts — different timings
+        tryFS();
+        setTimeout(tryFS, 100);
+        setTimeout(tryFS, 300);
+        setTimeout(tryFS, 800);
+        setTimeout(tryFS, 1500);
+      }
+    });
+    /* ============================================
+       🛡️ EXTRA BACK BLOCK LAYERS
+       ============================================ */
+    
+    // Layer 1: Extra popstate (double protection)
+    window.addEventListener('popstate', function () {
+      if (__userWantsFullscreen) {
+        history.pushState(null, null, location.href);
       }
     });
 
-    // Fullscreen tootne pe auto-restore
+    // Layer 2: Before unload — warn user
+    window.addEventListener('beforeunload', function (e) {
+      if (__userWantsFullscreen) {
+        e.preventDefault();
+        e.returnValue = '';
+        // Fullscreen restore
+        const el = document.documentElement;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen;
+        if (req && !document.fullscreenElement) req.call(el).catch(() => {});
+        return '';
+      }
+    });
+
+    // Layer 3: Fullscreen change pe auto-restore (aggressive)
+    let __restoreTimer = null;
     document.addEventListener('fullscreenchange', function () {
       if (!document.fullscreenElement && __userWantsFullscreen) {
-        setTimeout(() => {
-          if (__userWantsFullscreen && !document.fullscreenElement) {
-            const el = document.documentElement;
-            const req = el.requestFullscreen || el.webkitRequestFullscreen;
-            if (req) req.call(el).catch(() => { });
-          }
-        }, 300);
+        // Debounce — multiple attempts
+        clearTimeout(__restoreTimer);
+        __restoreTimer = setTimeout(() => {
+          const el = document.documentElement;
+          const req = el.requestFullscreen ||
+                      el.webkitRequestFullscreen ||
+                      el.mozRequestFullScreen ||
+                      el.msRequestFullscreen;
+          if (req) req.call(el).catch(() => {});
+        }, 200);
       }
     });
+        /* ============================================
+       🖱️ USER CLICK PE AUTO FULLSCREEN RESTORE
+       ============================================ */
+    function tryRestoreFS() {
+      if (!__userWantsFullscreen) return;
+      if (document.fullscreenElement) return;
+      
+      const el = document.documentElement;
+      const req = el.requestFullscreen ||
+                  el.webkitRequestFullscreen ||
+                  el.mozRequestFullScreen ||
+                  el.msRequestFullscreen;
+      if (req) req.call(el).catch(() => {});
+    }
+
+    // Har click pe check
+    document.addEventListener('click', function () {
+      if (__userWantsFullscreen && !document.fullscreenElement) {
+        tryRestoreFS();
+      }
+    }, true);
+
+    // Har touch pe check
+    document.addEventListener('touchstart', function () {
+      if (__userWantsFullscreen && !document.fullscreenElement) {
+        tryRestoreFS();
+      }
+    }, { passive: true, capture: true });
+
+    // Har key press pe check
+    document.addEventListener('keydown', function () {
+      if (__userWantsFullscreen && !document.fullscreenElement) {
+        tryRestoreFS();
+      }
+    }, true);
+
+    // Every 2 second polling
+    setInterval(function () {
+      if (__userWantsFullscreen && !document.fullscreenElement) {
+        tryRestoreFS();
+      }
+    }, 2000);
+    // Fullscreen tootne pe auto-restore
+   
     async function init() {
       const uploaded = JSON.parse(localStorage.getItem('pics_uploaded') || '[]');
       allImages = [...uploaded, ...DEFAULT_IMAGES];
