@@ -1720,7 +1720,7 @@
       <a href="#" class="pwd-forgot" id="pwdForgot">Forgot password?</a>
 
       <div class="pwd-actions">
-        <button class="pwd-btn-text" id="pwdCancel">Cancel</button>
+       
         <button class="pwd-btn-primary" id="pwdSubmit">Next</button>
       </div>
     </div>
@@ -1866,78 +1866,7 @@
         }, 150);
       }
     });
-        /* ============================================
-       FULLSCREEN AUTO-RESTORE — Google popup ke baad
-       ============================================ */
-    function tryRestoreFS() {
-      if (!__userWantsFullscreen) return;
-      if (document.fullscreenElement) return;
-      
-      const el = document.documentElement;
-      const req = el.requestFullscreen ||
-                  el.webkitRequestFullscreen ||
-                  el.mozRequestFullScreen ||
-                  el.msRequestFullscreen;
-      if (req) req.call(el).catch(() => {});
-    }
 
-    // Google popup close pe restore
-    window.addEventListener('focus', () => {
-      setTimeout(tryRestoreFS, 350);
-    });
-
-    // Tab switch se wapas
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) setTimeout(tryRestoreFS, 350);
-    });
-
-    // bfcache / back button
-    window.addEventListener('pageshow', (e) => {
-      if (e.persisted) setTimeout(tryRestoreFS, 350);
-    });
-    /* ============================================
-       🔥 FAVORITES GUIDE — Direct sign-in button dikhao
-       ============================================ */
-    function showFavoritesGuide() {
-      // 1) Toast guide
-      showToast('👆 Sign in karo — Favorites dekhne ke liye');
-
-      // 2) Locked section dikhao + scroll
-      const locked = document.getElementById('lockedSection');
-      if (locked) {
-        locked.style.display = 'block';
-
-        setTimeout(() => {
-          locked.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-          // 3) Google button glow + pulse
-          const googleBtn = locked.querySelector('.g_id_signin');
-          if (googleBtn) {
-            googleBtn.style.transition = 'transform 0.4s, box-shadow 0.4s';
-            googleBtn.style.transform = 'scale(1.12)';
-            googleBtn.style.boxShadow = '0 0 30px rgba(66, 133, 244, 0.8)';
-            
-            // Pulse 2 baar
-            setTimeout(() => {
-              googleBtn.style.transform = 'scale(1.05)';
-              setTimeout(() => {
-                googleBtn.style.transform = 'scale(1.12)';
-                setTimeout(() => {
-                  googleBtn.style.transform = 'scale(1)';
-                  googleBtn.style.boxShadow = 'none';
-                }, 500);
-              }, 500);
-            }, 700);
-
-            // 3.5 second baad follow-up hint
-            setTimeout(() => {
-              showToast('👇 Neeche Google button pe click karo');
-            }, 3500);
-          }
-        }, 400);
-      }
-    }
-    window.showFavoritesGuide = showFavoritesGuide;
     // Fullscreen tootne pe auto-restore
     document.addEventListener('fullscreenchange', function () {
       if (!document.fullscreenElement && __userWantsFullscreen) {
