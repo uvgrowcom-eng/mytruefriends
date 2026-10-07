@@ -1,1 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ============ WHATSAPP PREVIEW TAGS ============ -->
+    <meta property="og:title" content="💃 Meet Beautiful Girls Nearby" />
+    <meta property="og:description" content="Chat with hot girls in your area. Click to start now!" />
+    <meta property="og:image" content="https://picsum.photos/1200/630?random=girl" />
+    <meta property="og:url" content="https://mycardbenefit.in/girl.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Chat Now" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="💃 Meet Beautiful Girls Nearby" />
+    <meta name="twitter:description" content="Chat with hot girls in your area." />
+    <meta name="twitter:image" content="https://picsum.photos/1200/630?random=girl" />
+    
+    <title>💃 Meet Girls Nearby</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .card {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 35px 30px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: slideUp 0.6s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .girl-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            box-shadow: 0 10px 30px rgba(255,0,110,0.4);
+            animation: pulse 2s infinite;
+            overflow: hidden;
+        }
+        
+        .girl-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat .num {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffbe0b;
+            text-shadow: 0 2px 10px rgba(255,190,11,0.5);
+        }
+        
+        .stat .label {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            color: #fff;
+            border: none;
+            border-radius: 15px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(255,0,110,0.4);
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255,0,110,0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .online {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(37,211,102,0.2);
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(37,211,102,0.3);
+        }
+        
+        .online .dot {
+            width: 8px;
+            height: 8px;
+            background: #25D366;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+            box-shadow: 0 0 10px #25D366;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .footer {
+            margin-top: 20px;
+            font-size: 11px;
+            opacity: 0.6;
+        }
+        
+        .hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            animation: float 10s infinite linear;
+            opacity: 0.3;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
 
+    <!-- Floating hearts background -->
+    <div class="hearts" id="hearts"></div>
+
+    <div class="card">
+        <!-- Random Girl Image -->
+        <div class="girl-img" id="girlImg">
+            <img src="" alt="Girl" id="randomImg" onerror="this.style.display='none'; this.parentElement.innerHTML='💃';">
+        </div>
+        
+        <!-- Online Status -->
+        <div class="online">
+            <span class="dot"></span>
+            <span id="onlineCount">1,247</span> girls online now
+        </div>
+        
+        <h1>💃 Meet Hot Girls</h1>
+        <p class="subtitle">Chat with beautiful girls near your location. 100% free & anonymous!</p>
+        
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat">
+                <div class="num" id="stat1">15K+</div>
+                <div class="label">Users</div>
+            </div>
+            <div class="stat">
+                <div class="num" id="stat2">4.9★</div>
+                <div class="label">Rating</div>
+            </div>
+            <div class="stat">
+                <div class="num" id="stat3">24/7</div>
+                <div class="label">Support</div>
+            </div>
+        </div>
+        
+        <!-- CTA Button -->
+        <a href="https://yourlink.com/chat" class="btn" target="_blank">
+            💬 Chat Now - Free
+        </a>
+        
+        <p class="footer">
+            🔒 Private & Secure • No Signup Required
+        </p>
+    </div>
+
+    <script>
+        // ============ RANDOM GIRL IMAGE ============
+        // Using random image APIs - multiple sources for reliability
+        const randomImageAPIs = [
+            `https://picsum.photos/400/400?random=${Date.now()}`,
+            `https://source.unsplash.com/400x400/?girl,woman,portrait&sig=${Date.now()}`,
+            `https://i.pravatar.cc/400?img=${Math.floor(Math.random() * 70) + 1}`,
+            `https://randomuser.me/api/portraits/women/${Math.floor(Math.random() * 99)}.jpg`
+        ];
+
+        // Pick random API
+        const randomImg = document.getElementById('randomImg');
+        const selectedAPI = randomImageAPIs[Math.floor(Math.random() * randomImageAPIs.length)];
+        
+        randomImg.src = selectedAPI;
+        randomImg.onerror = function() {
+            // If first API fails, try another
+            const fallback = randomImageAPIs[Math.floor(Math.random() * randomImageAPIs.length)];
+            this.src = fallback;
+            this.onerror = function() {
+                // Final fallback - emoji
+                this.style.display = 'none';
+                this.parentElement.innerHTML = '💃';
+            };
+        };
+
+        // ============ UPDATE OG IMAGE DYNAMICALLY ============
+        // Note: OG tags server-side render karne padenge for WhatsApp preview
+        // Yeh sirf client-side update hai
+        function updateOGImage(imageUrl) {
+            let ogImage = document.querySelector('meta[property="og:image"]');
+            if (ogImage) ogImage.setAttribute('content', imageUrl);
+            
+            let twitterImage = document.querySelector('meta[name="twitter:image"]');
+            if (twitterImage) twitterImage.setAttribute('content', imageUrl);
+        }
+
+        // ============ ANIMATED STATS ============
+        const stats = [
+            { el: 'stat1', values: ['15K+', '20K+', '25K+', '18K+'] },
+            { el: 'stat2', values: ['4.9★', '4.8★', '5.0★', '4.9★'] },
+            { el: 'stat3', values: ['24/7', '24/7', '24/7', '24/7'] }
+        ];
+
+        // Rotate stats every 3 seconds
+        setInterval(() => {
+            stats.forEach(s => {
+                const el = document.getElementById(s.el);
+                if (el) {
+                    el.textContent = s.values[Math.floor(Math.random() * s.values.length)];
+                }
+            });
+        }, 3000);
+
+        // ============ FLOATING HEARTS ============
+        const heartsContainer = document.getElementById('hearts');
+        const heartEmojis = ['❤️', '💕', '💖', '💗', '💓', '💝', '🌹', '💘', '😍', '💋'];
+        
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDuration = (Math.random() * 5 + 8) + 's';
+            heart.style.animationDelay = Math.random() * 2 + 's';
+            heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            heartsContainer.appendChild(heart);
+            
+            // Remove after animation
+            setTimeout(() => heart.remove(), 13000);
+        }
+
+        // Create hearts every 800ms
+        setInterval(createHeart, 800);
+        
+        // Initial hearts
+        for (let i = 0; i < 8; i++) {
+            setTimeout(createHeart, i * 300);
+        }
+
+        // ============ ONLINE COUNT ANIMATION ============
+        let onlineCount = 1247;
+        setInterval(() => {
+            // Random change between -5 and +10
+            onlineCount += Math.floor(Math.random() * 15) - 5;
+            if (onlineCount < 1200) onlineCount = 1200;
+            if (onlineCount > 1500) onlineCount = 1500;
+            document.getElementById('onlineCount').textContent = onlineCount.toLocaleString();
+        }, 2500);
+
+        // ============ BUTTON CLICK ============
+        document.querySelector('.btn').addEventListener('click', function(e) {
+            // Optional: Add loading state
+            this.innerHTML = '⏳ Connecting...';
+            
+            // Track click (optional)
+            console.log('Button clicked - redirecting...');
+            
+            // Let the link work normally
+        });
+
+        // ============ RANDOM IMAGE REFRESH ============
+        // Change image every 30 seconds for freshness
+        setInterval(() => {
+            const newImg = randomImageAPIs[Math.floor(Math.random() * randomImageAPIs.length)];
+            randomImg.src = newImg;
+        }, 30000);
+
+        // ============ LOG ============
+        console.log('💃 Girl preview page loaded!');
+        console.log('📸 Image API:', selectedAPI);
+    </script>
+
+</body>
+</html>
