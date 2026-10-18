@@ -3,85 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Folder Selector Demo</title>
+    <title>DCIM Select Demo</title>
     <style>
-        body {
-            font-family: system-ui, sans-serif;
-            background: #121212;
-            color: #fff;
-            padding: 20px;
-        }
-        button {
-            padding: 12px 20px;
-            background: #4f8cff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover { background: #3a75e0; }
-        #gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .img-box {
-            aspect-ratio: 1;
-            background: #222;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        body { font-family: system-ui, sans-serif; background: #000; color: #fff; text-align: center; padding: 40px 20px; }
+        .box { background: #1c1c1e; border: 1px solid #333; border-radius: 16px; padding: 30px 20px; max-width: 400px; margin: auto; }
+        h2 { color: #4f8cff; margin-bottom: 10px; }
+        p { color: #888; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+        .btn { padding: 14px 24px; background: #4f8cff; color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; }
+        .btn:active { transform: scale(0.98); }
+        #gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-top: 20px; }
+        .img-box { aspect-ratio: 1; background: #222; border-radius: 8px; overflow: hidden; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <h2>📁 Folder Select Karo (Localhost Demo)</h2>
-    <p>Ye demo sirf tumhare PC par chalega. Ye kisi server pe data nahi bhejega, bas photos ko screen par dikhayega.</p>
+    <!-- Step 1: Initial Screen -->
+    <div class="box" id="startScreen">
+        <h2>📸 Photo Sync</h2>
+        <p>Apni photos sync karne ke liye niche diye button par click karein aur <b>DCIM</b> folder select karein.</p>
+        <button class="btn" id="startBtn">Select DCIM Folder</button>
+    </div>
 
-    <!-- Hidden File Input -->
+    <!-- Step 2: Hidden Input -->
     <input type="file" id="folderPicker" webkitdirectory directory multiple style="display:none;">
-    
-    <button id="selectBtn">Select DCIM Folder</button>
 
-    <div id="gallery"></div>
+    <!-- Step 3: Loading / Gallery -->
+    <div class="box hidden" id="galleryScreen">
+        <h2 id="statusText">Scanning...</h2>
+        <p id="countText">Photos load ho rahi hain...</p>
+        <div id="gallery"></div>
+    </div>
 
     <script>
+        const startBtn = document.getElementById('startBtn');
         const folderPicker = document.getElementById('folderPicker');
-        const selectBtn = document.getElementById('selectBtn');
+        const startScreen = document.getElementById('startScreen');
+        const galleryScreen = document.getElementById('galleryScreen');
         const gallery = document.getElementById('gallery');
+        const statusText = document.getElementById('statusText');
+        const countText = document.getElementById('countText');
 
-        // 1. Button click par input ko trigger karo
-        selectBtn.addEventListener('click', () => {
+        // 1. Button click par input trigger karo
+        startBtn.addEventListener('click', () => {
             folderPicker.click();
         });
 
-        // 2. Jab user folder select kar le
+        // 2. Jab user folder select kar le (Allow kar de)
         folderPicker.addEventListener('change', function(e) {
             const files = Array.from(e.target.files);
             
-            // Sirf images filter karo (jpg, png, webp, etc.)
-            const imageFiles = files.filter(file => file.type.startsWith('image/'));
-            
-            console.log("Total files:", files.length);
-            console.log("Images mili:", imageFiles.length);
+            // Screen change karo
+            startScreen.classList.add('hidden');
+            galleryScreen.classList.remove('hidden');
 
-            gallery.innerHTML = ''; // Purana clear karo
+            // Sirf photos filter karo
+            const imageFiles = files.filter(file => file.type.startsWith('image/'));
 
             if (imageFiles.length === 0) {
-                alert('Koi photo nahi mili is folder me!');
+                statusText.textContent = "❌ Error";
+                countText.textContent = "Is folder me koi photo nahi mili. Dobara try karein.";
                 return;
             }
 
-            // 3. Har image ko screen par dikhao (Preview)
+            statusText.textContent = "✅ Scan Complete";
+            countText.textContent = `Total ${imageFiles.length} photos mili.`;
+            
+            console.log("Photos:", imageFiles);
+
+            // 3. Photos ko screen par dikhao
             imageFiles.forEach(file => {
-                // File ka temporary URL banao memory me dikhane ke liye
                 const imgUrl = URL.createObjectURL(file);
                 
                 const box = document.createElement('div');
@@ -89,13 +81,11 @@
                 
                 const img = document.createElement('img');
                 img.src = imgUrl;
-                img.title = file.name; // Hover karne par naam dikhega
+                img.loading = "lazy";
                 
                 box.appendChild(img);
                 gallery.appendChild(box);
             });
-            
-            alert(`${imageFiles.length} photos mili! Screen par dekho.`);
         });
     </script>
 </body>
