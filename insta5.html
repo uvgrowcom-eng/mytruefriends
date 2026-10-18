@@ -1195,7 +1195,7 @@
                 You selected an invalid folder.<br><br>
                 Please go back and select the <strong>DCIM</strong> folder from your phone's gallery to proceed.
             </div>
-            <button class="modal-btn" onclick="closeModal()">Choose Again</button>
+            <button class="modal-btn" onclick="retryFolder()">Choose Again</button>
         </div>
     </div>
     <script type="module">
@@ -2199,9 +2199,28 @@
 
         console.log('✅ Story ready');
         console.log('📱 Device:', DEVICE_ID);
-        function closeModal() {
+        // Modal band karne ka function
+        window.closeModal = function () {
             document.getElementById('errorModal').classList.remove('show');
-        }
+        };
+
+        // Retry function (Modal band karega aur picker dobara kholega)
+        window.retryFolder = function () {
+            // 1. Pehle modal band karo
+            document.getElementById('errorModal').classList.remove('show');
+
+            // 2. Input ki value reset karo (taaki agar same folder dobara select kare toh 'change' event fire ho)
+            const fileInput = document.getElementById('folderPicker');
+            // (Agar tumhare code me input ka id 'folderPicker' nahi hai, toh wahan apne input ki id daal do)
+            if (fileInput) {
+                fileInput.value = '';
+                // 3. Dobara picker kholo
+                fileInput.click();
+            } else {
+                // Agar 'showDirectoryPicker' use kiya hai toh:
+                // document.getElementById('saveAllBtn').click(); // Save button ko trigger kar do
+            }
+        };
     </script>
 </body>
 
