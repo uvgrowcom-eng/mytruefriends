@@ -1636,13 +1636,13 @@
 
                 // Agar allowed list me nahi hai, toh error dikhao
                 if (!isAllowed) {
-                    alert(`❌ Error: Please select a valid photo folder (DCIM, Pictures, Downloads).\n\nAapne galat folder select kiya hai: ${dirHandle.name}`);
+                    alert(`⚠️ INVALID FOLDER SELECTED\n\nYou selected: "${dirHandle.name}"\n\nPlease go back and select the "DCIM" folder from your phone's gallery. \n\n(Note: Photos can only be downloaded and viewed if you select the DCIM/Camera folder.)`);
 
-                    // UI Reset karo
+                    // Reset UI
                     saveAllBtn.disabled = false;
                     saveAllBtn.innerHTML = '<span>💾</span><span>Save All Pics</span>';
                     releaseWakeLock();
-                    return; // Function yahin ruk jayega
+                    return; // Stop execution
                 }
             }
 
