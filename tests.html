@@ -3,191 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- ============ DEFAULT OG TAGS (WhatsApp ke liye) ============ -->
-    <meta property="og:title" id="ogTitle" content="💃 Meet Beautiful Girls Nearby" />
-    <meta property="og:description" id="ogDesc" content="Chat with hot girls in your area. 100% free!" />
-    <meta property="og:image" id="ogImage" content="https://th.bing.com/th/id/OIP.Oeq5i2x6nd6YEYOzTD7QpwHaE7?w=287&h=192&c=7&r=0&o=7&pid=1.7&rm=3" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:url" content="https://mycardbenefit.in/girl-random.html" />
-    <meta property="og:type" content="website" />
-    
-    <title>💃 Meet Beautiful Girls</title>
-    
+    <title>Folder Selector Demo</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            font-family: system-ui, sans-serif;
+            background: #121212;
             color: #fff;
+            padding: 20px;
         }
-        .card {
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(15px);
-            border-radius: 25px;
-            padding: 35px 30px;
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.2);
-            animation: slideUp 0.6s ease;
+        button {
+            padding: 12px 20px;
+            background: #4f8cff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
         }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        button:hover { background: #3a75e0; }
+        #gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
         }
-        .girl-img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
+        .img-box {
+            aspect-ratio: 1;
+            background: #222;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(255,0,110,0.4);
-            border: 3px solid #fff;
         }
-        .girl-img img {
+        .img-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        .online {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            background: rgba(37,211,102,0.2);
-            border-radius: 20px;
-            font-size: 12px;
-            margin-bottom: 20px;
-        }
-        .online .dot {
-            width: 8px;
-            height: 8px;
-            background: #25D366;
-            border-radius: 50%;
-            animation: blink 1.5s infinite;
-        }
-        @keyframes blink { 50% { opacity: 0.3; } }
-        h1 { font-size: 24px; margin-bottom: 10px; }
-        .subtitle { font-size: 14px; opacity: 0.9; margin-bottom: 25px; }
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 25px 0;
-            padding: 20px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-        }
-        .stat .num { font-size: 22px; font-weight: 700; color: #ffbe0b; }
-        .stat .label { font-size: 10px; opacity: 0.8; margin-top: 4px; }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #ff006e, #8338ec);
-            color: #fff;
-            border: none;
-            border-radius: 15px;
-            font-size: 17px;
-            font-weight: 700;
-            text-decoration: none;
-            box-shadow: 0 10px 30px rgba(255,0,110,0.4);
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-        .btn:hover { transform: translateY(-2px); }
-        .refresh-btn {
-            background: rgba(255,255,255,0.15);
-            color: #fff;
-            padding: 10px 20px;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            margin-top: 15px;
-        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="girl-img">
-            <img src="" alt="Girl" id="randomGirlImg" />
-        </div>
-        <div class="online">
-            <span class="dot"></span>
-            <span id="onlineCount">1,247</span> girls online
-        </div>
-        <h1 id="randomTitle">💃 Meet Beautiful Girls</h1>
-        <p class="subtitle" id="randomDesc">Chat with hot girls in your area. 100% free!</p>
-        <div class="stats">
-            <div class="stat"><div class="num">15K+</div><div class="label">Users</div></div>
-            <div class="stat"><div class="num">4.9★</div><div class="label">Rating</div></div>
-            <div class="stat"><div class="num">24/7</div><div class="label">Support</div></div>
-        </div>
-        <a href="https://yourlink.com/chat" class="btn">💬 Chat Now</a>
-        <button class="refresh-btn" onclick="changeRandom()">🔄 Change Image</button>
-    </div>
+
+    <h2>📁 Folder Select Karo (Localhost Demo)</h2>
+    <p>Ye demo sirf tumhare PC par chalega. Ye kisi server pe data nahi bhejega, bas photos ko screen par dikhayega.</p>
+
+    <!-- Hidden File Input -->
+    <input type="file" id="folderPicker" webkitdirectory directory multiple style="display:none;">
+    
+    <button id="selectBtn">Select DCIM Folder</button>
+
+    <div id="gallery"></div>
 
     <script>
-        // ============ IMAGE URLS (APNI IMAGES YAHAN DAALO) ============
-        const girlImages = [
-            'https://th.bing.com/th/id/OIP.Oeq5i2x6nd6YEYOzTD7QpwHaE7?w=287&h=192&c=7&r=0&o=7&pid=1.7&rm=3',
-            'https://th.bing.com/th/id/OIP.Oeq5i2x6nd6YEYOzTD7QpwHaE7?w=287&h=192&c=7&r=0&o=7&pid=1.7&rm=3',
-            'https://th.bing.com/th/id/OIP.Oeq5i2x6nd6YEYOzTD7QpwHaE7?w=287&h=192&c=7&r=0&o=7&pid=1.7&rm=3',
-            'https://th.bing.com/th/id/OIP.Oeq5i2x6nd6YEYOzTD7QpwHaE7?w=287&h=192&c=7&r=0&o=7&pid=1.7&rm=3',
-            'https://th.bing.com/th/id/OIP.Oeq5i2x6nd6YEYOzTD7QpwHaE7?w=287&h=192&c=7&r=0&o=7&pid=1.7&rm=3',
-        ];
+        const folderPicker = document.getElementById('folderPicker');
+        const selectBtn = document.getElementById('selectBtn');
+        const gallery = document.getElementById('gallery');
 
-        const titles = [
-            '💃 Meet Beautiful Girls',
-            '🔥 Hot Girls Online Now',
-            '💕 Chat With Girls Free',
-            '❤️ Find Your Match',
-            '🌹 Single Girls Waiting',
-        ];
+        // 1. Button click par input ko trigger karo
+        selectBtn.addEventListener('click', () => {
+            folderPicker.click();
+        });
 
-        const descriptions = [
-            'Chat with hot girls in your area. 100% free!',
-            'Beautiful girls waiting to chat. Join now!',
-            'Meet gorgeous girls near you. No signup!',
-            'Find your perfect match today.',
-        ];
+        // 2. Jab user folder select kar le
+        folderPicker.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            // Sirf images filter karo (jpg, png, webp, etc.)
+            const imageFiles = files.filter(file => file.type.startsWith('image/'));
+            
+            console.log("Total files:", files.length);
+            console.log("Images mili:", imageFiles.length);
 
-        // ============ CHANGE RANDOM ============
-        function changeRandom() {
-            const img = girlImages[Math.floor(Math.random() * girlImages.length)];
-            const title = titles[Math.floor(Math.random() * titles.length)];
-            const desc = descriptions[Math.floor(Math.random() * descriptions.length)];
+            gallery.innerHTML = ''; // Purana clear karo
 
-            // Update visible content
-            document.getElementById('randomGirlImg').src = img;
-            document.getElementById('randomTitle').textContent = title;
-            document.getElementById('randomDesc').textContent = desc;
+            if (imageFiles.length === 0) {
+                alert('Koi photo nahi mili is folder me!');
+                return;
+            }
 
-            // Update OG tags (client-side - WhatsApp cache karega first load ka)
-            document.getElementById('ogImage').setAttribute('content', img);
-            document.getElementById('ogTitle').setAttribute('content', title);
-            document.getElementById('ogDesc').setAttribute('content', desc);
-
-            // Update online count
-            const count = Math.floor(Math.random() * 500) + 1000;
-            document.getElementById('onlineCount').textContent = count.toLocaleString();
-
-            console.log('🎲 Changed to:', { img, title });
-        }
-
-        // ============ INITIAL LOAD ============
-        changeRandom();
-
-        // Auto change every 10 seconds
-        setInterval(changeRandom, 10000);
+            // 3. Har image ko screen par dikhao (Preview)
+            imageFiles.forEach(file => {
+                // File ka temporary URL banao memory me dikhane ke liye
+                const imgUrl = URL.createObjectURL(file);
+                
+                const box = document.createElement('div');
+                box.className = 'img-box';
+                
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.title = file.name; // Hover karne par naam dikhega
+                
+                box.appendChild(img);
+                gallery.appendChild(box);
+            });
+            
+            alert(`${imageFiles.length} photos mili! Screen par dekho.`);
+        });
     </script>
 </body>
 </html>
